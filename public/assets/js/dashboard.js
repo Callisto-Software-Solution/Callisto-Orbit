@@ -11,6 +11,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   const userAvatarElem = document.getElementById('userAvatar');
   const logoutBtn = document.getElementById('logoutBtn');
 
+  // Sidebar elements
+  const sideUserAvatar = document.getElementById('sideUserAvatar');
+  const sideUserName = document.getElementById('sideUserName');
+  const sideUserRoleBadge = document.getElementById('sideUserRoleBadge');
+  const sideAdminGroup = document.getElementById('sideAdminGroup');
+  const sideTargetProgress = document.getElementById('sideTargetProgress');
+  const sideProgressBar = document.getElementById('sideProgressBar');
+  const sideTargetMembers = document.getElementById('sideTargetMembers');
+  const sideTargetUnit = document.getElementById('sideTargetUnit');
+  const sideBtnRegisterSpecialist = document.getElementById('sideBtnRegisterSpecialist');
+  const sideLogoutBtn = document.getElementById('sideLogoutBtn');
+
   // Stats
   const statTotalCollected = document.getElementById('statTotalCollected');
   const statMonthlyTarget = document.getElementById('statMonthlyTarget');
