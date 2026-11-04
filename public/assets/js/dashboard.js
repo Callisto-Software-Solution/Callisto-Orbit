@@ -50,8 +50,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         await fetch('/api/auth/logout', { method: 'POST' });
         sessionStorage.removeItem('callisto_active_user');
-        window.location.href = '/';
-      } catch (e) {
+      } catch (e) {}
+
+      if (window.triggerOrbitTransition) {
+        window.triggerOrbitTransition('/', 'SESSION TERMINATED • RETURNING TO PHOENIX...', 1000);
+      } else {
         window.location.href = '/';
       }
     });
