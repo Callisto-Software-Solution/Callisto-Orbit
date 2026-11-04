@@ -1141,3 +1141,59 @@ body::before {
   position: relative;
   z-index: 2;
 }
+
+/* ==========================================================================
+   FIRE BIRD CUSTOM CURSOR & AUDIO VISUALIZER
+   ========================================================================== */
+
+:root {
+  --phoenix-cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34" fill="none"><defs><linearGradient id="fire" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%23ffffff"/><stop offset="25%" stop-color="%23ffd000"/><stop offset="65%" stop-color="%23ff4500"/><stop offset="100%" stop-color="%23d61818"/></linearGradient></defs><path d="M17 2 L19 8 C23 7 28 4 33 2 C31 7 28 11 23 13 C27 15 31 16 34 16 C30 19 25 20 20 18 L19 24 L22 32 L17 28 L12 32 L15 24 L14 18 C9 20 4 19 0 16 C3 16 7 15 11 13 C6 11 3 7 1 2 C6 4 11 7 15 8 Z" fill="url(%23fire)" stroke="%23ff9d00" stroke-width="0.8"/></svg>') 17 2, auto;
+
+  --phoenix-cursor-pointer: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 34 34" fill="none"><defs><linearGradient id="fire2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%2300f0ff"/><stop offset="25%" stop-color="%23ffd700"/><stop offset="65%" stop-color="%23ff5500"/><stop offset="100%" stop-color="%23ff1133"/></linearGradient></defs><path d="M17 1 L20 7 C24 6 29 3 34 1 C32 6 29 10 24 12 C28 14 32 15 35 15 C31 18 26 19 21 17 L20 23 L23 33 L17 29 L11 33 L14 23 L13 17 C8 19 3 18 0 15 C3 15 7 14 11 12 C6 10 3 6 1 1 C6 3 11 6 15 7 Z" fill="url(%23fire2)" stroke="%23ffffff" stroke-width="1.2"/></svg>') 17 2, pointer;
+}
+
+body.viewport-100vh, 
+body.viewport-100vh * {
+  cursor: var(--phoenix-cursor);
+}
+
+body.viewport-100vh a, 
+body.viewport-100vh button, 
+body.viewport-100vh input, 
+body.viewport-100vh .btn,
+body.viewport-100vh [role="button"],
+body.viewport-100vh .cursor-pointer {
+  cursor: var(--phoenix-cursor-pointer) !important;
+}
+
+/* Audio Indicator Waves */
+.audio-waves {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 12px;
+}
+
+.wave-bar {
+  width: 2.5px;
+  height: 3px;
+  background: var(--callisto-amber);
+  border-radius: 2px;
+  transition: height 0.2s ease;
+}
+
+.audio-playing .bar-1 {
+  animation: wavePulse1 0.75s infinite alternate ease-in-out;
+}
+
+.audio-playing .bar-2 {
+  animation: wavePulse2 0.55s infinite alternate ease-in-out 0.15s;
+}
+
+.audio-playing .bar-3 {
+  animation: wavePulse3 0.9s infinite alternate ease-in-out 0.3s;
+}
+
+@keyframes wavePulse1 { 0% { height: 3px; } 100% { height: 12px; } }
+@keyframes wavePulse2 { 0% { height: 4px; } 100% { height: 14px; } }
+@keyframes wavePulse3 { 0% { height: 2px; } 100% { height: 10px; } }
