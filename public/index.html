@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Callisto Orbit | Command &amp; Fund Center</title>
+  <title>Callisto Orbit | The Rising Phoenix of Cyber Security &amp; AI</title>
   
   <link rel="icon" type="image/jpeg" href="/assets/images/callisto-logo.jpg">
 
   <!-- Google Fonts: Inter & Rajdhani -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Bootstrap 5.3.3 & Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -18,268 +18,180 @@
 
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
-<body>
+<body class="viewport-100vh">
 
-  <!-- Ambient Glowing Orbs for Glass Reflection -->
+  <!-- Dynamic Fire Embers Canvas -->
+  <canvas id="emberCanvas"></canvas>
+
+  <!-- Ambient Aurora Orbs -->
   <div class="aurora-orb aurora-1"></div>
   <div class="aurora-orb aurora-2"></div>
 
-  <div class="command-viewport">
-    <div class="command-shell">
+  <!-- 1. TOP NAVBAR (Compact 100vh Header) -->
+  <header class="landing-nav-100vh">
+    <div class="landing-nav-box d-flex justify-content-between align-items-center" style="padding: 0.6rem 1.25rem;">
       
-      <div class="row g-3">
+      <!-- Brand Logo & Name -->
+      <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: #0c1222; border: 1px solid rgba(255,85,0,0.4); display: flex; align-items: center; justify-content: center; padding: 3px; box-shadow: 0 0 12px rgba(255,85,0,0.3);">
+          <img src="/assets/images/callisto-logo.jpg" alt="Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+        </div>
+        <div>
+          <span style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 800; letter-spacing: 1px; color: #fff;">
+            CALLISTO<span style="color: var(--callisto-orange);">-ORBIT</span>
+          </span>
+          <span class="d-none d-sm-inline-block ms-2 badge" style="background: rgba(0, 229, 255, 0.12); color: var(--callisto-cyan); border: 1px solid rgba(0, 229, 255, 0.25); font-size: 0.65rem;">
+            ● PHOENIX V2.4
+          </span>
+        </div>
+      </a>
+
+      <!-- Center Status Pill -->
+      <div class="d-none d-md-flex align-items-center gap-2 px-3 py-1 glass-subcard" style="border-radius: 50px; font-size: 0.75rem;">
+        <span class="status-indicator-dot" style="width: 6px; height: 6px;"></span>
+        <span style="color: var(--text-muted);">SQUAD FUND POOL:</span>
+        <strong style="color: #fff;">6 SPECIALISTS &bull; $100/MO</strong>
+      </div>
+
+      <!-- Action Button -->
+      <a href="/login.html" class="btn-nav-launch" style="padding: 0.45rem 1.15rem; font-size: 0.82rem;">
+        <span>Operator Login</span>
+        <i class="bi bi-arrow-right-short fs-5"></i>
+      </a>
+
+    </div>
+  </header>
+
+  <!-- 2. MAIN CENTER HERO (Takes up available height smoothly) -->
+  <main class="landing-main-100vh">
+    <div class="row align-items-center g-4 w-100">
+      
+      <!-- Hero Left: Typography & Metrics -->
+      <div class="col-12 col-lg-6">
         
-        <!-- SIDEBAR (Image 2 Match) -->
-        <div class="col-12 col-lg-2">
-          <aside class="command-sidebar">
-            <div>
-              <div class="sidebar-logo-group">
-                <div class="sidebar-logo-box">
-                  <img src="/assets/images/callisto-logo.jpg" alt="Logo">
-                </div>
-                <div>
-                  <div class="sidebar-brand-name">Callisto<span style="color: var(--callisto-orange);">360</span></div>
-                  <div class="sidebar-brand-tag">Cyber Security &amp; AI</div>
-                </div>
-              </div>
-
-              <div class="sidebar-nav-title">Core Navigation</div>
-              <nav class="d-flex flex-column">
-                <a href="#" class="sidebar-nav-link active">
-                  <i class="bi bi-shield-lock-fill"></i>
-                  <span>Authentication</span>
-                </a>
-                <a href="/dashboard.html" class="sidebar-nav-link">
-                  <i class="bi bi-grid-fill"></i>
-                  <span>Dashboard</span>
-                </a>
-                <a href="#" class="sidebar-nav-link">
-                  <i class="bi bi-wallet2"></i>
-                  <span>Fund Streams</span>
-                </a>
-                <a href="#" class="sidebar-nav-link">
-                  <i class="bi bi-people-fill"></i>
-                  <span>Squad Orbit</span>
-                </a>
-                <a href="#" class="sidebar-nav-link">
-                  <i class="bi bi-terminal-fill"></i>
-                  <span>Policy &amp; Rules</span>
-                </a>
-              </nav>
-            </div>
-
-            <!-- Bottom Gateway Badge -->
-            <div class="sidebar-bottom-pill">
-              <div class="d-flex align-items-center gap-2">
-                <span class="status-indicator-dot"></span>
-                <span style="font-size: 0.72rem; font-weight: 700; color: #fff; letter-spacing: 0.5px;">ORBIT GATEWAY</span>
-              </div>
-              <div style="font-size: 0.68rem; color: var(--text-dim); margin-top: 2px;">ONLINE &bull; ZONE ALPHA</div>
-            </div>
-          </aside>
+        <div class="phoenix-badge mb-2" style="padding: 0.3rem 0.85rem; font-size: 0.7rem;">
+          <i class="bi bi-fire text-warning"></i>
+          <span>The Rising Phoenix &bull; Internal Capital Pool</span>
         </div>
 
-        <!-- MAIN COMMAND CONTENT (Image 2 Match) -->
-        <div class="col-12 col-lg-10">
-          
-          <!-- Top Hero Section -->
-          <header class="hero-header-box">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="hero-tag-pill">CALLISTO ORBIT INFRASTRUCTURE &bull; SQUAD FUND POOL (100 / MO)</span>
-              <span class="badge" style="background: rgba(0, 229, 255, 0.12); color: var(--callisto-cyan); border: 1px solid rgba(0, 229, 255, 0.25); font-size: 0.7rem;">
-                <i class="bi bi-diagram-3-fill me-1"></i> COMPOSITE PATTERN
-              </span>
-            </div>
-            <h1 class="hero-main-title">Hierarchical Structure of Callisto Orbit Squad</h1>
-            <p class="hero-main-desc">
-              Implementation of decentralized internal treasury for Callisto. 6 core team members contributing $100 monthly to ensure rapid infrastructure scalability and future venture capital.
-            </p>
-          </header>
+        <h1 style="font-family: var(--font-display); font-size: clamp(2rem, 3.8vw, 3.3rem); font-weight: 800; line-height: 1.08; color: #fff; margin-bottom: 0.75rem;">
+          Rise Above The Horizon.<br>
+          <span class="phoenix-gradient-text">Fueling Callisto’s Future.</span>
+        </h1>
 
-          <!-- 4 Metric Cards Row (Image 2 Match) -->
-          <div class="row g-3 mb-3">
-            <div class="col-12 col-sm-6 col-xl-3">
-              <div class="stat-glass-card">
-                <div class="stat-glass-label">
-                  <i class="bi bi-lightning-charge-fill text-info"></i> Recursive Squad Target
-                </div>
-                <div class="stat-glass-value" style="color: var(--callisto-cyan);">$600.0 <span style="font-size: 0.8rem; color: var(--text-dim);">USD</span></div>
-                <div class="stat-glass-sub">6 members &times; $100 target</div>
-              </div>
-            </div>
+        <p style="font-size: clamp(0.85rem, 1.1vw, 1rem); color: var(--text-muted); line-height: 1.5; max-width: 540px; margin-bottom: 1.25rem;">
+          A high-security, decentralized internal treasury engineered for Callisto. 
+          6 elite specialists contributing <strong>$100 monthly</strong> into a self-sustaining innovation fund for cutting-edge Cyber Security &amp; AI expansion.
+        </p>
 
-            <div class="col-12 col-sm-6 col-xl-3">
-              <div class="stat-glass-card">
-                <div class="stat-glass-label">
-                  <i class="bi bi-people-fill text-warning"></i> Connected Squad
-                </div>
-                <div class="stat-glass-value" style="color: #fff;">6 <span style="font-size: 0.85rem; color: var(--text-dim);">Specialists</span></div>
-                <div class="stat-glass-sub">Cyber Security &amp; AI Leads</div>
-              </div>
-            </div>
-
-            <div class="col-12 col-sm-6 col-xl-3">
-              <div class="stat-glass-card">
-                <div class="stat-glass-label">
-                  <i class="bi bi-shield-check text-success"></i> Orbit Grid Status
-                </div>
-                <div class="mt-1">
-                  <span class="badge-operational">
-                    <span class="status-indicator-dot"></span> OPERATIONAL
-                  </span>
-                </div>
-                <div class="stat-glass-sub">Zero-DB JSON sync active</div>
-              </div>
-            </div>
-
-            <div class="col-12 col-sm-6 col-xl-3">
-              <div class="stat-glass-card">
-                <div class="stat-glass-label">
-                  <i class="bi bi-cpu-fill text-warning"></i> Security Clearance
-                </div>
-                <div class="stat-glass-value" style="color: #ff9d00;">4 <span style="font-size: 0.85rem; color: var(--text-dim);">Levels</span></div>
-                <div class="stat-glass-sub">scrypt 256-bit salted hash</div>
-              </div>
+        <!-- 4 Compact Metrics Cards (Image 2 Glass Look) -->
+        <div class="row g-2 mb-3" style="max-width: 540px;">
+          <div class="col-6 col-sm-3">
+            <div class="metric-pill-100vh">
+              <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase;">Target Pool</div>
+              <div style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--callisto-cyan);">$600<span style="font-size: 0.7rem;">/mo</span></div>
             </div>
           </div>
-
-          <!-- Main Split Section (Image 2 Dispatcher + Zone Tree Match) -->
-          <div class="row g-3">
-            
-            <!-- Left Box: Uniform Command Dispatcher (Login Form) -->
-            <div class="col-12 col-lg-5">
-              <div class="dispatcher-box">
-                <div>
-                  <div class="dispatcher-title">
-                    <i class="bi bi-terminal-split text-info"></i>
-                    <span>Uniform Operator Authenticator</span>
-                  </div>
-                  <p class="dispatcher-subtitle">
-                    Authenticate operator identity against Callisto Orbit's encrypted zero-database vault to dispatch transactions and view the treasury.
-                  </p>
-
-                  <div id="alertContainer"></div>
-
-                  <form id="loginForm" autocomplete="off" class="mt-3">
-                    
-                    <!-- Step 1: Identifier -->
-                    <div class="mb-3">
-                      <div class="form-step-label">
-                        <span>1. Operator Identity (Username or Email)</span>
-                      </div>
-                      <div class="input-wrap-relative">
-                        <input 
-                          type="text" 
-                          class="input-cyber-glass" 
-                          id="identifier" 
-                          placeholder="[Operator] e.g. kehan or kehan@callisto.io" 
-                          required 
-                          autofocus
-                        >
-                      </div>
-                    </div>
-
-                    <!-- Step 2: Password -->
-                    <div class="mb-3">
-                      <div class="form-step-label">
-                        <span>2. Secret Authorization Token (Password)</span>
-                      </div>
-                      <div class="input-wrap-relative">
-                        <input 
-                          type="password" 
-                          class="input-cyber-glass" 
-                          id="password" 
-                          placeholder="Enter security key" 
-                          required
-                        >
-                        <button type="button" class="input-toggle-eye" id="togglePassword" title="Show/Hide">
-                          <i class="bi bi-eye-fill" id="togglePasswordIcon"></i>
-                        </button>
-                      </div>
-                    </div>
-
-                    <!-- Remember Me Option -->
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                      <label class="d-flex align-items-center gap-2 cursor-pointer" style="cursor: pointer;">
-                        <input type="checkbox" id="rememberMe" style="accent-color: var(--callisto-orange); width: 16px; height: 16px;">
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Preserve Session State</span>
-                      </label>
-                      <span style="font-size: 0.72rem; color: var(--text-dim);">
-                        <i class="bi bi-lock-fill text-success"></i> HMAC Signed
-                      </span>
-                    </div>
-
-                    <!-- Dispatch Button -->
-                    <button type="submit" class="btn-dispatch-target mb-3" id="loginBtn">
-                      <i class="bi bi-send-fill"></i>
-                      <span>DISPATCH AUTHORIZATION TO ORBIT</span>
-                    </button>
-                  </form>
-                </div>
-
-                <!-- Execution Audit Log (Image 2 Match) -->
-                <div>
-                  <div class="d-flex align-items-center gap-2 mb-2" style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">
-                    <i class="bi bi-clock-history"></i> Execution Audit Log
-                  </div>
-                  <div class="audit-log-terminal">
-                    <span class="status-indicator-dot" style="width: 6px; height: 6px;"></span>
-                    <span id="auditLogText">Session Idle &bull; Ready for operator authentication</span>
-                  </div>
-                </div>
-
-              </div>
+          <div class="col-6 col-sm-3">
+            <div class="metric-pill-100vh">
+              <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase;">Squad Roster</div>
+              <div style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: #fff;">6 Specialists</div>
             </div>
-
-            <!-- Right Box: Interactive Urban Zone Tree (6 Squad Members) -->
-            <div class="col-12 col-lg-7">
-              <div class="squad-tree-box">
-                
-                <div class="squad-tree-header">
-                  <div class="squad-tree-title">
-                    <i class="bi bi-diagram-2 text-warning"></i>
-                    <span>Interactive Squad Zone Tree</span>
-                  </div>
-                  <span class="badge" style="background: rgba(0, 229, 255, 0.1); color: var(--callisto-cyan); border: 1px solid rgba(0, 229, 255, 0.25); font-size: 0.68rem;">
-                    LIVE RECURSIVE METRICS
-                  </span>
-                </div>
-
-                <!-- Root Zone Node (Image 2 Match) -->
-                <div class="squad-root-banner">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-folder-symlink-fill text-info"></i>
-                    <span style="font-weight: 700; color: #fff; font-size: 0.9rem;">Callisto Squad 360</span>
-                    <span class="badge" style="background: rgba(255, 255, 255, 0.1); font-size: 0.65rem; color: #cbd5e1;">ROOT COMPOSITE</span>
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="font-family: var(--font-display); font-weight: 700; color: var(--callisto-cyan); font-size: 0.9rem;">$600.0 USD</span>
-                    <span class="badge-operational" style="font-size: 0.65rem; padding: 0.15rem 0.5rem;">OPERATIONAL</span>
-                  </div>
-                </div>
-
-                <!-- 6 Squad Members List (Populated via JS) -->
-                <div id="memberPills">
-                  <!-- Dynamically rendered via auth.js -->
-                </div>
-
-                <div class="mt-3 p-2 px-3" style="background: rgba(10, 15, 28, 0.6); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.08); font-size: 0.72rem; color: var(--text-dim); display: flex; justify-content: space-between; align-items: center;">
-                  <span><i class="bi bi-info-circle me-1 text-warning"></i> Click any operator above to auto-dispatch credentials (Default: callisto123)</span>
-                  <span style="color: var(--callisto-cyan);">6 / 6 Connected</span>
-                </div>
-
-              </div>
-            </div>
-
           </div>
+          <div class="col-6 col-sm-3">
+            <div class="metric-pill-100vh">
+              <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase;">Per Member</div>
+              <div style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: #ff9d00;">$100.00</div>
+            </div>
+          </div>
+          <div class="col-6 col-sm-3">
+            <div class="metric-pill-100vh">
+              <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase;">Vault Node</div>
+              <div style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: #00f076;">Zero-DB</div>
+            </div>
+          </div>
+        </div>
 
+        <!-- Launch CTA Button -->
+        <div class="d-flex align-items-center gap-3">
+          <a href="/login.html" class="btn-phoenix-main" style="padding: 0.85rem 1.85rem; font-size: 1rem;">
+            <span>Enter Orbit Portal</span>
+            <i class="bi bi-arrow-right-circle-fill fs-5"></i>
+          </a>
+          <span style="font-size: 0.75rem; color: var(--text-dim);">
+            <i class="bi bi-shield-lock-fill text-success me-1"></i> scrypt 256-bit
+          </span>
         </div>
 
       </div>
 
-    </div>
-  </div>
+      <!-- Hero Right: THE PHOENIX STAGE (Constrained to 100vh) -->
+      <div class="col-12 col-lg-6">
+        <div class="phoenix-stage-wrap phoenix-stage-100vh">
+          
+          <!-- Concentric Flame Shockwave Rings -->
+          <div class="phoenix-shockwave shockwave-1" style="width: 260px; height: 260px;"></div>
+          <div class="phoenix-shockwave shockwave-2" style="width: 380px; height: 380px;"></div>
+          
+          <!-- Flame Glow Halo -->
+          <div class="phoenix-glow-halo" style="width: 80%; height: 80%;"></div>
 
-  <script src="/assets/js/auth.js"></script>
+          <!-- Phoenix Bird Image with 3D Tilt & Flight Breathing -->
+          <div class="phoenix-img-container">
+            <img src="/assets/images/callisto-phoenix.jpg" alt="Callisto Phoenix Bird" class="phoenix-img-100vh">
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- 3. BOTTOM FOOTER (6 Squad Avatars & Status) -->
+  <footer class="landing-footer-100vh">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 py-2">
+      
+      <!-- Squad Avatars Mini Bar -->
+      <div class="d-flex align-items-center gap-2">
+        <span style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;" class="d-none d-sm-inline">
+          Connected Squad (6):
+        </span>
+        <div class="d-flex align-items-center gap-2">
+          <span title="Kehan Hasalaka (Lead)" class="d-flex align-items-center gap-1 px-2 py-1 glass-subcard" style="border-radius: 20px; font-size: 0.7rem; color: #fff;">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Kehan" alt="Kehan" style="width: 18px; height: 18px; border-radius: 50%;">
+            <span>Kehan</span>
+          </span>
+          <span title="Alex Chen" class="d-flex align-items-center gap-1 px-2 py-1 glass-subcard" style="border-radius: 20px; font-size: 0.7rem; color: #fff;">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Alex" alt="Alex" style="width: 18px; height: 18px; border-radius: 50%;">
+            <span>Alex</span>
+          </span>
+          <span title="Nimesha Perera" class="d-flex align-items-center gap-1 px-2 py-1 glass-subcard" style="border-radius: 20px; font-size: 0.7rem; color: #fff;">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Nimesha" alt="Nimesha" style="width: 18px; height: 18px; border-radius: 50%;">
+            <span>Nimesha</span>
+          </span>
+          <span title="Sarah Miller" class="d-flex align-items-center gap-1 px-2 py-1 glass-subcard" style="border-radius: 20px; font-size: 0.7rem; color: #fff;">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Sarah" alt="Sarah" style="width: 18px; height: 18px; border-radius: 50%;">
+            <span>Sarah</span>
+          </span>
+          <span title="Dinuka Fernando" class="d-flex align-items-center gap-1 px-2 py-1 glass-subcard" style="border-radius: 20px; font-size: 0.7rem; color: #fff;">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Dinuka" alt="Dinuka" style="width: 18px; height: 18px; border-radius: 50%;">
+            <span>Dinuka</span>
+          </span>
+          <span title="Kavindu Silva" class="d-flex align-items-center gap-1 px-2 py-1 glass-subcard" style="border-radius: 20px; font-size: 0.7rem; color: #fff;">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Kavindu" alt="Kavindu" style="width: 18px; height: 18px; border-radius: 50%;">
+            <span>Kavindu</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Copyright & Info -->
+      <div style="font-size: 0.72rem; color: var(--text-dim);">
+        &copy; 2026 Callisto Cyber Security &amp; AI &bull; Orbit Treasury &bull; <span style="color: var(--callisto-cyan);">Zero-DB Architecture</span>
+      </div>
+
+    </div>
+  </footer>
+
+  <script src="/assets/js/phoenix.js"></script>
 </body>
 </html>

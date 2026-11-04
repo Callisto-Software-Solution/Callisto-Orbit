@@ -30,6 +30,8 @@ jobs:
           test -f data/collections.json || { echo "Missing collections.json"; exit 1; }
           test -f data/config.json || { echo "Missing config.json"; exit 1; }
           test -f public/index.html || { echo "Missing index.html"; exit 1; }
+          test -f public/login.html || { echo "Missing login.html"; exit 1; }
+          test -f public/dashboard.html || { echo "Missing dashboard.html"; exit 1; }
 
       - name: 🧪 Run Automated Tests & Authentication Checks
         run: npm test
