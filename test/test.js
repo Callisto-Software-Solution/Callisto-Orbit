@@ -77,13 +77,10 @@ async function runTests() {
   assert.ok(fs.existsSync(configPath), 'config.json must exist');
 
   const users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
-  const collections = JSON.parse(fs.readFileSync(collectionsPath, 'utf8'));
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
-  assert.strictEqual(users.length, 6, 'Must have exactly 6 team members');
   assert.strictEqual(config.monthlyContributionPerMember, 100, 'Monthly contribution per member must be 100');
-  assert.strictEqual(config.totalMembers, 6, 'Total members configured must be 6');
-  console.log('  ✅ JSON Data files are valid and 6 team members configured.\n');
+  console.log('  ✅ JSON Data files are valid and configured.\n');
 
   // Test 2: Crypto Password Hashing and Verification
   console.log('Test 2: Verifying Cryptographic Security (scrypt 256-bit)...');
@@ -94,12 +91,13 @@ async function runTests() {
 
   // Test 3: Session Token Generation and HMAC Tamper Verification
   console.log('Test 3: Testing Session Tokens (HMAC-SHA256)...');
-  const dummyUser = { id: 'usr_01', username: 'kehan', role: 'admin' };
+  const dummyUser = { id: 'usr_01', username: 'kehan', role: 'super_admin' };
   const token = createSessionToken(dummyUser);
   const session = verifySessionToken(token);
   assert.ok(session, 'Valid token must decode session');
   assert.strictEqual(session.userId, 'usr_01');
   assert.strictEqual(session.username, 'kehan');
+  assert.strictEqual(session.role, 'super_admin');
 
   // Test Tampered Token
   const tamperedToken = token.slice(0, -4) + 'abcd';
@@ -125,18 +123,19 @@ async function runTests() {
   assert.strictEqual(failRes.body.success, false);
   console.log('  ✅ Rejected invalid credentials with HTTP 401.\n');
 
-  // Test 6: API Login Success
-  console.log('Test 6: Testing POST /api/auth/login with valid admin credentials (kehan / callisto123)...');
+  // Test 6: API Login Success (Admin Mode)
+  console.log('Test 6: Testing POST /api/auth/login in Admin Mode (kehan / callisto123)...');
   const loginRes = await dispatchMockRequest({
     url: '/api/auth/login',
     method: 'POST',
-    body: { identifier: 'kehan', password: 'callisto123' }
+    body: { identifier: 'kehan', password: 'callisto123', mode: 'admin' }
   });
   assert.strictEqual(loginRes.statusCode, 200);
   assert.strictEqual(loginRes.body.success, true);
   assert.strictEqual(loginRes.body.user.username, 'kehan');
+  assert.strictEqual(loginRes.body.user.role, 'super_admin');
   assert.ok(loginRes.body.token, 'Response must include session token');
-  console.log('  ✅ Successful login returned user payload and token.\n');
+  console.log('  ✅ Successful Super Admin login returned user payload and token.\n');
 
   // Test 7: API GET /api/auth/me with Bearer Token
   console.log('Test 7: Testing GET /api/auth/me with Bearer token...');
@@ -147,18 +146,20 @@ async function runTests() {
   });
   assert.strictEqual(meRes.statusCode, 200);
   assert.strictEqual(meRes.body.user.username, 'kehan');
+  assert.strictEqual(meRes.body.user.role, 'super_admin');
   console.log('  ✅ Session authenticated user info returned.\n');
 
   // Test 8: API GET /api/members
   console.log('Test 8: Testing GET /api/members...');
   const membersRes = await dispatchMockRequest({ url: '/api/members', method: 'GET' });
   assert.strictEqual(membersRes.statusCode, 200);
-  assert.strictEqual(membersRes.body.members.length, 6, 'Must list all 6 squad members');
-  // Passwords must never be exposed
+  assert.ok(membersRes.body.members.length >= 6, 'Must list all squad members');
   membersRes.body.members.forEach(m => {
     assert.strictEqual(m.password, undefined, 'Member objects must never leak passwords');
+    assert.ok(m.nic, 'Every member must have a registered NIC');
+    assert.ok(['super_admin', 'admin', 'member'].includes(m.role), 'Role must be valid type');
   });
-  console.log('  ✅ All 6 members returned with sanitized payloads.\n');
+  console.log('  ✅ All members returned with sanitized payloads and roles.\n');
 
   // Test 9: Single-Field NIC Authentication
   console.log('Test 9: Testing Single-Field NIC Authentication (POST /api/auth/login with nic)...');
@@ -183,8 +184,86 @@ async function runTests() {
   assert.strictEqual(badNicRes.body.success, false);
   console.log('  ✅ Single-field NIC clearance verified successfully.\n');
 
-  // Test 10: Static UI Files Check
-  console.log('Test 10: Testing UI Assets Existence...');
+  // Test 10: Unauthorized Member attempting Admin Mode
+  console.log('Test 10: Testing Member attempting Admin Mode Login (should reject with 403)...');
+  const memberAdminAttempt = await dispatchMockRequest({
+    url: '/api/auth/login',
+    method: 'POST',
+    body: { identifier: 'nimesha', password: 'callisto123', mode: 'admin' }
+  });
+  assert.strictEqual(memberAdminAttempt.statusCode, 403, 'Member must be rejected from Admin mode with 403');
+  assert.strictEqual(memberAdminAttempt.body.success, false);
+  console.log('  ✅ Role security verified: Non-admin rejected with 403.\n');
+
+  // Test 11: Register New Specialist via Admin Endpoint and Instant Login
+  console.log('Test 11: Registering New Specialist with NIC and verifying instant clearance login...');
+  const adminToken = loginRes.body.token;
+  const newSpecialistNic = `2003${Math.floor(10000000 + Math.random() * 90000000)}`;
+  const regRes = await dispatchMockRequest({
+    url: '/api/admin/members',
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${adminToken}` },
+    body: {
+      name: 'Kaveen Test Specialist',
+      nic: newSpecialistNic,
+      role: 'member',
+      username: 'kaveentest',
+      title: 'Security Researcher'
+    }
+  });
+  assert.strictEqual(regRes.statusCode, 201);
+  assert.strictEqual(regRes.body.success, true);
+  assert.strictEqual(regRes.body.member.nic, newSpecialistNic);
+
+  // Verify that the newly registered specialist can immediately log in with single-field NIC!
+  const newNicLoginRes = await dispatchMockRequest({
+    url: '/api/auth/login',
+    method: 'POST',
+    body: { nic: newSpecialistNic }
+  });
+  assert.strictEqual(newNicLoginRes.statusCode, 200);
+  assert.strictEqual(newNicLoginRes.body.success, true);
+  assert.strictEqual(newNicLoginRes.body.user.name, 'Kaveen Test Specialist');
+  console.log(`  ✅ New specialist registered with NIC (${newSpecialistNic}) and authenticated immediately.\n`);
+
+  // Test 12: Updating Specialist NIC & Role via PUT /api/admin/members/:id
+  console.log('Test 12: Testing Specialist NIC & Role Update...');
+  const updatedNic = `2004${Math.floor(10000000 + Math.random() * 90000000)}`;
+  const updateRes = await dispatchMockRequest({
+    url: `/api/admin/members/${regRes.body.member.id}`,
+    method: 'PUT',
+    headers: { 'Authorization': `Bearer ${adminToken}` },
+    body: {
+      name: 'Kaveen Promoted',
+      nic: updatedNic,
+      role: 'admin',
+      title: 'Promoted Squad Administrator'
+    }
+  });
+  assert.strictEqual(updateRes.statusCode, 200);
+  assert.strictEqual(updateRes.body.success, true);
+  assert.strictEqual(updateRes.body.member.role, 'admin');
+
+  // Verify updated NIC login works
+  const updatedNicLogin = await dispatchMockRequest({
+    url: '/api/auth/login',
+    method: 'POST',
+    body: { nic: updatedNic }
+  });
+  assert.strictEqual(updatedNicLogin.statusCode, 200);
+  assert.strictEqual(updatedNicLogin.body.user.role, 'admin');
+  console.log('  ✅ Specialist NIC and Role update verified successfully.\n');
+
+  // Cleanup: Reset test user from data/users.json to keep pristine state
+  const cleanUsers = JSON.parse(fs.readFileSync(usersPath, 'utf8')).filter(u => u.id !== regRes.body.member.id);
+  fs.writeFileSync(usersPath, JSON.stringify(cleanUsers, null, 2), 'utf8');
+  const cleanConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  cleanConfig.totalMembers = cleanUsers.length;
+  cleanConfig.monthlyTarget = cleanUsers.length * 100;
+  fs.writeFileSync(configPath, JSON.stringify(cleanConfig, null, 2), 'utf8');
+
+  // Test 13: Static UI Files Check
+  console.log('Test 13: Testing UI Assets Existence...');
   const indexHtml = path.join(__dirname, '../public/index.html');
   const loginHtml = path.join(__dirname, '../public/login.html');
   const dashHtml = path.join(__dirname, '../public/dashboard.html');
