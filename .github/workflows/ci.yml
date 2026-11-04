@@ -45,3 +45,11 @@ jobs:
           kill $SERVER_PID
           echo "Server healthcheck passed successfully!"
 
+      - name: 🌐 Trigger Render Auto-Deploy Hook (Optional)
+        if: github.ref == 'refs/heads/main' && matrix.node-version == '20.x' && env.RENDER_DEPLOY_HOOK_URL != ''
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          curl -s "$RENDER_DEPLOY_HOOK_URL"
+          echo "Render deployment hook triggered!"
+
