@@ -143,29 +143,29 @@
             </div>
           </div>
 
-          <!-- 2. ADMIN & SUPER ADMIN FIELD GROUP (NIC/Username + Master Key) -->
+          <!-- 2. ADMIN & SUPER ADMIN FIELD GROUP (NIC + Password) -->
           <div id="adminFieldGroup" class="d-none">
             <div class="mb-3">
               <label for="adminIdentifier" class="form-step-label mb-2 d-flex justify-content-between align-items-center" style="font-size: 0.75rem;">
-                <span><i class="bi bi-person-check-fill text-info me-1"></i> Admin NIC or Username</span>
+                <span><i class="bi bi-person-badge-fill text-warning me-1"></i> Admin NIC Number</span>
                 <span class="badge" style="background: rgba(255, 85, 0, 0.2); color: #ff9d00; font-size: 0.65rem;">SUPER ADMIN &bull; ADMIN</span>
               </label>
 
               <div class="input-wrap-relative">
-                <i class="bi bi-cpu-fill input-field-icon"></i>
+                <i class="bi bi-shield-lock-fill input-field-icon" style="color: var(--callisto-orange);"></i>
                 <input 
                   type="text" 
                   class="input-cyber-glass input-nic-custom" 
                   id="adminIdentifier" 
                   name="adminIdentifier"
-                  placeholder="Enter Admin NIC or Username (e.g. kehan)" 
+                  placeholder="Enter Admin NIC (e.g. 200213800593)" 
                 >
               </div>
             </div>
 
             <div class="mb-3">
               <label for="adminPassword" class="form-step-label mb-2 d-flex justify-content-between align-items-center" style="font-size: 0.75rem;">
-                <span><i class="bi bi-key-fill text-warning me-1"></i> Master Security Key (Password)</span>
+                <span><i class="bi bi-key-fill text-warning me-1"></i> Password</span>
                 <span style="font-size: 0.68rem; color: var(--text-dim);">Default: callisto123</span>
               </label>
 

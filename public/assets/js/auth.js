@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (memberFieldGroup) memberFieldGroup.classList.add('d-none');
       if (loginBtnText) loginBtnText.textContent = 'AUTHENTICATE ADMIN CONSOLE';
       if (auditLogText) {
-        auditLogText.innerHTML = `<span style="color: #ff9d00;">Privileged Console:</span> Enter Admin/Super Admin credentials & Master Key`;
+        auditLogText.innerHTML = `<span style="color: #ff9d00;">Admin Clearance:</span> Enter your Admin NIC and Password`;
       }
       clearAlert();
       if (adminIdentifier) adminIdentifier.focus();
@@ -102,13 +102,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const pwVal = adminPassword ? adminPassword.value : '';
 
         if (!idVal) {
-          showAlert('Please enter your Admin NIC or Username.');
+          showAlert('Please enter your Admin NIC number (e.g. 200213800593).');
           if (adminIdentifier) adminIdentifier.focus();
           return;
         }
 
         if (!pwVal) {
-          showAlert('Please enter your Admin security password (default: callisto123).');
+          showAlert('Please enter your Admin password (default: callisto123).');
           if (adminPassword) adminPassword.focus();
           return;
         }
