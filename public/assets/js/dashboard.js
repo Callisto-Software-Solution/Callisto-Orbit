@@ -112,9 +112,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (userNameElem) userNameElem.textContent = user.name;
     if (userAvatarElem && user.avatar) userAvatarElem.src = user.avatar;
 
+    // Sidebar User Profile Sync
+    if (sideUserName) sideUserName.textContent = user.name;
+    if (sideUserAvatar && user.avatar) sideUserAvatar.src = user.avatar;
+
     const role = user.role || 'member';
     if (userRoleElem) {
       userRoleElem.textContent = user.title || (role === 'super_admin' ? 'Founder & Lead' : (role === 'admin' ? 'Squad Administrator' : 'Squad Specialist'));
+    }
+
+    if (sideUserRoleBadge) {
+      sideUserRoleBadge.innerHTML = getRoleBadge(role);
     }
 
     if (userRoleBadge) {
@@ -133,9 +141,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
-    // Configure Admin Console visibility
+    // Configure Admin Console visibility in main content & sidebar
     if (role === 'super_admin' || role === 'admin') {
       if (adminConsoleSection) adminConsoleSection.classList.remove('d-none');
+      if (sideAdminGroup) sideAdminGroup.classList.remove('d-none');
+
       if (adminTierBadge) {
         if (role === 'super_admin') {
           adminTierBadge.textContent = '★ SUPER ADMIN ACCESS (FULL CLEARANCE)';
@@ -157,19 +167,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // 2. Handle Logout
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      try {
-        await fetch('/api/auth/logout', { method: 'POST' });
-        sessionStorage.removeItem('callisto_active_user');
-      } catch (e) {}
+  const executeLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      sessionStorage.removeItem('callisto_active_user');
+    } catch (e) {}
 
-      if (window.triggerOrbitTransition) {
-        window.triggerOrbitTransition('/', 'SESSION TERMINATED • RETURNING TO PHOENIX...', 1000);
-      } else {
-        window.location.href = '/';
-      }
+    if (window.triggerOrbitTransition) {
+      window.triggerOrbitTransition('/', 'SESSION TERMINATED • RETURNING TO PHOENIX...', 1000);
+    } else {
+      window.location.href = '/';
+    }
+  };
+
+  if (logoutBtn) logoutBtn.addEventListener('click', executeLogout);
+  if (sideLogoutBtn) sideLogoutBtn.addEventListener('click', executeLogout);
+
+  // Sidebar Register Specialist Button Trigger
+  if (sideBtnRegisterSpecialist && btnOpenRegisterModal) {
+    sideBtnRegisterSpecialist.addEventListener('click', () => {
+      btnOpenRegisterModal.click();
     });
+  }
   }
 
   // 3. Load Dashboard & Collections Data
