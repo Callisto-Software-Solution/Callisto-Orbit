@@ -389,24 +389,68 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Portal button click fire blast
+    // Portal button click cinematic fire takeoff sequence
     const portalBtn = document.querySelector('.btn-phoenix-main');
     if (portalBtn) {
-      portalBtn.addEventListener('click', () => {
-        if (audioCtx && audioCtx.state === 'running') {
-          const blastOsc = audioCtx.createOscillator();
-          const blastGain = audioCtx.createGain();
-          blastOsc.type = 'sawtooth';
-          const now = audioCtx.currentTime;
-          blastOsc.frequency.setValueAtTime(240, now);
-          blastOsc.frequency.exponentialRampToValueAtTime(55, now + 0.45);
-          blastGain.gain.setValueAtTime(0.35, now);
-          blastGain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
-          blastOsc.connect(blastGain);
-          blastGain.connect(masterGain);
-          blastOsc.start(now);
-          blastOsc.stop(now + 0.45);
+      let isLaunching = false;
+
+      portalBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (isLaunching) return;
+        isLaunching = true;
+
+        // 1. Play high-energy sonic fire blast SFX
+        if (audioCtx) {
+          try {
+            if (audioCtx.state !== 'running') audioCtx.resume();
+            const now = audioCtx.currentTime;
+            
+            // Rising whoosh pitch
+            const blastOsc = audioCtx.createOscillator();
+            const blastGain = audioCtx.createGain();
+            blastOsc.type = 'sawtooth';
+            blastOsc.frequency.setValueAtTime(140, now);
+            blastOsc.frequency.exponentialRampToValueAtTime(820, now + 0.45);
+            
+            blastGain.gain.setValueAtTime(0.45, now);
+            blastGain.gain.exponentialRampToValueAtTime(0.01, now + 0.65);
+            
+            blastOsc.connect(blastGain);
+            blastGain.connect(masterGain || audioCtx.destination);
+            blastOsc.start(now);
+            blastOsc.stop(now + 0.65);
+
+            // Phoenix screech at launch
+            const cryOsc = audioCtx.createOscillator();
+            const cryGain = audioCtx.createGain();
+            cryOsc.type = 'sine';
+            cryOsc.frequency.setValueAtTime(950, now);
+            cryOsc.frequency.exponentialRampToValueAtTime(1800, now + 0.3);
+            cryGain.gain.setValueAtTime(0.35, now);
+            cryGain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            cryOsc.connect(cryGain);
+            cryGain.connect(masterGain || audioCtx.destination);
+            cryOsc.start(now);
+            cryOsc.stop(now + 0.5);
+          } catch (err) {}
         }
+
+        // 2. Add visual launch takeoff animation to Phoenix and Flash
+        document.body.classList.add('phoenix-launching');
+
+        let flash = document.getElementById('phoenixLaunchFlash');
+        if (!flash) {
+          flash = document.createElement('div');
+          flash.id = 'phoenixLaunchFlash';
+          flash.className = 'phoenix-launch-flash';
+          document.body.appendChild(flash);
+        }
+        setTimeout(() => flash.classList.add('active'), 200);
+
+        // 3. Smooth transition to Login page
+        setTimeout(() => {
+          window.location.href = '/login.html?flyIn=true';
+        }, 620);
       });
     }
   }

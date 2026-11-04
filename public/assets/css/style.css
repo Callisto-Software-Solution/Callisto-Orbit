@@ -1323,3 +1323,254 @@ body.viewport-100vh .cursor-pointer {
 @keyframes wavePulse1 { 0% { height: 3px; } 100% { height: 12px; } }
 @keyframes wavePulse2 { 0% { height: 4px; } 100% { height: 14px; } }
 @keyframes wavePulse3 { 0% { height: 2px; } 100% { height: 10px; } }
+
+/* ==========================================================================
+   3D FLAPPING PHOENIX SENTINEL ON LOGIN PAGE & TAKEOFF LAUNCH
+   ========================================================================== */
+
+/* 1. Cinematic Takeoff from Landing Page */
+.phoenix-launching .phoenix-bg-animated-img {
+  animation: phoenixTakeoff 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+}
+
+@keyframes phoenixTakeoff {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 0.88;
+  }
+  25% {
+    transform: scale(0.92) translateY(35px);
+    filter: drop-shadow(0 0 65px #ff3700) drop-shadow(0 0 100px #ff9900);
+  }
+  100% {
+    transform: scale(3.4) translateY(-160px);
+    opacity: 0;
+    filter: drop-shadow(0 0 160px #ffea00) drop-shadow(0 0 240px #ff5500);
+  }
+}
+
+.phoenix-launch-flash {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255, 140, 0, 0.9) 0%, rgba(255, 50, 0, 0.6) 50%, rgba(6, 9, 19, 0.98) 100%);
+  z-index: 99999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.phoenix-launch-flash.active {
+  opacity: 1;
+}
+
+/* 2. Login Page Phoenix Sentinel Card */
+.login-phoenix-sentinel-box {
+  background: rgba(12, 18, 34, 0.68);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 100, 0, 0.35);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 85, 0, 0.2);
+  border-radius: 18px;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  max-width: 310px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: visible;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.login-phoenix-sentinel-box:hover {
+  border-color: rgba(255, 140, 0, 0.65);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 100, 0, 0.35);
+  transform: translateY(-3px);
+}
+
+/* Fly-in transition when arriving from landing page */
+.login-phoenix-sentinel-box.fly-in-active {
+  animation: phoenixFlyInToSide 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes phoenixFlyInToSide {
+  0% {
+    transform: translate3d(-70vw, 45vh, 0) scale(0.3) rotate(-22deg);
+    opacity: 0;
+    filter: drop-shadow(0 0 90px #ff5500);
+  }
+  60% {
+    transform: translate3d(2vw, -2.5vh, 0) scale(1.08) rotate(4deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 110px #ffaa00);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 30px rgba(255, 85, 0, 0.75));
+  }
+}
+
+.phoenix-sentinel-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #ff9d00;
+  letter-spacing: 0.8px;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+/* 3. 3D Flapping Wings Rig */
+.phoenix-wing-stage {
+  position: relative;
+  width: 270px;
+  height: 152px;
+  perspective: 700px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: phoenixRigFloat 4s infinite ease-in-out;
+}
+
+@keyframes phoenixRigFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+.phoenix-wing-half {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 2;
+  will-change: transform;
+}
+
+/* Left Wing 3D Flapping */
+.wing-left {
+  left: 0;
+  transform-origin: 100% 50%;
+  animation: flapLeftWing 0.85s infinite ease-in-out;
+}
+
+.wing-left img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 270px;
+  height: 152px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(255, 85, 0, 0.85));
+}
+
+/* Right Wing 3D Flapping */
+.wing-right {
+  right: 0;
+  transform-origin: 0% 50%;
+  animation: flapRightWing 0.85s infinite ease-in-out;
+}
+
+.wing-right img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 270px;
+  height: 152px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(255, 85, 0, 0.85));
+}
+
+@keyframes flapLeftWing {
+  0%, 100% {
+    transform: rotateY(0deg) rotateZ(0deg) translateY(0);
+  }
+  38% {
+    transform: rotateY(36deg) rotateZ(3.5deg) translateY(-8px) scale(0.96);
+  }
+  72% {
+    transform: rotateY(-18deg) rotateZ(-2deg) translateY(3px) scale(1.02);
+  }
+}
+
+@keyframes flapRightWing {
+  0%, 100% {
+    transform: rotateY(0deg) rotateZ(0deg) translateY(0);
+  }
+  38% {
+    transform: rotateY(-36deg) rotateZ(-3.5deg) translateY(-8px) scale(0.96);
+  }
+  72% {
+    transform: rotateY(18deg) rotateZ(2deg) translateY(3px) scale(1.02);
+  }
+}
+
+/* Faster flap on hover */
+.login-phoenix-sentinel-box:hover .wing-left {
+  animation-duration: 0.45s !important;
+}
+
+.login-phoenix-sentinel-box:hover .wing-right {
+  animation-duration: 0.45s !important;
+}
+
+/* Central Body & Fiery Crest */
+.phoenix-body-core {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 66px;
+  height: 152px;
+  overflow: hidden;
+  z-index: 4;
+}
+
+.phoenix-body-core img {
+  position: absolute;
+  top: 0;
+  left: -102px;
+  width: 270px;
+  height: 152px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 25px rgba(255, 140, 0, 0.95));
+  animation: coreGlowPulse 1.7s infinite alternate ease-in-out;
+}
+
+@keyframes coreGlowPulse {
+  0% {
+    filter: drop-shadow(0 0 15px rgba(255, 85, 0, 0.8));
+  }
+  100% {
+    filter: drop-shadow(0 0 32px rgba(255, 210, 0, 1)) drop-shadow(0 0 50px rgba(255, 60, 0, 0.85));
+  }
+}
+
+.phoenix-sentinel-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 170px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 100, 0, 0.4) 0%, rgba(255, 40, 0, 0.15) 50%, transparent 75%);
+  filter: blur(14px);
+  z-index: 1;
+  pointer-events: none;
+  animation: haloBreath 2s infinite alternate ease-in-out;
+}
+
+@keyframes haloBreath {
+  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+}

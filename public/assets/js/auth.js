@@ -198,4 +198,50 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
+
+  // =========================================================================
+  // LIVING PHOENIX SENTINEL 3D WINGS & ARRIVAL CONTROLLER
+  // =========================================================================
+  const sentinel = document.getElementById('loginPhoenixSentinel');
+  if (sentinel) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const flyIn = urlParams.get('flyIn') === 'true';
+
+    if (flyIn) {
+      sentinel.classList.remove('fly-in-active');
+      void sentinel.offsetWidth; // Trigger reflow for fresh animation
+      sentinel.classList.add('fly-in-active');
+    }
+
+    // Gentle swoop audio tone upon arrival
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        const actx = new AudioCtx();
+        const now = actx.currentTime;
+        const osc = actx.createOscillator();
+        const gain = actx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(650, now);
+        osc.frequency.exponentialRampToValueAtTime(280, now + 0.6);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+        osc.connect(gain);
+        gain.connect(actx.destination);
+        osc.start(now);
+        osc.stop(now + 0.7);
+      }
+    } catch (e) {}
+
+    // Interactive Wing Burst upon click/tap
+    sentinel.addEventListener('click', () => {
+      const badge = sentinel.querySelector('.phoenix-sentinel-badge span:last-child');
+      if (badge) {
+        badge.textContent = 'PHOENIX: WING FLAP ACCELERATED!';
+        setTimeout(() => {
+          badge.textContent = 'PHOENIX GUARDIAN • ACTIVE';
+        }, 1600);
+      }
+    });
+  }
 });
