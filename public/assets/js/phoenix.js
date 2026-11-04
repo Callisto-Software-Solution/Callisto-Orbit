@@ -1,19 +1,25 @@
 /**
- * Callisto Phoenix Rising Animation & Ember Canvas (Supercharged)
+ * Callisto Phoenix NEXT-LEVEL Cinematic Animation Engine
  * Features:
- * - 140+ real-time fire embers, golden sparks & flame dust particles with velocity tails
- * - Interactive cursor fire spark generator on mouse move & click
- * - 3D Parallax tilt on Phoenix stage
- * - Dynamic lighting and flame shimmer
+ * - Fluid Molten Plasma Comet Ribbon Tail trailing the cursor
+ * - High-Energy Phoenix Sonic Shockwaves on Click & Rapid Movement
+ * - Cyber Circuit Electric Arc Lightning
+ * - Real-Time Aerodynamic Web Audio API Sound (Wind modulates with hand speed)
+ * - 3D Parallax & Reactive Solar Flare on Background Phoenix
+ * - 150+ High-Density Fire Embers & Velocity Sparks
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  let globalMouseSpeed = 0;
+  let updateAudioSpeed = null;
+
   initEmberCanvas();
   initPhoenixParallax();
   initAnimatedPhoenixCursor();
+  initPhoenixSoundscape();
 
   // =========================================================================
-  // 1. HIGH-DENSITY FIRE EMBERS & SPARKS CANVAS ANIMATION
+  // 1. ADVANCED PARTICLE, SHOCKWAVE & COMET RIBBON CANVAS
   // =========================================================================
   function initEmberCanvas() {
     const canvas = document.getElementById('emberCanvas');
@@ -21,7 +27,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     let width, height;
     let embers = [];
-    const emberCount = window.innerWidth < 768 ? 65 : 140;
+    let shockwaves = [];
+    let electricArcs = [];
+    let ribbonTrail = [];
+    const maxTrailLength = 26;
+    const emberCount = window.innerWidth < 768 ? 70 : 150;
+
+    let cursorX = null;
+    let cursorY = null;
+    let lastX = null;
+    let lastY = null;
+    let rayAngle = 0;
+    let burstRays = 0;
 
     function resize() {
       width = canvas.width = window.innerWidth;
@@ -37,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
       '#ffa200', // Gold Fire
       '#ffd000', // Bright Golden Spark
       '#ff1a1a', // Crimson Flame
-      '#ffffff'  // White-hot core spark
+      '#ffffff'  // White-hot core
     ];
 
     class Ember {
@@ -48,25 +65,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
       reset(initial = false, customX, customY) {
         if (customX !== undefined && customY !== undefined) {
-          this.x = customX + (Math.random() - 0.5) * 20;
-          this.y = customY + (Math.random() - 0.5) * 20;
-          this.speedY = (Math.random() * 2.5 + 1.2) * (this.isBurst ? 1.8 : 1);
-          this.speedX = (Math.random() - 0.5) * (this.isBurst ? 3.5 : 1.5);
+          this.x = customX + (Math.random() - 0.5) * 16;
+          this.y = customY + (Math.random() - 0.5) * 16;
+          this.speedY = (Math.random() * 2.8 + 1.2) * (this.isBurst ? 1.9 : 1);
+          this.speedX = (Math.random() - 0.5) * (this.isBurst ? 3.8 : 1.6);
           this.alpha = 1;
         } else {
           this.x = Math.random() * width;
           this.y = initial ? Math.random() * height : height + 15;
-          this.speedY = Math.random() * 2.2 + 0.8;
-          this.speedX = (Math.random() - 0.5) * 1.2;
+          this.speedY = Math.random() * 2.4 + 0.8;
+          this.speedX = (Math.random() - 0.5) * 1.3;
           this.alpha = Math.random() * 0.85 + 0.25;
         }
 
-        this.size = Math.random() * 3.2 + 0.8;
+        this.size = Math.random() * 3.4 + 0.8;
         this.color = colors[Math.floor(Math.random() * colors.length)];
         this.fadeRate = Math.random() * 0.008 + 0.003;
         this.oscillation = Math.random() * 0.06 + 0.02;
         this.angle = Math.random() * Math.PI * 2;
-        this.tailLength = Math.random() * 8 + 4;
+        this.tailLength = Math.random() * 9 + 4;
       }
 
       update() {
@@ -75,9 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
         this.x += Math.sin(this.angle) * 0.8 + this.speedX;
         this.alpha -= this.fadeRate;
 
-        if (this.y < -20 || this.alpha <= 0) {
+        if (this.y < -25 || this.alpha <= 0) {
           if (this.isBurst) {
-            // Remove burst particle once dead
             const idx = embers.indexOf(this);
             if (idx > -1) embers.splice(idx, 1);
           } else {
@@ -90,13 +106,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.save();
         ctx.globalAlpha = Math.max(0, this.alpha);
 
-        // Draw spark with trailing tail for high-speed fire sensation
-        if (this.speedY > 1.4) {
+        if (this.speedY > 1.3) {
           ctx.beginPath();
           ctx.moveTo(this.x, this.y);
-          ctx.lineTo(this.x - this.speedX * 2, this.y + this.tailLength);
+          ctx.lineTo(this.x - this.speedX * 2.2, this.y + this.tailLength);
           ctx.strokeStyle = this.color;
-          ctx.lineWidth = this.size * 0.7;
+          ctx.lineWidth = this.size * 0.75;
           ctx.lineCap = 'round';
           ctx.shadowBlur = this.size * 5;
           ctx.shadowColor = this.color;
@@ -118,30 +133,281 @@ document.addEventListener('DOMContentLoaded', () => {
       embers.push(new Ember());
     }
 
-    // Interactive mouse trail sparks
-    let lastSpawn = 0;
+    // Trigger Sonic Shockwave function
+    function createShockwave(x, y) {
+      shockwaves.push({
+        x,
+        y,
+        radius: 8,
+        maxRadius: Math.min(width, height) * 0.35,
+        alpha: 1.0,
+        speed: 14
+      });
+
+      // Displace embers outward
+      embers.forEach(e => {
+        const dx = e.x - x;
+        const dy = e.y - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 180 && dist > 0) {
+          e.x += (dx / dist) * 25;
+          e.y += (dy / dist) * 25;
+        }
+      });
+    }
+
+    // Trigger Cyber Circuit Lightning Arcs
+    function createElectricArc(startX, startY) {
+      const branches = [];
+      let curX = startX;
+      let curY = startY;
+      const steps = Math.floor(Math.random() * 6 + 5);
+
+      for (let i = 0; i < steps; i++) {
+        const nextX = curX + (Math.random() - 0.5) * 60;
+        const nextY = curY + (Math.random() - 0.5) * 60;
+        branches.push({ x1: curX, y1: curY, x2: nextX, y2: nextY });
+        curX = nextX;
+        curY = nextY;
+      }
+
+      electricArcs.push({
+        branches,
+        alpha: 1.0,
+        color: Math.random() > 0.5 ? '#00f0ff' : '#ffaa00'
+      });
+    }
+
+    // Mouse listener with Speed calculation & Comet ribbon
+    let lastMoveTime = Date.now();
     window.addEventListener('mousemove', (e) => {
+      cursorX = e.clientX;
+      cursorY = e.clientY;
+
       const now = Date.now();
-      if (now - lastSpawn > 40 && embers.length < emberCount + 40) {
-        lastSpawn = now;
-        embers.push(new Ember(e.clientX, e.clientY, true));
-        embers.push(new Ember(e.clientX, e.clientY, true));
+      const dt = Math.max(1, now - lastMoveTime);
+      lastMoveTime = now;
+
+      if (lastX !== null && lastY !== null) {
+        const dist = Math.hypot(cursorX - lastX, cursorY - lastY);
+        globalMouseSpeed = dist / dt; // pixels per millisecond
+
+        if (updateAudioSpeed) {
+          updateAudioSpeed(globalMouseSpeed);
+        }
+
+        // Fast flick triggers high-energy shockwave
+        if (globalMouseSpeed > 2.8 && shockwaves.length < 3) {
+          createShockwave(cursorX, cursorY);
+        }
+
+        // Occasional lightning arc on movement
+        if (Math.random() < 0.12 && electricArcs.length < 4) {
+          createElectricArc(cursorX, cursorY);
+        }
+      }
+
+      lastX = cursorX;
+      lastY = cursorY;
+
+      // Add point to Molten Comet Ribbon Trail
+      ribbonTrail.unshift({ x: cursorX, y: cursorY, time: now });
+      if (ribbonTrail.length > maxTrailLength) {
+        ribbonTrail.pop();
+      }
+
+      // Add trailing embers
+      if (Math.random() < 0.8 && embers.length < emberCount + 50) {
+        embers.push(new Ember(cursorX, cursorY, true));
       }
     });
 
-    // Click fire burst
+    window.addEventListener('mouseleave', () => {
+      cursorX = null;
+      cursorY = null;
+      lastX = null;
+      lastY = null;
+      ribbonTrail = [];
+    });
+
+    // Click triggers massive Phoenix Sonic Shockwave & Fire Blast
     window.addEventListener('click', (e) => {
-      for (let i = 0; i < 12; i++) {
+      burstRays = 1.2;
+      createShockwave(e.clientX, e.clientY);
+      createElectricArc(e.clientX, e.clientY);
+
+      for (let i = 0; i < 22; i++) {
         embers.push(new Ember(e.clientX, e.clientY, true));
       }
     });
 
+    // Animation Loop
     function animate() {
       ctx.clearRect(0, 0, width, height);
 
+      // 1. Draw Embers
       for (let i = 0; i < embers.length; i++) {
         embers[i].update();
         embers[i].draw();
+      }
+
+      // 2. Draw Dynamic Expanding Phoenix Sonic Shockwaves
+      for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const sw = shockwaves[i];
+        sw.radius += sw.speed;
+        sw.alpha -= 0.024;
+
+        if (sw.alpha <= 0 || sw.radius >= sw.maxRadius) {
+          shockwaves.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255, 120, 0, ${sw.alpha * 0.85})`;
+        ctx.lineWidth = 3.5 * sw.alpha;
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = '#ff5500';
+        ctx.stroke();
+
+        // Inner chromatic ring
+        ctx.beginPath();
+        ctx.arc(sw.x, sw.y, Math.max(0, sw.radius - 8), 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0, 240, 255, ${sw.alpha * 0.6})`;
+        ctx.lineWidth = 1.8 * sw.alpha;
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      // 3. Draw Cyber Circuit Electric Lightning Arcs
+      for (let i = electricArcs.length - 1; i >= 0; i--) {
+        const arc = electricArcs[i];
+        arc.alpha -= 0.06;
+
+        if (arc.alpha <= 0) {
+          electricArcs.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, arc.alpha);
+        ctx.strokeStyle = arc.color;
+        ctx.lineWidth = 1.8;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = arc.color;
+        ctx.beginPath();
+
+        arc.branches.forEach((b, idx) => {
+          if (idx === 0) ctx.moveTo(b.x1, b.y1);
+          ctx.lineTo(b.x2, b.y2);
+        });
+
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 4. Draw Molten Plasma Comet Ribbon Tail behind Cursor
+      if (ribbonTrail.length > 2) {
+        ctx.save();
+        for (let i = 0; i < ribbonTrail.length - 1; i++) {
+          const p1 = ribbonTrail[i];
+          const p2 = ribbonTrail[i + 1];
+          const progress = i / ribbonTrail.length; // 0 (near cursor) to 1 (tail tip)
+          const ribbonWidth = (1 - progress) * 14;
+          const alpha = (1 - progress) * 0.85;
+
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+
+          // Molten gradient from white-hot to flame red
+          let col = '#ffffff';
+          if (progress > 0.15) col = '#ffd700';
+          if (progress > 0.45) col = '#ff5500';
+          if (progress > 0.75) col = '#d61818';
+
+          ctx.strokeStyle = col;
+          ctx.globalAlpha = alpha;
+          ctx.lineWidth = Math.max(1, ribbonWidth);
+          ctx.lineCap = 'round';
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = '#ff6600';
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // 5. Draw 360-Degree Radiant Solar Rays Around Cursor
+      if (cursorX !== null && cursorY !== null) {
+        rayAngle += 0.024;
+        if (burstRays > 0) burstRays *= 0.92;
+
+        ctx.save();
+        ctx.translate(cursorX, cursorY);
+
+        // Outer Rotating Flame Rays
+        ctx.rotate(rayAngle);
+        const rayCount = 14;
+        for (let i = 0; i < rayCount; i++) {
+          const angle = (i * Math.PI * 2) / rayCount;
+          const rayLen = 45 + Math.sin(rayAngle * 3.5 + i) * 18 + burstRays * 55;
+          const ex = Math.cos(angle) * rayLen;
+          const ey = Math.sin(angle) * rayLen;
+
+          const rayGrad = ctx.createLinearGradient(0, 0, ex, ey);
+          rayGrad.addColorStop(0, 'rgba(255, 255, 210, 0.95)');
+          rayGrad.addColorStop(0.3, 'rgba(255, 150, 0, 0.7)');
+          rayGrad.addColorStop(0.7, 'rgba(255, 60, 0, 0.35)');
+          rayGrad.addColorStop(1, 'rgba(230, 20, 0, 0)');
+
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(ex, ey);
+          ctx.strokeStyle = rayGrad;
+          ctx.lineWidth = (i % 2 === 0) ? 3.5 : 2.0;
+          ctx.lineCap = 'round';
+          ctx.shadowBlur = 18;
+          ctx.shadowColor = '#ff6600';
+          ctx.stroke();
+        }
+
+        // Inner Counter-Rotating Starburst
+        ctx.rotate(-rayAngle * 2.3);
+        const innerCount = 8;
+        for (let j = 0; j < innerCount; j++) {
+          const angle2 = (j * Math.PI * 2) / innerCount;
+          const len2 = 30 + Math.cos(rayAngle * 4.5 + j) * 10 + burstRays * 30;
+          const rx = Math.cos(angle2) * len2;
+          const ry = Math.sin(angle2) * len2;
+
+          const innerGrad = ctx.createLinearGradient(0, 0, rx, ry);
+          innerGrad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+          innerGrad.addColorStop(0.45, 'rgba(255, 210, 50, 0.85)');
+          innerGrad.addColorStop(1, 'rgba(255, 80, 0, 0)');
+
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(rx, ry);
+          ctx.strokeStyle = innerGrad;
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+        }
+
+        // Central Fire Corona Core
+        const haloGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, 34 + burstRays * 25);
+        haloGrad.addColorStop(0, 'rgba(255, 255, 230, 0.95)');
+        haloGrad.addColorStop(0.3, 'rgba(255, 150, 0, 0.65)');
+        haloGrad.addColorStop(0.7, 'rgba(230, 40, 20, 0.3)');
+        haloGrad.addColorStop(1, 'transparent');
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 34 + burstRays * 25, 0, Math.PI * 2);
+        ctx.fillStyle = haloGrad;
+        ctx.fill();
+
+        ctx.restore();
       }
 
       requestAnimationFrame(animate);
@@ -151,40 +417,85 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // =========================================================================
-  // 2. 3D PARALLAX INTERACTION ON PHOENIX
+  // 2. 3D PARALLAX & DYNAMIC REACTIVE LIGHTING ON PHOENIX
   // =========================================================================
   function initPhoenixParallax() {
-    const bgImg = document.querySelector('.phoenix-bg-animated-img') || document.querySelector('.phoenix-img-container');
+    const bgImg = document.querySelector('.phoenix-bg-animated-img');
     if (!bgImg) return;
 
     window.addEventListener('mousemove', (e) => {
       const deltaX = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
       const deltaY = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
 
-      const rotateY = deltaX * 12;  // Responsive 3D tilt
-      const rotateX = -deltaY * 10;
+      const rotateY = deltaX * 14;
+      const rotateX = -deltaY * 11;
+      const speedGlow = Math.min(1.2, 1 + globalMouseSpeed * 0.2);
 
-      bgImg.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      bgImg.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${speedGlow})`;
     });
 
     window.addEventListener('mouseleave', () => {
-      bgImg.style.transform = 'rotateX(0deg) rotateY(0deg)';
+      bgImg.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
     });
   }
-});
 
   // =========================================================================
-  // 3. CINEMATIC WEB AUDIO API PHOENIX SOUNDSCAPE
+  // 3. LIVING FLAPPING PHOENIX CURSOR FOLLOWER
   // =========================================================================
-  initPhoenixSoundscape();
+  function initAnimatedPhoenixCursor() {
+    const cursorEl = document.getElementById('animatedPhoenixCursor');
+    if (!cursorEl) return;
 
+    let targetX = -100, targetY = -100;
+    let currentX = -100, currentY = -100;
+    let prevX = -100;
+    let tilt = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      cursorEl.style.opacity = '1';
+
+      // Flight banking when moving fast left or right
+      const vx = targetX - prevX;
+      prevX = targetX;
+      tilt = Math.max(-28, Math.min(28, vx * 1.8));
+    });
+
+    document.addEventListener('mouseleave', () => {
+      cursorEl.style.opacity = '0';
+    });
+
+    // Hover acceleration & click burst
+    const interactives = 'a, button, input, [role="button"], .glass-subcard, .btn';
+    document.querySelectorAll(interactives).forEach(el => {
+      el.addEventListener('mouseenter', () => cursorEl.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => cursorEl.classList.remove('cursor-hover'));
+    });
+
+    window.addEventListener('mousedown', () => cursorEl.classList.add('cursor-click'));
+    window.addEventListener('mouseup', () => cursorEl.classList.remove('cursor-click'));
+
+    // Smooth tracking loop
+    function updateCursor() {
+      currentX += (targetX - currentX) * 0.48;
+      currentY += (targetY - currentY) * 0.48;
+      tilt *= 0.88;
+
+      cursorEl.style.transform = `translate3d(${currentX - 20}px, ${currentY - 2}px, 0) rotate(${tilt}deg)`;
+      requestAnimationFrame(updateCursor);
+    }
+    requestAnimationFrame(updateCursor);
+  }
+
+  // =========================================================================
+  // 4. AERODYNAMIC SOUND ENGINE (SOUND RESPONDS TO MOVEMENT SPEED)
+  // =========================================================================
   function initPhoenixSoundscape() {
     let audioCtx = null;
     let isPlaying = false;
     let masterGain = null;
-    let ambientNoiseNode = null;
-    let droneOsc1 = null;
-    let droneOsc2 = null;
+    let fireFilter = null;
     let intervalCry = null;
 
     const toggleBtn = document.getElementById('toggleAudioBtn');
@@ -200,7 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
       masterGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
       masterGain.connect(audioCtx.destination);
 
-      // A. Fiery Wind & Crackle Ambient Generator (Pink/Brown noise filter)
+      // Pink noise flame wind
       const bufferSize = audioCtx.sampleRate * 2;
       const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
       const output = noiseBuffer.getChannelData(0);
@@ -217,18 +528,17 @@ document.addEventListener('DOMContentLoaded', () => {
         b6 = white * 0.115926;
       }
 
-      ambientNoiseNode = audioCtx.createBufferSource();
+      const ambientNoiseNode = audioCtx.createBufferSource();
       ambientNoiseNode.buffer = noiseBuffer;
       ambientNoiseNode.loop = true;
 
-      const fireFilter = audioCtx.createBiquadFilter();
+      fireFilter = audioCtx.createBiquadFilter();
       fireFilter.type = 'lowpass';
       fireFilter.frequency.setValueAtTime(280, audioCtx.currentTime);
 
       const fireGain = audioCtx.createGain();
       fireGain.gain.setValueAtTime(0.65, audioCtx.currentTime);
 
-      // Low frequency modulation for fire roar gust
       const lfo = audioCtx.createOscillator();
       lfo.frequency.setValueAtTime(0.25, audioCtx.currentTime);
       const lfoGain = audioCtx.createGain();
@@ -242,14 +552,14 @@ document.addEventListener('DOMContentLoaded', () => {
       fireGain.connect(masterGain);
       ambientNoiseNode.start();
 
-      // B. Mystical Warm Drone (D2 & A2 Harmonic Chords)
-      droneOsc1 = audioCtx.createOscillator();
+      // D2 / A2 Harmonic drone
+      const droneOsc1 = audioCtx.createOscillator();
       droneOsc1.type = 'triangle';
-      droneOsc1.frequency.setValueAtTime(73.42, audioCtx.currentTime); // D2
+      droneOsc1.frequency.setValueAtTime(73.42, audioCtx.currentTime);
 
-      droneOsc2 = audioCtx.createOscillator();
+      const droneOsc2 = audioCtx.createOscillator();
       droneOsc2.type = 'sine';
-      droneOsc2.frequency.setValueAtTime(110.00, audioCtx.currentTime); // A2
+      droneOsc2.frequency.setValueAtTime(110.00, audioCtx.currentTime);
 
       const droneFilter = audioCtx.createBiquadFilter();
       droneFilter.type = 'lowpass';
@@ -266,7 +576,14 @@ document.addEventListener('DOMContentLoaded', () => {
       droneOsc1.start();
       droneOsc2.start();
 
-      // C. Periodic Ethereal Phoenix Chime / Call
+      // Hook aerodynamic speed to filter frequency
+      updateAudioSpeed = (speed) => {
+        if (!fireFilter || !audioCtx) return;
+        const targetFreq = 260 + Math.min(650, speed * 220);
+        fireFilter.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, 0.08);
+      };
+
+      // Periodic ethereal Phoenix call
       function triggerPhoenixCall() {
         if (!isPlaying || !audioCtx) return;
         try {
@@ -276,9 +593,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
           callOsc.type = 'sine';
           const now = audioCtx.currentTime;
-          callOsc.frequency.setValueAtTime(587.33, now); // D5
-          callOsc.frequency.exponentialRampToValueAtTime(880.00, now + 1.2); // Bend up to A5
-          callOsc.frequency.exponentialRampToValueAtTime(440.00, now + 3.2); // Glide down
+          callOsc.frequency.setValueAtTime(587.33, now);
+          callOsc.frequency.exponentialRampToValueAtTime(880.00, now + 1.2);
+          callOsc.frequency.exponentialRampToValueAtTime(440.00, now + 3.2);
 
           callFilter.type = 'bandpass';
           callFilter.frequency.setValueAtTime(750, now);
@@ -302,15 +619,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startSound() {
-      if (!audioCtx) {
-        createAudioEngine();
-      }
-      if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      if (masterGain) {
-        masterGain.gain.linearRampToValueAtTime(0.7, audioCtx.currentTime + 1.5);
-      }
+      if (!audioCtx) createAudioEngine();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      if (masterGain) masterGain.gain.linearRampToValueAtTime(0.7, audioCtx.currentTime + 1.5);
+
       isPlaying = true;
       if (audioWaves) audioWaves.classList.add('audio-playing');
       if (audioBtnText) audioBtnText.textContent = 'SOUND: ON';
@@ -321,9 +633,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function stopSound() {
-      if (masterGain && audioCtx) {
-        masterGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
-      }
+      if (masterGain && audioCtx) masterGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
+
       isPlaying = false;
       if (audioWaves) audioWaves.classList.remove('audio-playing');
       if (audioBtnText) audioBtnText.textContent = 'SOUND: MUTED';
@@ -333,102 +644,43 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Try starting audio on page load
-    try {
-      startSound();
-    } catch (e) {}
+    try { startSound(); } catch (e) {}
 
-    // First user click starts audio if browser autoplay policy blocked it
     const startOnFirstGesture = () => {
-      if (!isPlaying) {
-        startSound();
-      }
+      if (!isPlaying) startSound();
       window.removeEventListener('click', startOnFirstGesture);
       window.removeEventListener('keydown', startOnFirstGesture);
     };
     window.addEventListener('click', startOnFirstGesture, { once: true });
     window.addEventListener('keydown', startOnFirstGesture, { once: true });
 
-    // Toggle button handler
     if (toggleBtn) {
       toggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (isPlaying) {
-          stopSound();
-        } else {
-          startSound();
-        }
+        if (isPlaying) stopSound();
+        else startSound();
       });
     }
 
-    // Enter Portal Click Fire Blast SFX
+    // Portal button click fire blast
     const portalBtn = document.querySelector('.btn-phoenix-main');
     if (portalBtn) {
-      portalBtn.addEventListener('click', (e) => {
+      portalBtn.addEventListener('click', () => {
         if (audioCtx && audioCtx.state === 'running') {
           const blastOsc = audioCtx.createOscillator();
           const blastGain = audioCtx.createGain();
           blastOsc.type = 'sawtooth';
           const now = audioCtx.currentTime;
-          blastOsc.frequency.setValueAtTime(220, now);
-          blastOsc.frequency.exponentialRampToValueAtTime(60, now + 0.4);
-          blastGain.gain.setValueAtTime(0.3, now);
-          blastGain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+          blastOsc.frequency.setValueAtTime(240, now);
+          blastOsc.frequency.exponentialRampToValueAtTime(55, now + 0.45);
+          blastGain.gain.setValueAtTime(0.35, now);
+          blastGain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
           blastOsc.connect(blastGain);
           blastGain.connect(masterGain);
           blastOsc.start(now);
-          blastOsc.stop(now + 0.4);
+          blastOsc.stop(now + 0.45);
         }
       });
     }
   }
-
-  // =========================================================================
-  // 4. ANIMATED FLYING PHOENIX CURSOR FOLLOWER
-  // =========================================================================
-  function initAnimatedPhoenixCursor() {
-    const cursorEl = document.getElementById('animatedPhoenixCursor');
-    if (!cursorEl) return;
-
-    let targetX = -100, targetY = -100;
-    let currentX = -100, currentY = -100;
-    let prevX = -100;
-    let tilt = 0;
-
-    window.addEventListener('mousemove', (e) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
-      cursorEl.style.opacity = '1';
-
-      // Flight banking when moving fast left or right
-      const vx = targetX - prevX;
-      prevX = targetX;
-      tilt = Math.max(-25, Math.min(25, vx * 1.6));
-    });
-
-    document.addEventListener('mouseleave', () => {
-      cursorEl.style.opacity = '0';
-    });
-
-    // Detect clickable elements for flight acceleration / flare
-    const interactives = 'a, button, input, [role="button"], .glass-subcard, .btn';
-    document.querySelectorAll(interactives).forEach(el => {
-      el.addEventListener('mouseenter', () => cursorEl.classList.add('cursor-hover'));
-      el.addEventListener('mouseleave', () => cursorEl.classList.remove('cursor-hover'));
-    });
-
-    // Click burst
-    window.addEventListener('mousedown', () => cursorEl.classList.add('cursor-click'));
-    window.addEventListener('mouseup', () => cursorEl.classList.remove('cursor-click'));
-
-    // Smooth 60fps tracking loop
-    function updateCursor() {
-      currentX += (targetX - currentX) * 0.45;
-      currentY += (targetY - currentY) * 0.45;
-      tilt *= 0.88;
-
-      cursorEl.style.transform = `translate3d(${currentX - 20}px, ${currentY - 2}px, 0) rotate(${tilt}deg)`;
-      requestAnimationFrame(updateCursor);
-    }
-    requestAnimationFrame(updateCursor);
-  }
+});
