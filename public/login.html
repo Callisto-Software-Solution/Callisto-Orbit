@@ -18,210 +18,178 @@
 
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
-<body class="login-page-body">
+<body class="viewport-100vh">
 
   <!-- Minimal Elegant Fire Cursor Glow Follower -->
   <div id="cursorFireAura" class="cursor-fire-aura" aria-hidden="true"></div>
 
-  <!-- Ambient Glowing Orbs & Background Spark Canvas -->
-  <canvas id="loginEmberCanvas" class="login-ember-canvas"></canvas>
+  <!-- 1. FULL BACKGROUND ANIMATED FIRE PHOENIX BIRD STAGE (Same as Index Page) -->
+  <div class="phoenix-bg-stage">
+    <!-- Concentric Flame Shockwave Rings -->
+    <div class="phoenix-shockwave shockwave-1" style="width: 450px; height: 450px;"></div>
+    <div class="phoenix-shockwave shockwave-2" style="width: 700px; height: 700px;"></div>
+    
+    <!-- Flame Glow Halo -->
+    <div class="phoenix-glow-halo" style="width: 65vw; height: 65vh;"></div>
+
+    <!-- The Fire Bird Image with Flight Breathing Hover Animation -->
+    <img src="/assets/images/callisto-phoenix.jpg" alt="Callisto Fire Phoenix" class="phoenix-bg-animated-img">
+
+    <!-- Vignette Blend into Background Space -->
+    <div class="phoenix-bg-vignette"></div>
+  </div>
+
+  <!-- 2. DYNAMIC FIRE EMBERS & SPARKS CANVAS -->
+  <canvas id="emberCanvas"></canvas>
+
+  <!-- Ambient Aurora Glow Orbs -->
   <div class="aurora-orb aurora-1"></div>
   <div class="aurora-orb aurora-2"></div>
 
-  <div class="login-viewport-container">
-    
-    <!-- Top Glass Navigation Bar -->
-    <header class="login-top-navbar mb-4">
-      <div class="d-flex justify-content-between align-items-center w-100">
+  <!-- 3. TOP NAVBAR (Compact Glass Bar) -->
+  <header class="landing-nav-100vh">
+    <div class="landing-nav-box d-flex justify-content-between align-items-center" style="padding: 0.6rem 1.35rem;">
+      
+      <!-- Logo & Brand -->
+      <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
+        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #0c1222; border: 1.5px solid rgba(255,85,0,0.5); display: flex; align-items: center; justify-content: center; padding: 4px; box-shadow: 0 0 15px rgba(255,85,0,0.4);">
+          <img src="/assets/images/callisto-logo.jpg" alt="Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        </div>
+        <div>
+          <span style="font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; letter-spacing: 1px; color: #fff;">
+            CALLISTO<span style="color: var(--callisto-orange);">-ORBIT</span>
+          </span>
+          <span class="d-none d-sm-inline-block ms-2 badge" style="background: rgba(0, 229, 255, 0.12); color: var(--callisto-cyan); border: 1px solid rgba(0, 229, 255, 0.25); font-size: 0.65rem;">
+            ● SECURITY CLEARANCE
+          </span>
+        </div>
+      </a>
+
+      <!-- Center Status Pill -->
+      <div class="d-none d-md-flex align-items-center gap-2 px-3 py-1 glass-subcard" style="border-radius: 50px; font-size: 0.75rem;">
+        <span class="status-indicator-dot" style="width: 6px; height: 6px; background: #00f076; box-shadow: 0 0 8px #00f076;"></span>
+        <span style="color: var(--text-muted);">ORBIT VAULT:</span>
+        <strong style="color: #fff;">ENCRYPTED &bull; ZERO-DB</strong>
+      </div>
+
+      <!-- Right Group: Home / Phoenix Link -->
+      <div class="d-flex align-items-center gap-2">
+        <a href="/" class="btn btn-sm glass-subcard d-flex align-items-center gap-2 px-3 py-1 text-decoration-none" style="border-radius: 50px; font-size: 0.75rem; color: var(--callisto-amber); border-color: rgba(255, 85, 0, 0.35);">
+          <i class="bi bi-house-door-fill"></i>
+          <span>Home / Phoenix</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- 4. CENTER AUTHENTICATOR CONSOLE (Glassmorphism Over Animated Phoenix Background) -->
+  <main class="landing-main-100vh">
+    <div class="w-100">
+      
+      <div class="hero-glass-card-center" style="max-width: 620px; padding: 2rem 2.25rem;">
         
-        <!-- Brand Link -->
-        <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
-          <div class="login-nav-logo-box">
-            <img src="/assets/images/callisto-logo.jpg" alt="Logo">
+        <!-- Fire Badge -->
+        <div class="phoenix-badge mb-2" style="padding: 0.35rem 0.95rem; font-size: 0.72rem;">
+          <i class="bi bi-shield-lock-fill text-warning"></i>
+          <span>The Rising Phoenix &bull; Operator Clearance</span>
+        </div>
+
+        <!-- Heading -->
+        <h1 style="font-family: var(--font-display); font-size: clamp(1.85rem, 3.8vw, 2.6rem); font-weight: 800; line-height: 1.15; color: #fff; margin-bottom: 0.4rem;">
+          Operator Clearance <span class="phoenix-gradient-text">Portal</span>
+        </h1>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Enter your registered Callisto Squad NIC for instant zero-DB vault access.
+        </p>
+
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Single-Field Form -->
+        <form id="loginForm" autocomplete="off" class="text-start mt-2">
+          
+          <!-- SINGLE INPUT FIELD: NIC NUMBER -->
+          <div class="mb-3">
+            <label for="nicInput" class="form-step-label mb-2 d-flex justify-content-between align-items-center" style="font-size: 0.75rem;">
+              <span><i class="bi bi-person-vcard-fill text-warning me-1"></i> Operator NIC Number</span>
+              <span style="font-size: 0.68rem; color: var(--text-dim);">9-digit or 12-digit NIC</span>
+            </label>
+
+            <div class="input-wrap-relative">
+              <i class="bi bi-person-badge-fill input-field-icon"></i>
+              <input 
+                type="text" 
+                class="input-cyber-glass input-nic-custom" 
+                id="nicInput" 
+                name="nic"
+                placeholder="Enter NIC Number (e.g. 200112345678)" 
+                required 
+                autofocus
+              >
+            </div>
           </div>
-          <div>
-            <span class="login-nav-brand">CALLISTO<span style="color: var(--callisto-orange);">-ORBIT</span></span>
-            <span class="d-none d-sm-inline-block ms-2 badge" style="background: rgba(0, 229, 255, 0.12); color: var(--callisto-cyan); border: 1px solid rgba(0, 229, 255, 0.25); font-size: 0.65rem;">
-              ● SECURITY CLEARANCE V2.5
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-phoenix-main w-100 py-3 mb-2" id="loginBtn" style="font-size: 1.02rem;">
+            <i class="bi bi-fingerprint fs-5"></i>
+            <span>VERIFY NIC &amp; ENTER ORBIT</span>
+            <i class="bi bi-arrow-right-short fs-4"></i>
+          </button>
+
+          <!-- Remember Me Check -->
+          <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+            <label class="d-flex align-items-center gap-2 cursor-pointer" style="cursor: pointer;">
+              <input type="checkbox" id="rememberMe" checked style="accent-color: var(--callisto-orange); width: 15px; height: 15px;">
+              <span style="font-size: 0.76rem; color: var(--text-muted);">Remember this operator</span>
+            </label>
+            <span style="font-size: 0.7rem; color: var(--text-dim);">
+              <i class="bi bi-lock-fill text-success"></i> HMAC Signed
             </span>
           </div>
-        </a>
 
-        <!-- Return Home Link & Gateway Status -->
-        <div class="d-flex align-items-center gap-2">
-          <span class="d-none d-md-flex align-items-center gap-2 px-3 py-1 glass-subcard" style="border-radius: 50px; font-size: 0.72rem; color: #fff;">
-            <span class="status-indicator-dot" style="background: #00f076; box-shadow: 0 0 8px #00f076;"></span>
-            <span>VAULT STATUS: <strong>ACTIVE</strong></span>
-          </span>
-          <a href="/" class="btn btn-sm glass-subcard d-flex align-items-center gap-2 px-3 py-1 text-decoration-none" style="border-radius: 50px; font-size: 0.75rem; color: var(--callisto-amber);">
-            <i class="bi bi-house-door-fill"></i>
-            <span>Home / Phoenix</span>
-          </a>
-        </div>
+        </form>
 
-      </div>
-    </header>
-
-    <!-- Main Dual Split Stage -->
-    <main class="login-main-stage">
-      <div class="row g-4 align-items-center justify-content-center w-100 m-0">
-        
-        <!-- LEFT SIDE: PROMINENT LARGE 3D FLAPPING FIRE BIRD STAGE -->
-        <div class="col-12 col-lg-7 p-2 p-md-3">
-          <div class="login-phoenix-large-stage" id="largePhoenixStage">
-            
-            <!-- Floating Cyber Badge -->
-            <div class="phoenix-stage-header mb-3">
-              <span class="phoenix-stage-pill">
-                <i class="bi bi-fire text-warning"></i>
-                <span>CALLISTO PHOENIX SENTINEL &bull; GUARDIAN ACTIVE</span>
-              </span>
-            </div>
-
-            <!-- Title & Slogan -->
-            <div class="text-center mb-3">
-              <h2 class="phoenix-large-title">
-                The Rising Phoenix <span class="phoenix-gradient-text">Of Cyber Security</span>
-              </h2>
-              <p class="phoenix-large-subtitle">
-                Guarding the internal treasury pool of 6 elite specialists ($100/mo &bull; $600 pool).
-              </p>
-            </div>
-
-            <!-- The Large 3D Flapping Phoenix Rig -->
-            <div class="phoenix-wing-stage-large">
-              <!-- Left Flapping Wing Half -->
-              <div class="phoenix-wing-half-large wing-left-large">
-                <img src="/assets/images/callisto-phoenix.jpg" alt="Phoenix Left Wing">
-              </div>
-              <!-- Right Flapping Wing Half -->
-              <div class="phoenix-wing-half-large wing-right-large">
-                <img src="/assets/images/callisto-phoenix.jpg" alt="Phoenix Right Wing">
-              </div>
-              <!-- Phoenix Body Core -->
-              <div class="phoenix-body-core-large">
-                <img src="/assets/images/callisto-phoenix.jpg" alt="Phoenix Core">
-              </div>
-              <!-- Luminous Radiant Halo -->
-              <div class="phoenix-large-halo"></div>
-            </div>
-
-            <!-- Metrics Bar Under The Bird -->
-            <div class="phoenix-metrics-bar mt-3">
-              <div class="metric-chip">
-                <span class="metric-chip-label">Target Pool</span>
-                <span class="metric-chip-value" style="color: var(--callisto-cyan);">$600/mo</span>
-              </div>
-              <div class="metric-chip">
-                <span class="metric-chip-label">Squad Roster</span>
-                <span class="metric-chip-value" style="color: #fff;">6 Specialists</span>
-              </div>
-              <div class="metric-chip">
-                <span class="metric-chip-label">Per Member</span>
-                <span class="metric-chip-value" style="color: #ff9d00;">$100.00</span>
-              </div>
-              <div class="metric-chip">
-                <span class="metric-chip-label">Vault Node</span>
-                <span class="metric-chip-value" style="color: #00f076;">Zero-DB</span>
-              </div>
-            </div>
-
+        <!-- 1-Click Specialist Fast Fill Pills -->
+        <div class="pt-2 border-top border-secondary border-opacity-25 text-start">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">
+              <i class="bi bi-people-fill text-info me-1"></i> 1-Click Specialist Fast Fill:
+            </span>
+            <span class="badge" style="background: rgba(255, 85, 0, 0.15); color: #ff9d00; font-size: 0.65rem;">
+              6 CONNECTED
+            </span>
+          </div>
+          
+          <div class="row g-2" id="quickNicList">
+            <!-- Dynamically populated via auth.js -->
           </div>
         </div>
 
-        <!-- RIGHT SIDE: SINGLE-FIELD NIC OPERATOR AUTHENTICATOR -->
-        <div class="col-12 col-lg-5 p-2 p-md-3">
-          <div class="login-auth-card">
-            
-            <!-- Auth Card Header -->
-            <div class="d-flex align-items-center gap-3 mb-3">
-              <div class="auth-icon-badge">
-                <i class="bi bi-shield-lock-fill"></i>
-              </div>
-              <div>
-                <h3 class="auth-card-title mb-0">Operator Clearance</h3>
-                <p class="auth-card-sub mb-0">Enter your Callisto Squad NIC for verified access</p>
-              </div>
-            </div>
-
-            <!-- Alert Container -->
-            <div id="alertContainer"></div>
-
-            <!-- The Single-Field Form -->
-            <form id="loginForm" autocomplete="off" class="mt-3">
-              
-              <!-- THE SINGLE INPUT FIELD: NIC NUMBER -->
-              <div class="mb-4">
-                <label for="nicInput" class="form-step-label mb-2 d-flex justify-content-between align-items-center">
-                  <span><i class="bi bi-person-vcard text-warning me-1"></i> Operator NIC Number</span>
-                  <span class="text-dim" style="font-size: 0.7rem;">9-digit or 12-digit NIC</span>
-                </label>
-                
-                <div class="input-wrap-relative">
-                  <i class="bi bi-person-badge-fill input-field-icon"></i>
-                  <input 
-                    type="text" 
-                    class="input-cyber-glass input-nic-custom" 
-                    id="nicInput" 
-                    name="nic"
-                    placeholder="Enter NIC Number (e.g. 200112345678)" 
-                    required 
-                    autofocus
-                  >
-                </div>
-              </div>
-
-              <!-- Dispatch Button -->
-              <button type="submit" class="btn-phoenix-main w-100 py-3 mb-3" id="loginBtn">
-                <i class="bi bi-fingerprint fs-5"></i>
-                <span>VERIFY NIC &amp; ENTER ORBIT</span>
-              </button>
-
-              <!-- Session Note -->
-              <div class="d-flex justify-content-between align-items-center mb-3 px-1">
-                <label class="d-flex align-items-center gap-2 cursor-pointer" style="cursor: pointer;">
-                  <input type="checkbox" id="rememberMe" checked style="accent-color: var(--callisto-orange); width: 16px; height: 16px;">
-                  <span style="font-size: 0.78rem; color: var(--text-muted);">Remember this operator</span>
-                </label>
-                <span style="font-size: 0.72rem; color: var(--text-dim);">
-                  <i class="bi bi-lock-fill text-success"></i> HMAC Signed Token
-                </span>
-              </div>
-
-            </form>
-
-            <!-- 1-Click Specialist Quick-Select Pills -->
-            <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">
-                  <i class="bi bi-people-fill text-info me-1"></i> 1-Click Specialist Fast Fill
-                </span>
-                <span class="badge" style="background: rgba(255, 85, 0, 0.15); color: #ff9d00; font-size: 0.65rem;">
-                  6 CONNECTED
-                </span>
-              </div>
-              
-              <div class="row g-2" id="quickNicList">
-                <!-- Populated dynamically via auth.js -->
-              </div>
-            </div>
-
-            <!-- Execution Audit Log -->
-            <div class="mt-4">
-              <div class="audit-log-terminal">
-                <span class="status-indicator-dot" style="width: 6px; height: 6px;"></span>
-                <span id="auditLogText">Session Idle &bull; Awaiting Operator NIC clearance</span>
-              </div>
-            </div>
-
-          </div>
+        <!-- Terminal Audit Log -->
+        <div class="audit-log-terminal mt-3 text-start">
+          <span class="status-indicator-dot" style="width: 6px; height: 6px;"></span>
+          <span id="auditLogText">Session Idle &bull; Awaiting Operator NIC clearance</span>
         </div>
 
       </div>
-    </main>
 
-  </div>
+    </div>
+  </main>
 
+  <!-- 5. BOTTOM FOOTER (Squad Status & Architecture) -->
+  <footer class="landing-footer-100vh">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 py-2">
+      <div style="font-size: 0.72rem; color: var(--text-dim);">
+        <strong style="color: #fff;">Callisto Squad Pool:</strong> 6 Specialists &bull; $100/mo &bull; $600/mo Target
+      </div>
+      <div style="font-size: 0.72rem; color: var(--text-dim);">
+        &copy; 2026 Callisto Cyber Security &amp; AI &bull; Orbit Treasury &bull; <span style="color: var(--callisto-cyan);">Zero-DB Architecture</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/phoenix.js"></script>
   <script src="/assets/js/auth.js"></script>
 </body>
 </html>

@@ -390,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Portal button click cinematic fire takeoff sequence
-    const portalBtn = document.querySelector('.btn-phoenix-main');
+    const portalBtn = document.getElementById('btnLaunchOrbit');
     if (portalBtn) {
       let isLaunching = false;
 
