@@ -1074,18 +1074,113 @@ body::before {
 
 @media (max-width: 991px) {
   .viewport-100vh {
-    height: auto;
-    min-height: 100vh;
-    max-height: none;
-    overflow-y: auto;
-    padding: 1rem;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+    padding: 0.6rem 0.85rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
   }
-  .phoenix-stage-100vh {
-    max-height: 38vh;
-    margin: 1.5rem 0;
+
+  /* Phoenix Bird Mobile Presentation: Wings expand majestically across screen */
+  .phoenix-bg-stage {
+    align-items: center !important;
+    justify-content: center !important;
+    transform: translateY(-5vh) !important;
   }
-  .phoenix-img-100vh {
-    max-height: 36vh;
+
+  .phoenix-bg-animated-img {
+    width: 140vw !important;
+    max-width: none !important;
+    min-width: 500px !important;
+    height: auto !important;
+    max-height: 56vh !important;
+    object-fit: contain !important;
+    opacity: 0.88 !important;
+    -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 65%, transparent 92%) !important;
+    mask-image: radial-gradient(ellipse at 50% 50%, black 65%, transparent 92%) !important;
+    filter: drop-shadow(0 0 35px rgba(255, 85, 0, 0.95)) drop-shadow(0 0 75px rgba(230, 32, 32, 0.65)) !important;
+    animation: phoenixHoverMobile 4.5s infinite ease-in-out !important;
+  }
+
+  @keyframes phoenixHoverMobile {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+      filter: drop-shadow(0 0 32px rgba(255, 85, 0, 0.9)) drop-shadow(0 0 70px rgba(230, 32, 32, 0.6));
+    }
+    50% {
+      transform: translateY(-10px) scale(1.04);
+      filter: drop-shadow(0 0 55px rgba(255, 140, 0, 1)) drop-shadow(0 0 100px rgba(255, 45, 0, 0.8));
+    }
+  }
+
+  .phoenix-glow-halo {
+    width: 95vw !important;
+    height: 52vh !important;
+    opacity: 0.85 !important;
+  }
+
+  .phoenix-bg-vignette {
+    background: radial-gradient(circle at center, transparent 35%, rgba(6, 9, 19, 0.5) 70%, #060913 100%) !important;
+  }
+
+  /* Center Hero Card On Mobile (Translucent & Compact to showcase Phoenix behind) */
+  .hero-glass-card-center {
+    padding: 1.35rem 1.15rem !important;
+    border-radius: 20px !important;
+    background: rgba(10, 15, 28, 0.48) !important;
+    backdrop-filter: blur(14px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(200%) !important;
+    border: 1px solid rgba(255, 120, 0, 0.22) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 85, 0, 0.18) !important;
+    margin-top: 1rem !important;
+  }
+
+  .hero-glass-card-center h1 {
+    font-size: clamp(1.55rem, 6.2vw, 2.1rem) !important;
+    line-height: 1.15 !important;
+    margin-bottom: 1.15rem !important;
+  }
+
+  .btn-phoenix-main {
+    padding: 0.82rem 1.8rem !important;
+    font-size: 0.98rem !important;
+    width: 100% !important;
+    max-width: 270px !important;
+    justify-content: center !important;
+  }
+
+  .landing-nav-box {
+    padding: 0.45rem 0.85rem !important;
+  }
+
+  .landing-footer-100vh {
+    padding-top: 0.35rem !important;
+  }
+
+  .squad-avatars-wrap {
+    overflow-x: auto;
+    max-width: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 2px;
+  }
+
+  .squad-avatars-wrap::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Touch screens cursor reset */
+@media (pointer: coarse), (hover: none) {
+  .cursor-fire-aura {
+    display: none !important;
+  }
+  body.viewport-100vh, 
+  body.viewport-100vh * {
+    cursor: auto !important;
   }
 }
 

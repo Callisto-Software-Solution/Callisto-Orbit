@@ -152,6 +152,31 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('mouseleave', () => {
       bgImg.style.transform = 'rotateX(0deg) rotateY(0deg)';
     });
+
+    // Mobile touch parallax
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches[0]) {
+        const touch = e.touches[0];
+        const deltaX = (touch.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+        const deltaY = (touch.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
+        bgImg.style.transform = `rotateX(${-deltaY * 7}deg) rotateY(${deltaX * 9}deg)`;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      bgImg.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
+
+    // Mobile device tilt (gyroscope)
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', (e) => {
+        if (e.gamma !== null && e.beta !== null) {
+          const tiltX = Math.max(-14, Math.min(14, e.gamma * 0.35));
+          const tiltY = Math.max(-10, Math.min(10, (e.beta - 40) * 0.25));
+          bgImg.style.transform = `rotateX(${-tiltY}deg) rotateY(${tiltX}deg)`;
+        }
+      }, { passive: true });
+    }
   }
 
   // =========================================================================
