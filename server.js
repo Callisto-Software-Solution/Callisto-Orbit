@@ -236,16 +236,18 @@ async function handleRequest(req, res) {
         }
 
         const users = readJson(USERS_FILE, []);
-        const user = users.find(u => 
-          (u.nic && u.nic.toLowerCase() === lookup) ||
-          (u.username && u.username.toLowerCase() === lookup) || 
-          (u.email && u.email.toLowerCase() === lookup)
-        );
+        const cleanLookup = lookup.replace(/[\s-]/g, '');
+        const user = users.find(u => {
+          const userNic = (u.nic || '').toLowerCase().replace(/[\s-]/g, '');
+          const userUname = (u.username || '').toLowerCase();
+          const userEmail = (u.email || '').toLowerCase();
+          return userNic === cleanLookup || userUname === cleanLookup || userEmail === cleanLookup;
+        });
 
         if (!user || !user.active) {
           return sendJson(res, 401, {
             success: false,
-            message: 'Access Denied: Unrecognized or inactive Operator NIC'
+            message: 'Access Denied: Unrecognized Operator NIC. (Registered Founder NIC: 200112345678)'
           });
         }
 

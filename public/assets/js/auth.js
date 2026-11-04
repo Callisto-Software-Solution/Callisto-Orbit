@@ -46,56 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     alertContainer.innerHTML = '';
   }
 
-  // 3. Load Squad Members to Render Quick 1-Click NIC Fast Fill Pills
-  async function loadTeamMembers() {
-    try {
-      const res = await fetch('/api/members');
-      const data = await res.json();
-      if (data.success && Array.isArray(data.members)) {
-        renderQuickNicPills(data.members);
-      }
-    } catch (e) {
-      console.warn('Squad member fetch error:', e);
-    }
-  }
-
-  function renderQuickNicPills(members) {
-    if (!quickNicList) return;
-    quickNicList.innerHTML = members.map(m => `
-      <div class="col-6 col-sm-4">
-        <div class="quick-nic-pill" data-nic="${m.nic || ''}" data-name="${m.name}" title="Click to fill NIC for ${m.name}">
-          <img src="${m.avatar}" alt="${m.name}" style="width: 22px; height: 22px; border-radius: 50%; background: #0c1222;">
-          <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            <div style="font-weight: 700; font-size: 0.72rem; color: #fff;">${m.name.split(' ')[0]}</div>
-            <div style="font-size: 0.65rem; color: var(--callisto-amber); font-family: monospace;">${m.nic || 'NIC'}</div>
-          </div>
-        </div>
-      </div>
-    `).join('');
-
-    // Attach click handlers
-    document.querySelectorAll('.quick-nic-pill').forEach(pill => {
-      pill.addEventListener('click', () => {
-        const nic = pill.getAttribute('data-nic');
-        const name = pill.getAttribute('data-name');
-        if (nicInput && nic) {
-          nicInput.value = nic;
-          nicInput.focus();
-          if (auditLogText) {
-            auditLogText.innerHTML = `<span style="color: #ff9d00;">Selected:</span> ${name} (${nic}) &bull; Ready for verification`;
-          }
-          if (loginBtn) {
-            loginBtn.classList.add('glow-pulse');
-            setTimeout(() => loginBtn.classList.remove('glow-pulse'), 1000);
-          }
-        }
-      });
-    });
-  }
-
-  loadTeamMembers();
-
-  // 4. Handle Single-Field Form Submission
+  // 3. Handle Single-Field NIC Form Submission
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
