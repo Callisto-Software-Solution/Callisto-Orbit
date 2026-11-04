@@ -103,37 +103,89 @@
           Enter your registered Callisto Squad NIC for instant zero-DB vault access.
         </p>
 
+        <!-- Clearance Mode Switcher: Member vs Admin / Super Admin -->
+        <div class="login-mode-container mb-3">
+          <div class="d-flex justify-content-center gap-2 p-1 glass-subcard" style="border-radius: 50px; background: rgba(8, 12, 24, 0.75); border-color: rgba(255, 85, 0, 0.25);">
+            <button type="button" class="btn btn-sm login-mode-btn active" id="btnModeMember" style="border-radius: 50px; font-size: 0.76rem; padding: 0.4rem 1rem; color: #fff; font-weight: 600;">
+              <i class="bi bi-person-badge-fill me-1"></i> Member Access (NIC)
+            </button>
+            <button type="button" class="btn btn-sm login-mode-btn" id="btnModeAdmin" style="border-radius: 50px; font-size: 0.76rem; padding: 0.4rem 1rem; color: var(--text-dim); font-weight: 600;">
+              <i class="bi bi-shield-lock-fill text-warning me-1"></i> Admin &amp; Super Admin
+            </button>
+          </div>
+        </div>
+
         <!-- Alert Container -->
         <div id="alertContainer"></div>
 
-        <!-- Single-Field Form -->
+        <!-- Authentication Form -->
         <form id="loginForm" autocomplete="off" class="text-start mt-2">
           
-          <!-- SINGLE INPUT FIELD: NIC NUMBER -->
-          <div class="mb-3">
-            <label for="nicInput" class="form-step-label mb-2 d-flex justify-content-between align-items-center" style="font-size: 0.75rem;">
-              <span><i class="bi bi-person-vcard-fill text-warning me-1"></i> Operator NIC Number</span>
-              <span style="font-size: 0.68rem; color: var(--text-dim);">9-digit or 12-digit NIC</span>
-            </label>
+          <!-- 1. MEMBER FIELD GROUP (NIC Only) -->
+          <div id="memberFieldGroup">
+            <div class="mb-3">
+              <label for="nicInput" class="form-step-label mb-2 d-flex justify-content-between align-items-center" style="font-size: 0.75rem;">
+                <span><i class="bi bi-person-vcard-fill text-warning me-1"></i> Operator NIC Number</span>
+                <span style="font-size: 0.68rem; color: var(--text-dim);">9-digit or 12-digit NIC</span>
+              </label>
 
-            <div class="input-wrap-relative">
-              <i class="bi bi-person-badge-fill input-field-icon"></i>
-              <input 
-                type="text" 
-                class="input-cyber-glass input-nic-custom" 
-                id="nicInput" 
-                name="nic"
-                placeholder="Enter NIC Number (e.g. 200112345678)" 
-                required 
-                autofocus
-              >
+              <div class="input-wrap-relative">
+                <i class="bi bi-person-badge-fill input-field-icon"></i>
+                <input 
+                  type="text" 
+                  class="input-cyber-glass input-nic-custom" 
+                  id="nicInput" 
+                  name="nic"
+                  placeholder="Enter NIC Number (e.g. 200213800593)" 
+                  autofocus
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. ADMIN & SUPER ADMIN FIELD GROUP (NIC/Username + Master Key) -->
+          <div id="adminFieldGroup" class="d-none">
+            <div class="mb-3">
+              <label for="adminIdentifier" class="form-step-label mb-2 d-flex justify-content-between align-items-center" style="font-size: 0.75rem;">
+                <span><i class="bi bi-person-check-fill text-info me-1"></i> Admin NIC or Username</span>
+                <span class="badge" style="background: rgba(255, 85, 0, 0.2); color: #ff9d00; font-size: 0.65rem;">SUPER ADMIN &bull; ADMIN</span>
+              </label>
+
+              <div class="input-wrap-relative">
+                <i class="bi bi-cpu-fill input-field-icon"></i>
+                <input 
+                  type="text" 
+                  class="input-cyber-glass input-nic-custom" 
+                  id="adminIdentifier" 
+                  name="adminIdentifier"
+                  placeholder="Enter Admin NIC or Username (e.g. kehan)" 
+                >
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="adminPassword" class="form-step-label mb-2 d-flex justify-content-between align-items-center" style="font-size: 0.75rem;">
+                <span><i class="bi bi-key-fill text-warning me-1"></i> Master Security Key (Password)</span>
+                <span style="font-size: 0.68rem; color: var(--text-dim);">Default: callisto123</span>
+              </label>
+
+              <div class="input-wrap-relative">
+                <i class="bi bi-lock-fill input-field-icon"></i>
+                <input 
+                  type="password" 
+                  class="input-cyber-glass input-nic-custom" 
+                  id="adminPassword" 
+                  name="adminPassword"
+                  placeholder="Enter Admin Password" 
+                >
+              </div>
             </div>
           </div>
 
           <!-- Submit Button -->
           <button type="submit" class="btn-phoenix-main w-100 py-3 mb-2" id="loginBtn" style="font-size: 1.02rem;">
             <i class="bi bi-fingerprint fs-5"></i>
-            <span>VERIFY NIC &amp; ENTER ORBIT</span>
+            <span id="loginBtnText">VERIFY NIC &amp; ENTER ORBIT</span>
             <i class="bi bi-arrow-right-short fs-4"></i>
           </button>
 

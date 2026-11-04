@@ -38,8 +38,8 @@
             ● ORBIT ONLINE
           </span>
         </div>
-        <div style="font-size: 0.72rem; color: var(--text-dim);">
-          6 Members &bull; 100/mo Fund Pool
+        <div style="font-size: 0.72rem; color: var(--text-dim);" id="squadMetaHeader">
+          6 Members &bull; $100/mo Fund Pool
         </div>
       </div>
     </div>
@@ -47,10 +47,13 @@
     <!-- Active User & Logout -->
     <div class="d-flex align-items-center gap-3">
       <div class="d-none d-sm-flex align-items-center gap-2 px-3 py-1 glass-panel" style="border-radius: 50px;">
-        <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=User" alt="Avatar" style="width: 28px; height: 28px; border-radius: 50%; background: #1e293b;">
+        <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=User" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; background: #1e293b;">
         <div class="d-flex flex-column text-start">
-          <span id="userName" style="font-size: 0.82rem; font-weight: 600; color: #fff; line-height: 1.1;">Loading...</span>
-          <span id="userRole" style="font-size: 0.68rem; color: var(--callisto-orange); line-height: 1;">User</span>
+          <div class="d-flex align-items-center gap-1">
+            <span id="userName" style="font-size: 0.82rem; font-weight: 600; color: #fff; line-height: 1.1;">Loading...</span>
+            <span id="userRoleBadge" class="badge" style="font-size: 0.62rem; padding: 0.2rem 0.45rem;">MEMBER</span>
+          </div>
+          <span id="userRole" style="font-size: 0.68rem; color: var(--text-muted); line-height: 1;">User</span>
         </div>
       </div>
 
@@ -78,8 +81,8 @@
           <h2 style="font-family: var(--font-display); font-weight: 700; color: #fff; margin-bottom: 0.25rem;">
             Callisto Future Growth Fund
           </h2>
-          <p class="text-muted mb-0" style="font-size: 0.9rem;">
-            Internal fund pool for Callisto company's future ventures and infrastructure. 6 core members contributing 100 each per month.
+          <p class="text-muted mb-0" style="font-size: 0.9rem;" id="bannerDescription">
+            Internal fund pool for Callisto company's future ventures and infrastructure. Core members contributing $100 each per month.
           </p>
         </div>
         <div class="text-md-end">
@@ -91,7 +94,56 @@
       </div>
     </div>
 
-    <!-- Stat Metric Cards (Image 2 Inspired) -->
+    <!-- PRIVILEGED ADMIN & SUPER ADMIN DIRECTORY CONSOLE -->
+    <div id="adminConsoleSection" class="glass-panel p-3 p-md-4 mb-4 d-none" style="border: 1px solid rgba(255, 85, 0, 0.35); background: linear-gradient(135deg, rgba(16, 22, 42, 0.95), rgba(28, 16, 20, 0.95)); border-radius: 16px;">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3 pb-3" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge" style="background: rgba(255, 85, 0, 0.2); color: #ff9d00; border: 1px solid rgba(255, 85, 0, 0.4); font-size: 0.72rem;">
+              <i class="bi bi-shield-lock-fill me-1"></i> PRIVILEGED DIRECTORY CONSOLE
+            </span>
+            <span class="badge" id="adminTierBadge" style="background: rgba(0, 210, 255, 0.15); color: var(--callisto-cyan); font-size: 0.7rem;">
+              ADMIN CLEARANCE
+            </span>
+          </div>
+          <h4 class="text-white mb-0" style="font-family: var(--font-display); font-weight: 700;">
+            Specialist Registry &amp; NIC Clearance Management
+          </h4>
+          <p class="text-muted mb-0" style="font-size: 0.8rem; margin-top: 2px;">
+            Register new team specialists with their NIC numbers, assign clearance roles (Member, Admin, Super Admin), and manage access.
+          </p>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-sm btn-phoenix-main px-3 py-2" id="btnOpenRegisterModal" style="border-radius: 10px; font-size: 0.82rem; font-weight: 600;">
+            <i class="bi bi-person-plus-fill me-1"></i> Register New Specialist (NIC)
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Notification Banner inside Console -->
+      <div id="adminConsoleAlert"></div>
+
+      <!-- Specialists Directory Table -->
+      <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.12); font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">
+              <th>Specialist</th>
+              <th>Registered NIC</th>
+              <th>Clearance Tier</th>
+              <th>Specialization / Title</th>
+              <th>Email</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminSpecialistsTbody">
+            <!-- Dynamically populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Stat Metric Cards -->
     <div class="row g-3 mb-4">
       <!-- Stat 1 -->
       <div class="col-12 col-sm-6 col-lg-3">
@@ -120,7 +172,7 @@
             </div>
           </div>
           <div class="stat-number text-white" id="statMonthlyTarget">$600.0</div>
-          <div class="d-flex align-items-center gap-1 mt-2" style="font-size: 0.75rem; color: var(--text-muted);">
+          <div class="d-flex align-items-center gap-1 mt-2" style="font-size: 0.75rem; color: var(--text-muted);" id="statMonthlyTargetFormula">
             <span>6 members &times; $100 / month</span>
           </div>
         </div>
@@ -151,7 +203,7 @@
               <i class="bi bi-people-fill"></i>
             </div>
           </div>
-          <div class="stat-number text-white">6 Active</div>
+          <div class="stat-number text-white" id="statRosterCount">6 Active</div>
           <div class="d-flex align-items-center gap-1 mt-2" style="font-size: 0.75rem; color: #00e676;">
             <i class="bi bi-shield-check"></i>
             <span>All members verified</span>
@@ -178,7 +230,7 @@
             </span>
           </div>
 
-          <!-- 6 Members Grid -->
+          <!-- Members Grid -->
           <div class="row g-3" id="membersGrid">
             <!-- Dynamically populated -->
           </div>
@@ -205,6 +257,7 @@
           </h6>
           <ul class="list-unstyled text-muted mb-0" style="font-size: 0.8rem; line-height: 1.8;">
             <li><i class="bi bi-check2 text-success me-2"></i> <strong>Zero Database Dependency:</strong> Pure JSON persistence (`data/users.json`, `data/collections.json`).</li>
+            <li><i class="bi bi-check2 text-success me-2"></i> <strong>Role Hierarchy:</strong> Super Admin, Admin, and Member tiers with cryptographic clearance.</li>
             <li><i class="bi bi-check2 text-success me-2"></i> <strong>Cryptographic Passwords:</strong> Native scrypt 256-bit salted hashes.</li>
             <li><i class="bi bi-check2 text-success me-2"></i> <strong>Session Security:</strong> HMAC-SHA256 tamper-proof tokens with HttpOnly cookies.</li>
             <li><i class="bi bi-check2 text-success me-2"></i> <strong>CI/CD Workflow:</strong> GitHub Actions testing suite on every push.</li>
@@ -217,8 +270,145 @@
 
   </div>
 
+  <!-- MODAL 1: REGISTER NEW SPECIALIST (NIC) -->
+  <div class="modal fade" id="modalRegisterSpecialist" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-panel" style="background: rgba(13, 19, 36, 0.98); border: 1px solid rgba(255, 85, 0, 0.4); border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.7);">
+        
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+          <div class="d-flex align-items-center gap-2">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,85,0,0.15); display: flex; align-items: center; justify-content: center; color: var(--callisto-orange);">
+              <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <div>
+              <h5 class="modal-title text-white mb-0" style="font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;">
+                Register New Specialist &bull; NIC
+              </h5>
+              <div style="font-size: 0.72rem; color: var(--text-dim);">Register operator to Callisto zero-DB vault ledger</div>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form id="formRegisterSpecialist">
+          <div class="modal-body">
+            <div id="modalRegAlert"></div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Full Name *</label>
+              <input type="text" class="form-control input-cyber-glass" id="regName" placeholder="e.g. Kaveen Rajapaksha" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Operator NIC Number *</label>
+              <input type="text" class="form-control input-cyber-glass" id="regNic" placeholder="e.g. 200312345678 or 981234567V" required>
+              <small class="text-dim" style="font-size: 0.68rem;">Used by the specialist for instant single-field clearance login.</small>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label text-dim" style="font-size: 0.78rem;">Clearance Role *</label>
+                <select class="form-select input-cyber-glass" id="regRole" style="background: #111a2e; color: #fff;">
+                  <option value="member" selected>Member</option>
+                  <option value="admin">Admin</option>
+                  <option value="super_admin" id="optSuperAdmin">Super Admin</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label text-dim" style="font-size: 0.78rem;">Username</label>
+                <input type="text" class="form-control input-cyber-glass" id="regUsername" placeholder="e.g. kaveen">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Specialization / Title</label>
+              <input type="text" class="form-control input-cyber-glass" id="regTitle" placeholder="e.g. Penetration Tester &amp; AI Security">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Email Address</label>
+              <input type="email" class="form-control input-cyber-glass" id="regEmail" placeholder="e.g. kaveen@callisto.io">
+            </div>
+          </div>
+
+          <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-sm btn-phoenix-main" id="btnSubmitRegister">
+              <i class="bi bi-shield-check me-1"></i> Register to Zero-DB Vault
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: EDIT SPECIALIST (NIC & ROLE) -->
+  <div class="modal fade" id="modalEditSpecialist" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-panel" style="background: rgba(13, 19, 36, 0.98); border: 1px solid rgba(0, 210, 255, 0.4); border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.7);">
+        
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+          <div class="d-flex align-items-center gap-2">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(0,210,255,0.15); display: flex; align-items: center; justify-content: center; color: var(--callisto-cyan);">
+              <i class="bi bi-pencil-square"></i>
+            </div>
+            <div>
+              <h5 class="modal-title text-white mb-0" style="font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;">
+                Update Specialist NIC &amp; Clearance
+              </h5>
+              <div style="font-size: 0.72rem; color: var(--text-dim);" id="editModalSub">Modify clearance ledger entry</div>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form id="formEditSpecialist">
+          <input type="hidden" id="editMemberId">
+          <div class="modal-body">
+            <div id="modalEditAlert"></div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Full Name *</label>
+              <input type="text" class="form-control input-cyber-glass" id="editName" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Operator NIC Number *</label>
+              <input type="text" class="form-control input-cyber-glass" id="editNic" required>
+              <small class="text-dim" style="font-size: 0.68rem;">Operator will authenticate using this new NIC.</small>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label text-dim" style="font-size: 0.78rem;">Clearance Role *</label>
+                <select class="form-select input-cyber-glass" id="editRole" style="background: #111a2e; color: #fff;">
+                  <option value="member">Member</option>
+                  <option value="admin">Admin</option>
+                  <option value="super_admin" id="optEditSuperAdmin">Super Admin</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label text-dim" style="font-size: 0.78rem;">Specialization / Title</label>
+                <input type="text" class="form-control input-cyber-glass" id="editTitle">
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-sm btn-phoenix-main" id="btnSubmitEdit">
+              <i class="bi bi-check2-circle me-1"></i> Save Clearance Changes
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/assets/js/portal-loader.js"></script>
   <script src="/assets/js/dashboard.js"></script>
 </body>
 </html>
-

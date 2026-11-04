@@ -225,13 +225,13 @@ async function handleRequest(req, res) {
       // 1. LOGIN: POST /api/auth/login
       if (pathname === '/api/auth/login' && method === 'POST') {
         const body = await parseBody(req);
-        const { identifier, password, nic } = body;
+        const { identifier, password, nic, mode } = body;
         const lookup = (nic || identifier || '').trim().toLowerCase();
 
         if (!lookup) {
           return sendJson(res, 400, {
             success: false,
-            message: 'Please enter a valid Operator NIC number'
+            message: mode === 'admin' ? 'Please enter Admin NIC or Username' : 'Please enter a valid Operator NIC number'
           });
         }
 
@@ -251,8 +251,31 @@ async function handleRequest(req, res) {
           });
         }
 
-        // If password provided and not the default fallback, verify it (for tests)
-        if (password && password !== 'callisto123') {
+        // Dedicated Admin / Super Admin Verification Mode
+        if (mode === 'admin') {
+          if (!password) {
+            return sendJson(res, 400, {
+              success: false,
+              message: 'Please enter your Admin security password'
+            });
+          }
+
+          if (user.role !== 'super_admin' && user.role !== 'admin') {
+            return sendJson(res, 403, {
+              success: false,
+              message: 'Access Denied: You do not have Admin or Super Admin privileges'
+            });
+          }
+
+          const isValid = verifyPassword(password, user.password);
+          if (!isValid) {
+            return sendJson(res, 401, {
+              success: false,
+              message: 'Invalid Admin security key/password'
+            });
+          }
+        } else if (password && password !== 'callisto123') {
+          // Fallback verify for tests
           const isValid = verifyPassword(password, user.password);
           if (!isValid) {
             return sendJson(res, 401, {
@@ -280,7 +303,7 @@ async function handleRequest(req, res) {
 
         return sendJson(res, 200, {
           success: true,
-          message: `Welcome back, ${user.name}!`,
+          message: `Welcome back, ${user.name}! Clearance: ${user.role.toUpperCase()}`,
           token,
           user: safeUser
         }, {
@@ -353,6 +376,110 @@ async function handleRequest(req, res) {
           active: u.active
         }));
         return sendJson(res, 200, { success: true, members: safeMembers });
+      }
+
+      // 6. ADMIN: REGISTER NEW SPECIALIST (Super Admin & Admin Only)
+      if (pathname === '/api/admin/members' && method === 'POST') {
+        const token = getAuthToken(req);
+        const session = verifySessionToken(token);
+        if (!session || (session.role !== 'admin' && session.role !== 'super_admin')) {
+          return sendJson(res, 403, { success: false, message: 'Forbidden: Admin or Super Admin clearance required' });
+        }
+
+        const body = await parseBody(req);
+        const { name, username, nic, email, role, title } = body;
+
+        if (!name || !nic) {
+          return sendJson(res, 400, { success: false, message: 'Name and NIC number are required' });
+        }
+
+        const validRoles = ['member', 'admin', 'super_admin'];
+        const assignRole = validRoles.includes(role) ? role : 'member';
+
+        // Only super_admin can create another super_admin
+        if (assignRole === 'super_admin' && session.role !== 'super_admin') {
+          return sendJson(res, 403, { success: false, message: 'Only Super Admin can assign Super Admin clearance' });
+        }
+
+        const users = readJson(USERS_FILE, []);
+        const cleanNic = nic.trim().replace(/[\s-]/g, '');
+        if (users.some(u => (u.nic || '').replace(/[\s-]/g, '') === cleanNic)) {
+          return sendJson(res, 400, { success: false, message: 'A specialist with this NIC already exists' });
+        }
+
+        const uname = (username || name.toLowerCase().split(' ')[0] + Math.floor(Math.random() * 899 + 100)).trim();
+        const newId = `usr_${String(users.length + 1).padStart(2, '0')}`;
+        const newMember = {
+          id: newId,
+          name: name.trim(),
+          username: uname,
+          nic: nic.trim(),
+          email: (email || `${uname}@callisto.io`).trim(),
+          password: hashPassword('callisto123'),
+          role: assignRole,
+          title: (title || (assignRole === 'admin' ? 'Squad Admin' : 'Squad Specialist')).trim(),
+          avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`,
+          joinedDate: new Date().toISOString().split('T')[0],
+          active: true
+        };
+
+        users.push(newMember);
+        writeJson(USERS_FILE, users);
+
+        // Update config total members and monthly target
+        const config = readJson(CONFIG_FILE, {});
+        config.totalMembers = users.length;
+        config.monthlyTarget = users.length * (config.monthlyContributionPerMember || 100);
+        writeJson(CONFIG_FILE, config);
+
+        return sendJson(res, 201, {
+          success: true,
+          message: `Specialist ${name} successfully registered as ${assignRole.toUpperCase()}`,
+          member: {
+            id: newMember.id,
+            name: newMember.name,
+            nic: newMember.nic,
+            role: newMember.role,
+            title: newMember.title
+          }
+        });
+      }
+
+      // 7. ADMIN: UPDATE SPECIALIST ROLE OR NIC
+      if (pathname.startsWith('/api/admin/members/') && method === 'PUT') {
+        const token = getAuthToken(req);
+        const session = verifySessionToken(token);
+        if (!session || (session.role !== 'admin' && session.role !== 'super_admin')) {
+          return sendJson(res, 403, { success: false, message: 'Forbidden: Admin or Super Admin clearance required' });
+        }
+
+        const memberId = pathname.replace('/api/admin/members/', '').trim();
+        const body = await parseBody(req);
+        const { role, nic, title, name } = body;
+
+        const users = readJson(USERS_FILE, []);
+        const userIndex = users.findIndex(u => u.id === memberId);
+        if (userIndex === -1) {
+          return sendJson(res, 404, { success: false, message: 'Member not found' });
+        }
+
+        // Only super_admin can change or grant super_admin role
+        if (role === 'super_admin' && session.role !== 'super_admin') {
+          return sendJson(res, 403, { success: false, message: 'Only Super Admin can assign Super Admin clearance' });
+        }
+
+        if (role) users[userIndex].role = role;
+        if (nic) users[userIndex].nic = nic.trim();
+        if (title) users[userIndex].title = title.trim();
+        if (name) users[userIndex].name = name.trim();
+
+        writeJson(USERS_FILE, users);
+
+        return sendJson(res, 200, {
+          success: true,
+          message: `Member ${users[userIndex].name} updated successfully`,
+          member: users[userIndex]
+        });
       }
 
       // 6. COLLECTIONS: GET /api/collections

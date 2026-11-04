@@ -165,12 +165,12 @@ async function runTests() {
   const nicLoginRes = await dispatchMockRequest({
     url: '/api/auth/login',
     method: 'POST',
-    body: { nic: '200112345678' }
+    body: { nic: '200213800593' }
   });
   assert.strictEqual(nicLoginRes.statusCode, 200);
   assert.strictEqual(nicLoginRes.body.success, true);
   assert.strictEqual(nicLoginRes.body.user.username, 'kehan');
-  assert.strictEqual(nicLoginRes.body.user.nic, '200112345678');
+  assert.strictEqual(nicLoginRes.body.user.nic, '200213800593');
   assert.ok(nicLoginRes.body.token, 'Must return session token for valid NIC');
 
   // Test invalid NIC

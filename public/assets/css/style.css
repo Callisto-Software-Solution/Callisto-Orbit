@@ -635,6 +635,23 @@ body::before {
 }
 
 /* Responsive adjustments */
+.login-mode-btn {
+  background: transparent;
+  border: none;
+  transition: all 0.25s ease;
+  color: var(--text-dim);
+}
+
+.login-mode-btn:hover {
+  color: #fff;
+}
+
+.login-mode-btn.active {
+  background: linear-gradient(135deg, #ff5500 0%, #d81b1b 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 15px rgba(255, 85, 0, 0.45);
+}
+
 @media (max-width: 991px) {
   .command-sidebar {
     margin-bottom: 1.25rem;
@@ -1070,6 +1087,23 @@ body::before {
 .metric-pill-100vh:hover {
   border-color: rgba(255, 85, 0, 0.4);
   transform: translateY(-2px);
+}
+
+.login-mode-btn {
+  background: transparent;
+  border: none;
+  transition: all 0.25s ease;
+  color: var(--text-dim);
+}
+
+.login-mode-btn:hover {
+  color: #fff;
+}
+
+.login-mode-btn.active {
+  background: linear-gradient(135deg, #ff5500 0%, #d81b1b 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 15px rgba(255, 85, 0, 0.45);
 }
 
 @media (max-width: 991px) {
@@ -2133,6 +2167,23 @@ body.viewport-100vh .cursor-pointer {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(255, 85, 0, 0.2);
   color: #fff;
+}
+
+.login-mode-btn {
+  background: transparent;
+  border: none;
+  transition: all 0.25s ease;
+  color: var(--text-dim);
+}
+
+.login-mode-btn:hover {
+  color: #fff;
+}
+
+.login-mode-btn.active {
+  background: linear-gradient(135deg, #ff5500 0%, #d81b1b 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 15px rgba(255, 85, 0, 0.45);
 }
 
 @media (max-width: 991px) {
