@@ -17,9 +17,14 @@ function dispatchMockRequest({ method = 'GET', url = '/', headers = {}, body = n
       }
     });
 
+    const normalizedHeaders = { host: 'localhost:3000' };
+    Object.keys(headers).forEach(k => {
+      normalizedHeaders[k.toLowerCase()] = headers[k];
+    });
+
     req.method = method;
     req.url = url;
-    req.headers = { host: 'localhost:3000', ...headers };
+    req.headers = normalizedHeaders;
 
     // Mock res stream
     let statusCode = 200;
