@@ -10,6 +10,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   initEmberCanvas();
   initPhoenixParallax();
+  initAnimatedPhoenixCursor();
 
   // =========================================================================
   // 1. HIGH-DENSITY FIRE EMBERS & SPARKS CANVAS ANIMATION
@@ -380,4 +381,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
+  }
+
+  // =========================================================================
+  // 4. ANIMATED FLYING PHOENIX CURSOR FOLLOWER
+  // =========================================================================
+  function initAnimatedPhoenixCursor() {
+    const cursorEl = document.getElementById('animatedPhoenixCursor');
+    if (!cursorEl) return;
+
+    let targetX = -100, targetY = -100;
+    let currentX = -100, currentY = -100;
+    let prevX = -100;
+    let tilt = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      cursorEl.style.opacity = '1';
+
+      // Flight banking when moving fast left or right
+      const vx = targetX - prevX;
+      prevX = targetX;
+      tilt = Math.max(-25, Math.min(25, vx * 1.6));
+    });
+
+    document.addEventListener('mouseleave', () => {
+      cursorEl.style.opacity = '0';
+    });
+
+    // Detect clickable elements for flight acceleration / flare
+    const interactives = 'a, button, input, [role="button"], .glass-subcard, .btn';
+    document.querySelectorAll(interactives).forEach(el => {
+      el.addEventListener('mouseenter', () => cursorEl.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => cursorEl.classList.remove('cursor-hover'));
+    });
+
+    // Click burst
+    window.addEventListener('mousedown', () => cursorEl.classList.add('cursor-click'));
+    window.addEventListener('mouseup', () => cursorEl.classList.remove('cursor-click'));
+
+    // Smooth 60fps tracking loop
+    function updateCursor() {
+      currentX += (targetX - currentX) * 0.45;
+      currentY += (targetY - currentY) * 0.45;
+      tilt *= 0.88;
+
+      cursorEl.style.transform = `translate3d(${currentX - 20}px, ${currentY - 2}px, 0) rotate(${tilt}deg)`;
+      requestAnimationFrame(updateCursor);
+    }
+    requestAnimationFrame(updateCursor);
   }

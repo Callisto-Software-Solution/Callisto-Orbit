@@ -1143,27 +1143,99 @@ body::before {
 }
 
 /* ==========================================================================
-   FIRE BIRD CUSTOM CURSOR & AUDIO VISUALIZER
+   ANIMATED LIVING PHOENIX CURSOR
    ========================================================================== */
 
-:root {
-  --phoenix-cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34" fill="none"><defs><linearGradient id="fire" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%23ffffff"/><stop offset="25%" stop-color="%23ffd000"/><stop offset="65%" stop-color="%23ff4500"/><stop offset="100%" stop-color="%23d61818"/></linearGradient></defs><path d="M17 2 L19 8 C23 7 28 4 33 2 C31 7 28 11 23 13 C27 15 31 16 34 16 C30 19 25 20 20 18 L19 24 L22 32 L17 28 L12 32 L15 24 L14 18 C9 20 4 19 0 16 C3 16 7 15 11 13 C6 11 3 7 1 2 C6 4 11 7 15 8 Z" fill="url(%23fire)" stroke="%23ff9d00" stroke-width="0.8"/></svg>') 17 2, auto;
-
-  --phoenix-cursor-pointer: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 34 34" fill="none"><defs><linearGradient id="fire2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%2300f0ff"/><stop offset="25%" stop-color="%23ffd700"/><stop offset="65%" stop-color="%23ff5500"/><stop offset="100%" stop-color="%23ff1133"/></linearGradient></defs><path d="M17 1 L20 7 C24 6 29 3 34 1 C32 6 29 10 24 12 C28 14 32 15 35 15 C31 18 26 19 21 17 L20 23 L23 33 L17 29 L11 33 L14 23 L13 17 C8 19 3 18 0 15 C3 15 7 14 11 12 C6 10 3 6 1 1 C6 3 11 6 15 7 Z" fill="url(%23fire2)" stroke="%23ffffff" stroke-width="1.2"/></svg>') 17 2, pointer;
-}
-
+/* Hide native cursor on viewport so the living animated Phoenix flies cleanly */
 body.viewport-100vh, 
 body.viewport-100vh * {
-  cursor: var(--phoenix-cursor);
+  cursor: none !important;
 }
 
-body.viewport-100vh a, 
-body.viewport-100vh button, 
-body.viewport-100vh input, 
-body.viewport-100vh .btn,
-body.viewport-100vh [role="button"],
-body.viewport-100vh .cursor-pointer {
-  cursor: var(--phoenix-cursor-pointer) !important;
+/* Custom Animated Phoenix DOM Follower */
+.animated-phoenix-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 46px;
+  height: 46px;
+  pointer-events: none;
+  z-index: 999999;
+  transform: translate3d(-999px, -999px, 0);
+  transition: opacity 0.2s ease;
+  will-change: transform;
+  filter: drop-shadow(0 0 10px rgba(255, 85, 0, 0.95)) drop-shadow(0 0 20px rgba(255, 157, 0, 0.7));
+}
+
+.cursor-phoenix-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: 20px 2px;
+  transition: transform 0.15s ease-out;
+}
+
+/* Left & Right Wing Flapping Cycle */
+.cursor-wing-left {
+  transform-origin: 20px 12px;
+  animation: wingFlapLeft 0.32s infinite alternate ease-in-out;
+}
+
+.cursor-wing-right {
+  transform-origin: 20px 12px;
+  animation: wingFlapRight 0.32s infinite alternate ease-in-out;
+}
+
+@keyframes wingFlapLeft {
+  0% { transform: rotate(0deg) scaleY(1); }
+  100% { transform: rotate(22deg) scaleY(0.7); }
+}
+
+@keyframes wingFlapRight {
+  0% { transform: rotate(0deg) scaleY(1); }
+  100% { transform: rotate(-22deg) scaleY(0.7); }
+}
+
+/* Tail Flame Flicker */
+.cursor-tail {
+  transform-origin: 20px 22px;
+  animation: tailFlameFlicker 0.22s infinite alternate ease-in-out;
+}
+
+@keyframes tailFlameFlicker {
+  0% { transform: rotate(-8deg) scaleY(0.88); }
+  100% { transform: rotate(8deg) scaleY(1.18); }
+}
+
+/* Beak Core Glow Pulse */
+.cursor-body {
+  animation: cursorCorePulse 0.8s infinite alternate ease-in-out;
+}
+
+@keyframes cursorCorePulse {
+  0% { filter: drop-shadow(0 0 5px #fff); }
+  100% { filter: drop-shadow(0 0 14px #ffd700); }
+}
+
+/* Spikes Pulse */
+.cursor-radiant-spikes {
+  transform-origin: 20px 16px;
+  animation: spikesPulse 0.5s infinite alternate ease-in-out;
+}
+
+@keyframes spikesPulse {
+  0% { opacity: 0.7; transform: scale(0.92); }
+  100% { opacity: 1; transform: scale(1.18); }
+}
+
+/* Interactive Cursor States */
+.animated-phoenix-cursor.cursor-hover .cursor-phoenix-svg {
+  transform: scale(1.25);
+  filter: drop-shadow(0 0 15px #00f0ff);
+}
+
+.animated-phoenix-cursor.cursor-click .cursor-phoenix-svg {
+  transform: scale(1.45);
 }
 
 /* Audio Indicator Waves */
