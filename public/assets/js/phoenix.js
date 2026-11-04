@@ -199,21 +199,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // =========================================================================
-  // 4. CINEMATIC AMBIENT AUDIO ENGINE (IMMEDIATE ON-LOAD AUTOPLAY)
+  // 4. CINEMATIC AMBIENT AUDIO ENGINE
   // =========================================================================
   function initPhoenixSoundscape() {
     let audioCtx = null;
     let isPlaying = false;
     let masterGain = null;
     let intervalCry = null;
-    let hasPlayedInitialCry = false;
 
     const toggleBtn = document.getElementById('toggleAudioBtn');
     const audioWaves = document.getElementById('audioWaves');
     const audioBtnText = document.getElementById('audioBtnText');
 
     function createAudioEngine() {
-      if (audioCtx) return true;
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       if (!AudioContext) return false;
       audioCtx = new AudioContext();
@@ -235,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         b3 = 0.86650 * b3 + white * 0.3104856;
         b4 = 0.55000 * b4 + white * 0.5329522;
         b5 = -0.7616 * b5 - white * 0.0168980;
-        output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.045;
+        output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
         b6 = white * 0.115926;
       }
 
@@ -245,15 +243,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const fireFilter = audioCtx.createBiquadFilter();
       fireFilter.type = 'lowpass';
-      fireFilter.frequency.setValueAtTime(320, audioCtx.currentTime);
+      fireFilter.frequency.setValueAtTime(280, audioCtx.currentTime);
 
       const fireGain = audioCtx.createGain();
-      fireGain.gain.setValueAtTime(0.7, audioCtx.currentTime);
+      fireGain.gain.setValueAtTime(0.65, audioCtx.currentTime);
 
       const lfo = audioCtx.createOscillator();
-      lfo.frequency.setValueAtTime(0.24, audioCtx.currentTime);
+      lfo.frequency.setValueAtTime(0.22, audioCtx.currentTime);
       const lfoGain = audioCtx.createGain();
-      lfoGain.gain.setValueAtTime(95, audioCtx.currentTime);
+      lfoGain.gain.setValueAtTime(80, audioCtx.currentTime);
       lfo.connect(lfoGain);
       lfoGain.connect(fireFilter.frequency);
       lfo.start();
@@ -263,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fireGain.connect(masterGain);
       ambientNoiseNode.start();
 
-      // Deep harmonic foundation drone
+      // D2 / A2 Harmonic drone
       const droneOsc1 = audioCtx.createOscillator();
       droneOsc1.type = 'triangle';
       droneOsc1.frequency.setValueAtTime(73.42, audioCtx.currentTime);
@@ -274,10 +272,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const droneFilter = audioCtx.createBiquadFilter();
       droneFilter.type = 'lowpass';
-      droneFilter.frequency.setValueAtTime(180, audioCtx.currentTime);
+      droneFilter.frequency.setValueAtTime(160, audioCtx.currentTime);
 
       const droneGain = audioCtx.createGain();
-      droneGain.gain.setValueAtTime(0.22, audioCtx.currentTime);
+      droneGain.gain.setValueAtTime(0.18, audioCtx.currentTime);
 
       droneOsc1.connect(droneFilter);
       droneOsc2.connect(droneFilter);
@@ -287,134 +285,49 @@ document.addEventListener('DOMContentLoaded', () => {
       droneOsc1.start();
       droneOsc2.start();
 
-      if (intervalCry) clearInterval(intervalCry);
-      intervalCry = setInterval(() => {
-        if (isPlaying && audioCtx && audioCtx.state === 'running') {
-          triggerPhoenixCall(false);
-        }
-      }, 12000);
+      // Periodic ethereal Phoenix call
+      function triggerPhoenixCall() {
+        if (!isPlaying || !audioCtx) return;
+        try {
+          const callOsc = audioCtx.createOscillator();
+          const callGain = audioCtx.createGain();
+          const callFilter = audioCtx.createBiquadFilter();
 
+          callOsc.type = 'sine';
+          const now = audioCtx.currentTime;
+          callOsc.frequency.setValueAtTime(587.33, now);
+          callOsc.frequency.exponentialRampToValueAtTime(880.00, now + 1.2);
+          callOsc.frequency.exponentialRampToValueAtTime(440.00, now + 3.2);
+
+          callFilter.type = 'bandpass';
+          callFilter.frequency.setValueAtTime(750, now);
+          callFilter.Q.setValueAtTime(4.0, now);
+
+          callGain.gain.setValueAtTime(0.001, now);
+          callGain.gain.linearRampToValueAtTime(0.12, now + 0.8);
+          callGain.gain.exponentialRampToValueAtTime(0.0001, now + 3.8);
+
+          callOsc.connect(callFilter);
+          callFilter.connect(callGain);
+          callGain.connect(masterGain);
+
+          callOsc.start(now);
+          callOsc.stop(now + 4.0);
+        } catch (e) {}
+      }
+
+      intervalCry = setInterval(triggerPhoenixCall, 14000);
       return true;
-    }
-
-    // Fiery Phoenix Cry & Wing Flap Whoosh Effect
-    function triggerPhoenixCall(isInitial = false) {
-      if (!audioCtx || audioCtx.state !== 'running') return;
-      try {
-        const now = audioCtx.currentTime;
-
-        // 1. Fiery Wing-Flap Flame Whoosh (Filtered Noise Burst)
-        const whooshBuffer = audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate * 1.6), audioCtx.sampleRate);
-        const whooshData = whooshBuffer.getChannelData(0);
-        for (let i = 0; i < whooshData.length; i++) {
-          whooshData[i] = (Math.random() * 2 - 1) * 0.75;
-        }
-        const whooshSource = audioCtx.createBufferSource();
-        whooshSource.buffer = whooshBuffer;
-
-        const whooshFilter = audioCtx.createBiquadFilter();
-        whooshFilter.type = 'bandpass';
-        whooshFilter.Q.setValueAtTime(2.2, now);
-        whooshFilter.frequency.setValueAtTime(240, now);
-        whooshFilter.frequency.exponentialRampToValueAtTime(1750, now + 0.45);
-        whooshFilter.frequency.exponentialRampToValueAtTime(320, now + 1.5);
-
-        const whooshGain = audioCtx.createGain();
-        whooshGain.gain.setValueAtTime(0.001, now);
-        whooshGain.gain.linearRampToValueAtTime(isInitial ? 0.38 : 0.25, now + 0.4);
-        whooshGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.55);
-
-        whooshSource.connect(whooshFilter);
-        whooshFilter.connect(whooshGain);
-        whooshGain.connect(masterGain);
-        whooshSource.start(now);
-        whooshSource.stop(now + 1.6);
-
-        // 2. Majestic Soaring Phoenix Call (Harmonic Sawtooth + Sine)
-        const cryOsc1 = audioCtx.createOscillator();
-        const cryOsc2 = audioCtx.createOscillator();
-        const cryFilter = audioCtx.createBiquadFilter();
-        const cryGain = audioCtx.createGain();
-
-        // Subtle flight vibrato
-        const vibrato = audioCtx.createOscillator();
-        const vibratoGain = audioCtx.createGain();
-        vibrato.frequency.setValueAtTime(5.8, now);
-        vibratoGain.gain.setValueAtTime(22, now);
-        vibrato.connect(vibratoGain);
-        vibratoGain.connect(cryOsc1.frequency);
-        vibratoGain.connect(cryOsc2.frequency);
-        vibrato.start(now);
-        vibrato.stop(now + 3.2);
-
-        cryOsc1.type = 'sawtooth';
-        cryOsc2.type = 'sine';
-
-        const startFreq = isInitial ? 520 : 560;
-        const peakFreq = isInitial ? 1120 : 1020;
-        const endFreq = 440;
-
-        cryOsc1.frequency.setValueAtTime(startFreq, now + 0.08);
-        cryOsc1.frequency.exponentialRampToValueAtTime(peakFreq, now + 0.85);
-        cryOsc1.frequency.exponentialRampToValueAtTime(endFreq, now + 2.7);
-
-        cryOsc2.frequency.setValueAtTime(startFreq * 1.5, now + 0.08);
-        cryOsc2.frequency.exponentialRampToValueAtTime(peakFreq * 1.5, now + 0.85);
-        cryOsc2.frequency.exponentialRampToValueAtTime(endFreq * 1.5, now + 2.7);
-
-        cryFilter.type = 'bandpass';
-        cryFilter.frequency.setValueAtTime(750, now);
-        cryFilter.frequency.exponentialRampToValueAtTime(1450, now + 0.85);
-        cryFilter.frequency.exponentialRampToValueAtTime(650, now + 2.7);
-        cryFilter.Q.setValueAtTime(3.6, now);
-
-        cryGain.gain.setValueAtTime(0.001, now);
-        cryGain.gain.linearRampToValueAtTime(isInitial ? 0.32 : 0.22, now + 0.55);
-        cryGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.9);
-
-        cryOsc1.connect(cryFilter);
-        cryOsc2.connect(cryFilter);
-        cryFilter.connect(cryGain);
-        cryGain.connect(masterGain);
-
-        cryOsc1.start(now + 0.08);
-        cryOsc2.start(now + 0.08);
-        cryOsc1.stop(now + 3.0);
-        cryOsc2.stop(now + 3.0);
-
-      } catch (e) {
-        console.warn('Phoenix audio playback error:', e);
-      }
-    }
-
-    function playInitialCryOnce() {
-      if (!hasPlayedInitialCry && audioCtx && audioCtx.state === 'running') {
-        hasPlayedInitialCry = true;
-        setTimeout(() => {
-          triggerPhoenixCall(true);
-        }, 150);
-      }
     }
 
     function startSound() {
       if (!audioCtx) createAudioEngine();
-      if (!audioCtx) return;
-
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume().then(() => {
-          if (audioCtx.state === 'running') playInitialCryOnce();
-        }).catch(() => {});
-      } else if (audioCtx.state === 'running') {
-        playInitialCryOnce();
-      }
-
-      if (masterGain) {
-        masterGain.gain.linearRampToValueAtTime(0.75, audioCtx.currentTime + 0.8);
-      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      if (masterGain) masterGain.gain.linearRampToValueAtTime(0.7, audioCtx.currentTime + 1.5);
 
       isPlaying = true;
       if (audioWaves) audioWaves.classList.add('audio-playing');
-      if (audioBtnText) audioBtnText.textContent = 'PHOENIX SOUND ON';
+      if (audioBtnText) audioBtnText.textContent = 'SOUND: ON';
       if (toggleBtn) {
         toggleBtn.style.color = '#ff9d00';
         toggleBtn.style.borderColor = 'rgba(255, 85, 0, 0.5)';
@@ -422,9 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function stopSound() {
-      if (masterGain && audioCtx) {
-        masterGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
-      }
+      if (masterGain && audioCtx) masterGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
 
       isPlaying = false;
       if (audioWaves) audioWaves.classList.remove('audio-playing');
@@ -435,49 +346,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 1. Attempt immediate playback on script load
-    try {
-      startSound();
-    } catch (e) {}
+    try { startSound(); } catch (e) {}
 
-    // 2. Also attempt on window 'load'
-    window.addEventListener('load', () => {
-      try { startSound(); } catch (e) {}
-    }, { once: true });
-
-    // 3. Ultra-responsive wake-up: Browser policy allows audio on the earliest user interaction.
-    // The instant the mouse moves even 1px across the window or anything touches the page, wake audio immediately!
-    const wakeEvents = ['pointermove', 'mousemove', 'pointerdown', 'touchstart', 'mousedown', 'keydown', 'wheel', 'focus'];
-    const wakeAudioOnFirstTouch = () => {
-      if (!audioCtx || audioCtx.state !== 'running') {
-        startSound();
-        if (audioCtx && audioCtx.state === 'suspended') {
-          audioCtx.resume().then(() => {
-            playInitialCryOnce();
-          }).catch(() => {});
-        }
-      } else if (!hasPlayedInitialCry) {
-        playInitialCryOnce();
-      }
-
-      if (audioCtx && audioCtx.state === 'running' && hasPlayedInitialCry) {
-        wakeEvents.forEach(evt => window.removeEventListener(evt, wakeAudioOnFirstTouch));
-      }
+    const startOnFirstGesture = () => {
+      if (!isPlaying) startSound();
+      window.removeEventListener('click', startOnFirstGesture);
+      window.removeEventListener('keydown', startOnFirstGesture);
     };
-
-    wakeEvents.forEach(evt => {
-      window.addEventListener(evt, wakeAudioOnFirstTouch, { passive: true });
-    });
+    window.addEventListener('click', startOnFirstGesture, { once: true });
+    window.addEventListener('keydown', startOnFirstGesture, { once: true });
 
     if (toggleBtn) {
       toggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (isPlaying && masterGain && masterGain.gain.value > 0.05) {
-          stopSound();
-        } else {
-          startSound();
-          triggerPhoenixCall(false);
-        }
+        if (isPlaying) stopSound();
+        else startSound();
       });
     }
 
