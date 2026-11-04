@@ -207,6 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderAdminSpecialists(cachedMembers);
         if (statRosterCount) statRosterCount.textContent = `${cachedMembers.length} Active`;
         if (squadMetaHeader) squadMetaHeader.innerHTML = `${cachedMembers.length} Members &bull; $100/mo Fund Pool`;
+        if (sideTargetMembers) sideTargetMembers.textContent = `${cachedMembers.length} Specialists`;
       }
 
       if (colData.success) {
@@ -217,6 +218,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (statMonthlyTargetFormula) {
           statMonthlyTargetFormula.innerHTML = `<span>${cachedMembers.length} members &times; ${currency}100 / month</span>`;
         }
+        if (sideTargetUnit) sideTargetUnit.textContent = `${currency}100/mo`;
 
         const collections = colData.collections || [];
         const activeMonth = collections[collections.length - 1];
@@ -227,6 +229,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           const pct = Math.min(100, Math.round((collected / target) * 100));
           if (statProgressPercentage) statProgressPercentage.textContent = `${pct}%`;
           if (statProgressBar) statProgressBar.style.width = `${pct}%`;
+
+          // Sync sidebar widget
+          if (sideTargetProgress) sideTargetProgress.textContent = `${pct}%`;
+          if (sideProgressBar) sideProgressBar.style.width = `${pct}%`;
 
           renderActiveMembers(activeMonth.contributions, cachedMembers);
         }
@@ -482,6 +488,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
+
+  // 5. Sidebar Navigation Links Smooth Scroll & Active Highlight
+  const sideNavLinks = document.querySelectorAll('.sidebar-nav-link[href^="#"]');
+  sideNavLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetId = link.getAttribute('href');
+      const targetElem = document.querySelector(targetId);
+      if (targetElem) {
+        e.preventDefault();
+        sideNavLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        targetElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Close mobile offcanvas if open
+        const offcanvasEl = document.getElementById('sidebarOffcanvas');
+        if (offcanvasEl && typeof bootstrap !== 'undefined') {
+          const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+          if (bsOffcanvas) bsOffcanvas.hide();
+        }
+      }
+    });
+  });
 
   // Initial load
   loadDashboardData();
