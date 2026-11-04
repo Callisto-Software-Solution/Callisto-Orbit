@@ -155,6 +155,109 @@
     }, delay);
   };
 
+  // =========================================================================
+  // TACTILE CYBER AUDIO ENGINE: MOUSE CLICKS & TYPING KEYSTROKES
+  // =========================================================================
+
+  /**
+   * Play crisp sci-fi mechanical click sound on mouse/pointer down
+   * @param {boolean} isInteractive Whether clicking on a button, link, or input
+   */
+  function playCyberClick(isInteractive = false) {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state !== 'running') ctx.resume();
+
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      // Triangle for punchy mechanical click, Sine for soft ambient glass tap
+      osc.type = isInteractive ? 'triangle' : 'sine';
+      const startFreq = isInteractive ? 1480 : 1050;
+      const endFreq = isInteractive ? 340 : 420;
+      const duration = isInteractive ? 0.038 : 0.026;
+      const volume = isInteractive ? 0.12 : 0.045;
+
+      osc.frequency.setValueAtTime(startFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(endFreq, now + duration);
+
+      gain.gain.setValueAtTime(volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + duration + 0.005);
+    } catch (e) {}
+  }
+
+  /**
+   * Play organic cyber mechanical switch keystroke sound when typing
+   * @param {string} key The keyboard key pressed
+   */
+  function playCyberKey(key) {
+    // Ignore lone modifier keys
+    if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(key)) return;
+
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state !== 'running') ctx.resume();
+
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      // Pitch variation per key to feel organic & mechanical
+      let baseFreq = 1620 + (Math.random() * 240 - 120);
+      let duration = 0.032;
+      let volume = 0.075;
+
+      if (key === 'Enter') {
+        baseFreq = 860;
+        duration = 0.065;
+        volume = 0.15;
+      } else if (key === 'Backspace' || key === 'Delete') {
+        baseFreq = 1120;
+        duration = 0.042;
+        volume = 0.09;
+      } else if (key === ' ') {
+        baseFreq = 1380;
+        duration = 0.045;
+        volume = 0.085;
+      }
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(baseFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.42, now + duration);
+
+      gain.gain.setValueAtTime(volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + duration + 0.005);
+    } catch (e) {}
+  }
+
+  // Bind Universal Global Mouse Click & Typing Audio Listeners
+  window.addEventListener('pointerdown', (e) => {
+    // Determine if target is interactive (button, input, link, pill, etc.)
+    const isInteractive = Boolean(
+      e.target.closest('a, button, input, textarea, select, [role="button"], .btn, .glass-subcard, .quick-nic-pill, .member-card')
+    );
+    playCyberClick(isInteractive);
+  }, { passive: true });
+
+  window.addEventListener('keydown', (e) => {
+    playCyberKey(e.key);
+  }, { passive: true });
+
   // Auto-hook internal navigation links on DOM ready
   document.addEventListener('DOMContentLoaded', () => {
     ensureLoaderDOM();
