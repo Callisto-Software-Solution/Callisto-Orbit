@@ -192,12 +192,12 @@ function serveStaticFile(req, res, filePath) {
 
 // Extract auth token
 function getAuthToken(req) {
-  const cookies = parseCookies(req.headers.cookie);
+  const cookies = parseCookies(req.headers.cookie || req.headers.Cookie);
   if (cookies.callisto_token) return cookies.callisto_token;
 
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization || req.headers.Authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.substring(7);
+    return authHeader.substring(7).trim();
   }
   return null;
 }
