@@ -1,21 +1,19 @@
 /**
  * Callisto-Orbit Command Center Authentication
- * Image 2 Layout Integration with Real-Time Zone Tree Dispatcher
+ * Redesigned Single-Field NIC Clearance & Large Left 3D Fire Bird Stage
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
   const loginForm = document.getElementById('loginForm');
-  const identifierInput = document.getElementById('identifier');
-  const passwordInput = document.getElementById('password');
-  const togglePasswordBtn = document.getElementById('togglePassword');
-  const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+  const nicInput = document.getElementById('nicInput');
   const loginBtn = document.getElementById('loginBtn');
   const alertContainer = document.getElementById('alertContainer');
   const rememberMeCheck = document.getElementById('rememberMe');
-  const memberPillsContainer = document.getElementById('memberPills');
+  const quickNicList = document.getElementById('quickNicList');
   const auditLogText = document.getElementById('auditLogText');
+  const largePhoenixStage = document.getElementById('largePhoenixStage');
 
-  // Check if session already active
+  // 1. Check if session already active
   try {
     const res = await fetch('/api/auth/me');
     if (res.ok) {
@@ -27,20 +25,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   } catch (err) {}
 
-  // Restore remembered operator
-  const savedUser = localStorage.getItem('callisto_remembered_user');
-  if (savedUser && identifierInput) {
-    identifierInput.value = savedUser;
+  // 2. Restore remembered NIC
+  const savedNic = localStorage.getItem('callisto_remembered_nic');
+  if (savedNic && nicInput) {
+    nicInput.value = savedNic;
     if (rememberMeCheck) rememberMeCheck.checked = true;
   }
 
-  // Toggle Password Visibility
-  if (togglePasswordBtn) {
-    togglePasswordBtn.addEventListener('click', () => {
-      const isPassword = passwordInput.getAttribute('type') === 'password';
-      passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
-      togglePasswordIcon.className = isPassword ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill';
-    });
+  // 3. Handle Fly-In Animation
+  const urlParams = new URLSearchParams(window.location.search);
+  const flyIn = urlParams.get('flyIn') === 'true';
+  if (largePhoenixStage && flyIn) {
+    largePhoenixStage.classList.add('fly-in-active');
   }
 
   function showAlert(message, type = 'danger') {
@@ -54,68 +50,53 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function clearAlert() {
-    if (alertContainer) alertContainer.innerHTML = '';
+    if (!alertContainer) return;
+    alertContainer.innerHTML = '';
   }
 
-  // Populate 6 Squad Members in the Interactive Zone Tree
+  // 4. Load Squad Members to Render Quick 1-Click NIC Pills
   async function loadTeamMembers() {
     try {
       const res = await fetch('/api/members');
       const data = await res.json();
       if (data.success && Array.isArray(data.members)) {
-        renderSquadRows(data.members);
+        renderQuickNicPills(data.members);
       }
     } catch (e) {
       console.warn('Squad member fetch error:', e);
     }
   }
 
-  function renderSquadRows(members) {
-    if (!memberPillsContainer) return;
-    memberPillsContainer.innerHTML = members.map(m => `
-      <div class="squad-member-row" data-username="${m.username}">
-        <div class="d-flex align-items-center gap-3">
-          <div class="member-avatar-box">
-            <img src="${m.avatar}" alt="${m.name}">
+  function renderQuickNicPills(members) {
+    if (!quickNicList) return;
+    quickNicList.innerHTML = members.map(m => `
+      <div class="col-6 col-sm-4">
+        <div class="quick-nic-pill" data-nic="${m.nic || ''}" data-name="${m.name}" title="Click to fill NIC for ${m.name}">
+          <img src="${m.avatar}" alt="${m.name}" style="width: 24px; height: 24px; border-radius: 50%; background: #0c1222;">
+          <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <div style="font-weight: 700; font-size: 0.72rem; color: #fff;">${m.name.split(' ')[0]}</div>
+            <div style="font-size: 0.65rem; color: var(--callisto-amber); font-family: monospace;">${m.nic || 'NIC'}</div>
           </div>
-          <div>
-            <div class="d-flex align-items-center gap-2">
-              <span class="member-meta-title">${m.name}</span>
-              ${m.role === 'admin' 
-                ? '<span class="badge" style="background: rgba(255, 85, 0, 0.2); color: #ff8c00; font-size: 0.65rem;">LEAD</span>' 
-                : '<span class="badge" style="background: rgba(255, 255, 255, 0.08); color: #94a3b8; font-size: 0.65rem;">SQUAD</span>'}
-            </div>
-            <div class="member-meta-role">${m.title || 'Specialist'}</div>
-          </div>
-        </div>
-
-        <div class="d-flex align-items-center gap-3">
-          <div class="text-end d-none d-sm-block">
-            <div style="font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 0.88rem;">$100.0 USD</div>
-            <div style="font-size: 0.68rem; color: #00f076;">● Active Pool</div>
-          </div>
-          <button type="button" class="member-action-pill select-op-btn" data-username="${m.username}">
-            <i class="bi bi-person-check-fill me-1"></i> Target
-          </button>
         </div>
       </div>
     `).join('');
 
-    // Attach click triggers to each row and button
-    memberPillsContainer.querySelectorAll('.squad-member-row').forEach(row => {
-      row.addEventListener('click', () => {
-        memberPillsContainer.querySelectorAll('.squad-member-row').forEach(r => r.classList.remove('selected-row'));
-        row.classList.add('selected-row');
-
-        const username = row.getAttribute('data-username');
-        const member = members.find(m => m.username === username);
-
-        identifierInput.value = username;
-        passwordInput.value = 'callisto123';
-        clearAlert();
-
-        if (auditLogText) {
-          auditLogText.innerHTML = `<span style="color: #00f076;">Operator Selected:</span> ${member ? member.name : username} &bull; Credentials armed`;
+    // Attach click handlers
+    document.querySelectorAll('.quick-nic-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const nic = pill.getAttribute('data-nic');
+        const name = pill.getAttribute('data-name');
+        if (nicInput && nic) {
+          nicInput.value = nic;
+          nicInput.focus();
+          if (auditLogText) {
+            auditLogText.innerHTML = `<span style="color: #ff9d00;">Selected:</span> ${name} (${nic}) &bull; Ready for verification`;
+          }
+          // Highlight dispatch button
+          if (loginBtn) {
+            loginBtn.classList.add('glow-pulse');
+            setTimeout(() => loginBtn.classList.remove('glow-pulse'), 1000);
+          }
         }
       });
     });
@@ -123,125 +104,186 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   loadTeamMembers();
 
-  // Form submission
+  // 5. Handle Single-Field Form Submission
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       clearAlert();
 
-      const identifier = identifierInput.value.trim();
-      const password = passwordInput.value;
-
-      if (!identifier || !password) {
-        showAlert('Please enter both operator identifier and secret token.');
+      const nic = nicInput ? nicInput.value.trim() : '';
+      if (!nic) {
+        showAlert('Please enter your Operator NIC number.');
+        if (nicInput) nicInput.focus();
         return;
       }
 
-      loginBtn.disabled = true;
-      loginBtn.innerHTML = `
-        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        <span>DISPATCHING AUTHORIZATION...</span>
-      `;
+      // UI state loading
+      if (loginBtn) {
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = `
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          <span>VERIFYING NIC CLEARANCE...</span>
+        `;
+      }
 
       if (auditLogText) {
-        auditLogText.innerHTML = `<span style="color: #ff9d00;">Handshaking with Orbit...</span> Verifying identity [${identifier}]`;
+        auditLogText.innerHTML = `<span style="color: var(--callisto-cyan);">Auditing NIC:</span> Querying Callisto vault for clearance...`;
       }
 
       try {
         const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ identifier, password })
+          body: JSON.stringify({ nic })
         });
 
         const result = await response.json();
 
         if (response.ok && result.success) {
-          showAlert(`Authorization Granted! Welcome ${result.user.name}. Redirecting...`, 'success');
+          showAlert(`Clearance Granted! Welcome ${result.user.name}. Entering Orbit...`, 'success');
 
           if (rememberMeCheck && rememberMeCheck.checked) {
-            localStorage.setItem('callisto_remembered_user', identifier);
+            localStorage.setItem('callisto_remembered_nic', nic);
           } else {
-            localStorage.removeItem('callisto_remembered_user');
+            localStorage.removeItem('callisto_remembered_nic');
           }
 
           sessionStorage.setItem('callisto_active_user', JSON.stringify(result.user));
 
           if (auditLogText) {
-            auditLogText.innerHTML = `<span style="color: #00f076;">Authorized:</span> Redirecting to Orbit Dashboard...`;
+            auditLogText.innerHTML = `<span style="color: #00f076;">Clearance Verified:</span> Welcome Operator ${result.user.name}!`;
           }
+
+          // Accelerate Phoenix wings on login success
+          const leftWing = document.querySelector('.wing-left-large');
+          const rightWing = document.querySelector('.wing-right-large');
+          if (leftWing) leftWing.style.animationDuration = '0.35s';
+          if (rightWing) rightWing.style.animationDuration = '0.35s';
 
           setTimeout(() => {
             window.location.href = '/dashboard.html';
           }, 650);
         } else {
-          showAlert(result.message || 'Access Denied: Invalid operator credentials.');
-          loginBtn.disabled = false;
-          loginBtn.innerHTML = `
-            <i class="bi bi-send-fill"></i>
-            <span>DISPATCH AUTHORIZATION TO ORBIT</span>
-          `;
-          passwordInput.select();
+          showAlert(result.message || 'Access Denied: Unrecognized or inactive Operator NIC.');
+          if (loginBtn) {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = `
+              <i class="bi bi-fingerprint fs-5"></i>
+              <span>VERIFY NIC &amp; ENTER ORBIT</span>
+            `;
+          }
+          if (nicInput) nicInput.select();
 
           if (auditLogText) {
-            auditLogText.innerHTML = `<span style="color: #f87171;">Authorization Failed:</span> Invalid credentials for ${identifier}`;
+            auditLogText.innerHTML = `<span style="color: #f87171;">Clearance Rejected:</span> NIC not found in Callisto squad vault`;
           }
         }
       } catch (err) {
         console.error('Login error:', err);
         showAlert('Network or gateway error. Please verify server status.');
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = `
-          <i class="bi bi-send-fill"></i>
-          <span>DISPATCH AUTHORIZATION TO ORBIT</span>
-        `;
+        if (loginBtn) {
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = `
+            <i class="bi bi-fingerprint fs-5"></i>
+            <span>VERIFY NIC &amp; ENTER ORBIT</span>
+          `;
+        }
       }
     });
   }
 
-  // =========================================================================
-  // LIVING PHOENIX SENTINEL 3D WINGS & ARRIVAL CONTROLLER
-  // =========================================================================
-  const sentinel = document.getElementById('loginPhoenixSentinel');
-  if (sentinel) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const flyIn = urlParams.get('flyIn') === 'true';
+  // 6. Background Embers Canvas for Login Page
+  function initLoginEmberCanvas() {
+    const canvas = document.getElementById('loginEmberCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
 
-    if (flyIn) {
-      sentinel.classList.remove('fly-in-active');
-      void sentinel.offsetWidth; // Trigger reflow for fresh animation
-      sentinel.classList.add('fly-in-active');
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const embers = [];
+    const emberCount = Math.min(45, Math.floor(window.innerWidth / 30));
+
+    class Ember {
+      constructor() { this.reset(true); }
+      reset(randomY = false) {
+        this.x = Math.random() * width;
+        this.y = randomY ? Math.random() * height : height + 10;
+        this.radius = Math.random() * 2 + 0.8;
+        this.vy = -(Math.random() * 1.5 + 0.5);
+        this.vx = (Math.random() - 0.5) * 0.8;
+        this.opacity = Math.random() * 0.6 + 0.3;
+        this.color = Math.random() > 0.4 ? '#ff5500' : '#ffb700';
+      }
+      update() {
+        this.y += this.vy;
+        this.x += this.vx;
+        this.opacity -= 0.002;
+        if (this.y < -10 || this.opacity <= 0) this.reset();
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = Math.max(0, this.opacity);
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = this.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+      }
     }
 
-    // Gentle swoop audio tone upon arrival
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) {
-        const actx = new AudioCtx();
-        const now = actx.currentTime;
-        const osc = actx.createOscillator();
-        const gain = actx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(650, now);
-        osc.frequency.exponentialRampToValueAtTime(280, now + 0.6);
-        gain.gain.setValueAtTime(0.15, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
-        osc.connect(gain);
-        gain.connect(actx.destination);
-        osc.start(now);
-        osc.stop(now + 0.7);
-      }
-    } catch (e) {}
+    for (let i = 0; i < emberCount; i++) {
+      embers.push(new Ember());
+    }
 
-    // Interactive Wing Burst upon click/tap
-    sentinel.addEventListener('click', () => {
-      const badge = sentinel.querySelector('.phoenix-sentinel-badge span:last-child');
-      if (badge) {
-        badge.textContent = 'PHOENIX: WING FLAP ACCELERATED!';
-        setTimeout(() => {
-          badge.textContent = 'PHOENIX GUARDIAN • ACTIVE';
-        }, 1600);
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < embers.length; i++) {
+        embers[i].update();
+        embers[i].draw();
       }
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+
+  initLoginEmberCanvas();
+
+  // 7. Fire Cursor Aura Follower
+  const aura = document.getElementById('cursorFireAura');
+  if (aura) {
+    let mouseX = -100, mouseY = -100;
+    let currentX = -100, currentY = -100;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      aura.style.opacity = '1';
     });
+
+    document.addEventListener('mouseleave', () => {
+      aura.style.opacity = '0';
+    });
+
+    const interactives = 'a, button, input, [role="button"], .quick-nic-pill, .btn';
+    document.querySelectorAll(interactives).forEach(el => {
+      el.addEventListener('mouseenter', () => aura.classList.add('aura-hover'));
+      el.addEventListener('mouseleave', () => aura.classList.remove('aura-hover'));
+    });
+
+    function loopAura() {
+      currentX += (mouseX - currentX) * 0.22;
+      currentY += (mouseY - currentY) * 0.22;
+      aura.style.transform = `translate3d(${currentX - 11}px, ${currentY - 11}px, 0)`;
+      requestAnimationFrame(loopAura);
+    }
+    loopAura();
   }
 });

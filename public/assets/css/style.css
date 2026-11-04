@@ -1574,3 +1574,411 @@ body.viewport-100vh .cursor-pointer {
   0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; }
   100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
 }
+
+/* ==========================================================================
+   REDESIGNED SPLIT-SCREEN LOGIN (LARGE LEFT PHOENIX BIRD & SINGLE NIC INPUT)
+   ========================================================================== */
+
+.login-page-body {
+  min-height: 100vh;
+  background: radial-gradient(circle at 20% 30%, #180a04 0%, #080d1e 50%, #03060f 100%);
+  color: #fff;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.login-ember-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.login-viewport-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.25rem 1.25rem 1.5rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.login-top-navbar {
+  background: rgba(12, 18, 36, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 0.65rem 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.login-nav-logo-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #0c1222;
+  border: 1.5px solid rgba(255, 85, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  box-shadow: 0 0 15px rgba(255, 85, 0, 0.4);
+}
+
+.login-nav-logo-box img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.login-nav-brand {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.login-main-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem 0;
+}
+
+/* Left Large 3D Phoenix Bird Stage */
+.login-phoenix-large-stage {
+  background: rgba(10, 16, 32, 0.68);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1.5px solid rgba(255, 100, 0, 0.35);
+  border-radius: 26px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 45px rgba(255, 85, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.login-phoenix-large-stage.fly-in-active {
+  animation: phoenixLargeFlyIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes phoenixLargeFlyIn {
+  0% {
+    transform: translate3d(-60vw, 40vh, 0) scale(0.3) rotate(-20deg);
+    opacity: 0;
+    filter: drop-shadow(0 0 90px #ff5500);
+  }
+  60% {
+    transform: translate3d(2vw, -2vh, 0) scale(1.06) rotate(3deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 110px #ffaa00);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 35px rgba(255, 85, 0, 0.75));
+  }
+}
+
+.phoenix-stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 85, 0, 0.12);
+  border: 1px solid rgba(255, 85, 0, 0.3);
+  border-radius: 50px;
+  padding: 0.35rem 0.95rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ff9d00;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.phoenix-large-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 0.35rem;
+}
+
+.phoenix-large-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0;
+  max-width: 480px;
+}
+
+/* Large 3D Flapping Rig */
+.phoenix-wing-stage-large {
+  position: relative;
+  width: 440px;
+  height: 248px;
+  max-width: 100%;
+  perspective: 850px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: phoenixRigFloat 4s infinite ease-in-out;
+  margin: 1.25rem 0;
+}
+
+.phoenix-wing-half-large {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 2;
+  will-change: transform;
+}
+
+.wing-left-large {
+  left: 0;
+  transform-origin: 100% 50%;
+  animation: flapLeftWing 0.85s infinite ease-in-out;
+}
+
+.wing-left-large img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 440px;
+  height: 248px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 35px rgba(255, 85, 0, 0.95)) drop-shadow(0 0 70px rgba(230, 32, 32, 0.5));
+}
+
+.wing-right-large {
+  right: 0;
+  transform-origin: 0% 50%;
+  animation: flapRightWing 0.85s infinite ease-in-out;
+}
+
+.wing-right-large img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 440px;
+  height: 248px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 35px rgba(255, 85, 0, 0.95)) drop-shadow(0 0 70px rgba(230, 32, 32, 0.5));
+}
+
+.login-phoenix-large-stage:hover .wing-left-large {
+  animation-duration: 0.45s !important;
+}
+
+.login-phoenix-large-stage:hover .wing-right-large {
+  animation-duration: 0.45s !important;
+}
+
+.phoenix-body-core-large {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 106px;
+  height: 248px;
+  overflow: hidden;
+  z-index: 4;
+}
+
+.phoenix-body-core-large img {
+  position: absolute;
+  top: 0;
+  left: -167px;
+  width: 440px;
+  height: 248px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 40px rgba(255, 140, 0, 1)) drop-shadow(0 0 65px rgba(255, 60, 0, 0.8));
+  animation: coreGlowPulse 1.7s infinite alternate ease-in-out;
+}
+
+.phoenix-large-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 340px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 120, 0, 0.5) 0%, rgba(255, 45, 0, 0.22) 55%, transparent 75%);
+  filter: blur(22px);
+  z-index: 1;
+  pointer-events: none;
+  animation: haloBreath 2s infinite alternate ease-in-out;
+}
+
+.phoenix-metrics-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.metric-chip {
+  background: rgba(14, 21, 40, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.45rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 90px;
+}
+
+.metric-chip-label {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.metric-chip-value {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* Right Single-Field Auth Card */
+.login-auth-card {
+  background: rgba(12, 18, 36, 0.78);
+  backdrop-filter: blur(25px) saturate(190%);
+  -webkit-backdrop-filter: blur(25px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1.5px 0 0 rgba(255, 255, 255, 0.2), 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(255, 85, 0, 0.15);
+  border-radius: 26px;
+  padding: 2.25rem 2.25rem;
+}
+
+.auth-icon-badge {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: rgba(255, 85, 0, 0.12);
+  border: 1.5px solid rgba(255, 85, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #ff9d00;
+  box-shadow: 0 0 20px rgba(255, 85, 0, 0.25);
+}
+
+.auth-card-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.auth-card-sub {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.input-nic-custom {
+  font-size: 1.15rem !important;
+  letter-spacing: 1.5px !important;
+  font-family: var(--font-display) !important;
+  font-weight: 600 !important;
+  padding: 0.95rem 1.25rem 0.95rem 3.2rem !important;
+  color: #fff !important;
+  background: rgba(8, 12, 24, 0.78) !important;
+  border: 1.5px solid rgba(255, 100, 0, 0.45) !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 12px !important;
+  transition: all 0.25s ease !important;
+}
+
+.input-nic-custom:focus {
+  border-color: #ff6600 !important;
+  box-shadow: 0 0 25px rgba(255, 85, 0, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.1) !important;
+}
+
+.input-field-icon {
+  position: absolute;
+  left: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.35rem;
+  color: #ff9d00;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.quick-nic-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(15, 22, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.75rem;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.quick-nic-pill:hover {
+  background: rgba(255, 85, 0, 0.2);
+  border-color: rgba(255, 85, 0, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 85, 0, 0.2);
+  color: #fff;
+}
+
+@media (max-width: 991px) {
+  .login-phoenix-large-stage {
+    padding: 1.5rem 1rem;
+  }
+  .phoenix-wing-stage-large {
+    width: 320px;
+    height: 180px;
+  }
+  .wing-left-large img,
+  .wing-right-large img {
+    width: 320px;
+    height: 180px;
+  }
+  .phoenix-body-core-large {
+    width: 78px;
+    height: 180px;
+  }
+  .phoenix-body-core-large img {
+    left: -121px;
+    width: 320px;
+    height: 180px;
+  }
+  .login-auth-card {
+    padding: 1.5rem 1.25rem;
+  }
+}

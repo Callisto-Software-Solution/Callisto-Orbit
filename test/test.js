@@ -160,8 +160,31 @@ async function runTests() {
   });
   console.log('  ✅ All 6 members returned with sanitized payloads.\n');
 
-  // Test 9: Static UI Files Check
-  console.log('Test 9: Testing UI Assets Existence...');
+  // Test 9: Single-Field NIC Authentication
+  console.log('Test 9: Testing Single-Field NIC Authentication (POST /api/auth/login with nic)...');
+  const nicLoginRes = await dispatchMockRequest({
+    url: '/api/auth/login',
+    method: 'POST',
+    body: { nic: '200112345678' }
+  });
+  assert.strictEqual(nicLoginRes.statusCode, 200);
+  assert.strictEqual(nicLoginRes.body.success, true);
+  assert.strictEqual(nicLoginRes.body.user.username, 'kehan');
+  assert.strictEqual(nicLoginRes.body.user.nic, '200112345678');
+  assert.ok(nicLoginRes.body.token, 'Must return session token for valid NIC');
+
+  // Test invalid NIC
+  const badNicRes = await dispatchMockRequest({
+    url: '/api/auth/login',
+    method: 'POST',
+    body: { nic: '000000000000' }
+  });
+  assert.strictEqual(badNicRes.statusCode, 401);
+  assert.strictEqual(badNicRes.body.success, false);
+  console.log('  ✅ Single-field NIC clearance verified successfully.\n');
+
+  // Test 10: Static UI Files Check
+  console.log('Test 10: Testing UI Assets Existence...');
   const indexHtml = path.join(__dirname, '../public/index.html');
   const loginHtml = path.join(__dirname, '../public/login.html');
   const dashHtml = path.join(__dirname, '../public/dashboard.html');

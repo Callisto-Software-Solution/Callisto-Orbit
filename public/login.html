@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Callisto Orbit | Command &amp; Fund Center</title>
+  <title>Callisto Orbit | Operator Clearance &amp; Authentication</title>
   
   <link rel="icon" type="image/jpeg" href="/assets/images/callisto-logo.jpg">
 
   <!-- Google Fonts: Inter & Rajdhani -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Bootstrap 5.3.3 & Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -18,301 +18,208 @@
 
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
-<body>
+<body class="login-page-body">
 
-  <!-- Ambient Glowing Orbs for Glass Reflection -->
+  <!-- Minimal Elegant Fire Cursor Glow Follower -->
+  <div id="cursorFireAura" class="cursor-fire-aura" aria-hidden="true"></div>
+
+  <!-- Ambient Glowing Orbs & Background Spark Canvas -->
+  <canvas id="loginEmberCanvas" class="login-ember-canvas"></canvas>
   <div class="aurora-orb aurora-1"></div>
   <div class="aurora-orb aurora-2"></div>
 
-  <div class="command-viewport">
-    <div class="command-shell">
-      
-      <div class="row g-3">
+  <div class="login-viewport-container">
+    
+    <!-- Top Glass Navigation Bar -->
+    <header class="login-top-navbar mb-4">
+      <div class="d-flex justify-content-between align-items-center w-100">
         
-        <!-- SIDEBAR (Image 2 Match) -->
-        <div class="col-12 col-lg-2">
-          <aside class="command-sidebar">
-            <div>
-              <div class="sidebar-logo-group">
-                <div class="sidebar-logo-box">
-                  <img src="/assets/images/callisto-logo.jpg" alt="Logo">
-                </div>
-                <div>
-                  <div class="sidebar-brand-name">Callisto<span style="color: var(--callisto-orange);">360</span></div>
-                  <div class="sidebar-brand-tag">Cyber Security &amp; AI</div>
-                </div>
-              </div>
-
-              <div class="sidebar-nav-title">Core Navigation</div>
-              <nav class="d-flex flex-column">
-                <a href="/" class="sidebar-nav-link">
-                  <i class="bi bi-house-door-fill"></i>
-                  <span>Home / Phoenix</span>
-                </a>
-                <a href="/login.html" class="sidebar-nav-link active">
-                  <i class="bi bi-shield-lock-fill"></i>
-                  <span>Authentication</span>
-                </a>
-                <a href="/dashboard.html" class="sidebar-nav-link">
-                  <i class="bi bi-grid-fill"></i>
-                  <span>Dashboard</span>
-                </a>
-                <a href="#" class="sidebar-nav-link">
-                  <i class="bi bi-wallet2"></i>
-                  <span>Fund Streams</span>
-                </a>
-                <a href="#" class="sidebar-nav-link">
-                  <i class="bi bi-people-fill"></i>
-                  <span>Squad Orbit</span>
-                </a>
-                <a href="#" class="sidebar-nav-link">
-                  <i class="bi bi-terminal-fill"></i>
-                  <span>Policy &amp; Rules</span>
-                </a>
-              </nav>
-            </div>
-
-            <!-- Bottom Gateway Badge -->
-            <div class="sidebar-bottom-pill">
-              <div class="d-flex align-items-center gap-2">
-                <span class="status-indicator-dot"></span>
-                <span style="font-size: 0.72rem; font-weight: 700; color: #fff; letter-spacing: 0.5px;">ORBIT GATEWAY</span>
-              </div>
-              <div style="font-size: 0.68rem; color: var(--text-dim); margin-top: 2px;">ONLINE &bull; ZONE ALPHA</div>
-            </div>
-          </aside>
-        </div>
-
-        <!-- MAIN COMMAND CONTENT (Image 2 Match) -->
-        <div class="col-12 col-lg-10">
-          
-          <!-- Top Hero Section with Living 3D Flapping Phoenix Sentinel -->
-          <header class="hero-header-box">
-            <div class="row align-items-center g-3">
-              <div class="col-12 col-lg-8">
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                  <span class="hero-tag-pill">CALLISTO ORBIT INFRASTRUCTURE &bull; SQUAD FUND POOL (100 / MO)</span>
-                  <span class="badge" style="background: rgba(0, 229, 255, 0.12); color: var(--callisto-cyan); border: 1px solid rgba(0, 229, 255, 0.25); font-size: 0.7rem;">
-                    <i class="bi bi-diagram-3-fill me-1"></i> COMPOSITE PATTERN
-                  </span>
-                </div>
-                <h1 class="hero-main-title">Hierarchical Structure of Callisto Orbit Squad</h1>
-                <p class="hero-main-desc mb-0">
-                  Implementation of decentralized internal treasury for Callisto. 6 core team members contributing $100 monthly to ensure rapid infrastructure scalability and future venture capital.
-                </p>
-              </div>
-
-              <!-- PHOENIX 3D WINGS FLAPPING SENTINEL ON THE SIDE -->
-              <div class="col-12 col-lg-4 d-flex justify-content-center justify-content-lg-end">
-                <div class="login-phoenix-sentinel-box fly-in-active" id="loginPhoenixSentinel" title="Callisto Fire Bird Sentinel &bull; Guardian of the Treasury">
-                  <div class="phoenix-sentinel-badge">
-                    <span class="status-indicator-dot" style="background: #ff5500; box-shadow: 0 0 10px #ff5500;"></span>
-                    <span>PHOENIX GUARDIAN &bull; ACTIVE</span>
-                  </div>
-                  
-                  <div class="phoenix-wing-stage">
-                    <!-- Left Flapping Wing -->
-                    <div class="phoenix-wing-half wing-left">
-                      <img src="/assets/images/callisto-phoenix.jpg" alt="Left Wing">
-                    </div>
-                    <!-- Right Flapping Wing -->
-                    <div class="phoenix-wing-half wing-right">
-                      <img src="/assets/images/callisto-phoenix.jpg" alt="Right Wing">
-                    </div>
-                    <!-- Phoenix Body Core -->
-                    <div class="phoenix-body-core">
-                      <img src="/assets/images/callisto-phoenix.jpg" alt="Phoenix Core">
-                    </div>
-                    <!-- Ambient Glow Behind Wings -->
-                    <div class="phoenix-sentinel-halo"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <!-- 4 Metric Cards Row (Image 2 Match) -->
-          <div class="row g-3 mb-3">
-            <div class="col-12 col-sm-6 col-xl-3">
-              <div class="stat-glass-card">
-                <div class="stat-glass-label">
-                  <i class="bi bi-lightning-charge-fill text-info"></i> Recursive Squad Target
-                </div>
-                <div class="stat-glass-value" style="color: var(--callisto-cyan);">$600.0 <span style="font-size: 0.8rem; color: var(--text-dim);">USD</span></div>
-                <div class="stat-glass-sub">6 members &times; $100 target</div>
-              </div>
-            </div>
-
-            <div class="col-12 col-sm-6 col-xl-3">
-              <div class="stat-glass-card">
-                <div class="stat-glass-label">
-                  <i class="bi bi-people-fill text-warning"></i> Connected Squad
-                </div>
-                <div class="stat-glass-value" style="color: #fff;">6 <span style="font-size: 0.85rem; color: var(--text-dim);">Specialists</span></div>
-                <div class="stat-glass-sub">Cyber Security &amp; AI Leads</div>
-              </div>
-            </div>
-
-            <div class="col-12 col-sm-6 col-xl-3">
-              <div class="stat-glass-card">
-                <div class="stat-glass-label">
-                  <i class="bi bi-shield-check text-success"></i> Orbit Grid Status
-                </div>
-                <div class="mt-1">
-                  <span class="badge-operational">
-                    <span class="status-indicator-dot"></span> OPERATIONAL
-                  </span>
-                </div>
-                <div class="stat-glass-sub">Zero-DB JSON sync active</div>
-              </div>
-            </div>
-
-            <div class="col-12 col-sm-6 col-xl-3">
-              <div class="stat-glass-card">
-                <div class="stat-glass-label">
-                  <i class="bi bi-cpu-fill text-warning"></i> Security Clearance
-                </div>
-                <div class="stat-glass-value" style="color: #ff9d00;">4 <span style="font-size: 0.85rem; color: var(--text-dim);">Levels</span></div>
-                <div class="stat-glass-sub">scrypt 256-bit salted hash</div>
-              </div>
-            </div>
+        <!-- Brand Link -->
+        <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
+          <div class="login-nav-logo-box">
+            <img src="/assets/images/callisto-logo.jpg" alt="Logo">
           </div>
-
-          <!-- Main Split Section (Image 2 Dispatcher + Zone Tree Match) -->
-          <div class="row g-3">
-            
-            <!-- Left Box: Uniform Command Dispatcher (Login Form) -->
-            <div class="col-12 col-lg-5">
-              <div class="dispatcher-box">
-                <div>
-                  <div class="dispatcher-title">
-                    <i class="bi bi-terminal-split text-info"></i>
-                    <span>Uniform Operator Authenticator</span>
-                  </div>
-                  <p class="dispatcher-subtitle">
-                    Authenticate operator identity against Callisto Orbit's encrypted zero-database vault to dispatch transactions and view the treasury.
-                  </p>
-
-                  <div id="alertContainer"></div>
-
-                  <form id="loginForm" autocomplete="off" class="mt-3">
-                    
-                    <!-- Step 1: Identifier -->
-                    <div class="mb-3">
-                      <div class="form-step-label">
-                        <span>1. Operator Identity (Username or Email)</span>
-                      </div>
-                      <div class="input-wrap-relative">
-                        <input 
-                          type="text" 
-                          class="input-cyber-glass" 
-                          id="identifier" 
-                          placeholder="[Operator] e.g. kehan or kehan@callisto.io" 
-                          required 
-                          autofocus
-                        >
-                      </div>
-                    </div>
-
-                    <!-- Step 2: Password -->
-                    <div class="mb-3">
-                      <div class="form-step-label">
-                        <span>2. Secret Authorization Token (Password)</span>
-                      </div>
-                      <div class="input-wrap-relative">
-                        <input 
-                          type="password" 
-                          class="input-cyber-glass" 
-                          id="password" 
-                          placeholder="Enter security key" 
-                          required
-                        >
-                        <button type="button" class="input-toggle-eye" id="togglePassword" title="Show/Hide">
-                          <i class="bi bi-eye-fill" id="togglePasswordIcon"></i>
-                        </button>
-                      </div>
-                    </div>
-
-                    <!-- Remember Me Option -->
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                      <label class="d-flex align-items-center gap-2 cursor-pointer" style="cursor: pointer;">
-                        <input type="checkbox" id="rememberMe" style="accent-color: var(--callisto-orange); width: 16px; height: 16px;">
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Preserve Session State</span>
-                      </label>
-                      <span style="font-size: 0.72rem; color: var(--text-dim);">
-                        <i class="bi bi-lock-fill text-success"></i> HMAC Signed
-                      </span>
-                    </div>
-
-                    <!-- Dispatch Button -->
-                    <button type="submit" class="btn-dispatch-target mb-3" id="loginBtn">
-                      <i class="bi bi-send-fill"></i>
-                      <span>DISPATCH AUTHORIZATION TO ORBIT</span>
-                    </button>
-                  </form>
-                </div>
-
-                <!-- Execution Audit Log (Image 2 Match) -->
-                <div>
-                  <div class="d-flex align-items-center gap-2 mb-2" style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">
-                    <i class="bi bi-clock-history"></i> Execution Audit Log
-                  </div>
-                  <div class="audit-log-terminal">
-                    <span class="status-indicator-dot" style="width: 6px; height: 6px;"></span>
-                    <span id="auditLogText">Session Idle &bull; Ready for operator authentication</span>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <!-- Right Box: Interactive Urban Zone Tree (6 Squad Members) -->
-            <div class="col-12 col-lg-7">
-              <div class="squad-tree-box">
-                
-                <div class="squad-tree-header">
-                  <div class="squad-tree-title">
-                    <i class="bi bi-diagram-2 text-warning"></i>
-                    <span>Interactive Squad Zone Tree</span>
-                  </div>
-                  <span class="badge" style="background: rgba(0, 229, 255, 0.1); color: var(--callisto-cyan); border: 1px solid rgba(0, 229, 255, 0.25); font-size: 0.68rem;">
-                    LIVE RECURSIVE METRICS
-                  </span>
-                </div>
-
-                <!-- Root Zone Node (Image 2 Match) -->
-                <div class="squad-root-banner">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-folder-symlink-fill text-info"></i>
-                    <span style="font-weight: 700; color: #fff; font-size: 0.9rem;">Callisto Squad 360</span>
-                    <span class="badge" style="background: rgba(255, 255, 255, 0.1); font-size: 0.65rem; color: #cbd5e1;">ROOT COMPOSITE</span>
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <span style="font-family: var(--font-display); font-weight: 700; color: var(--callisto-cyan); font-size: 0.9rem;">$600.0 USD</span>
-                    <span class="badge-operational" style="font-size: 0.65rem; padding: 0.15rem 0.5rem;">OPERATIONAL</span>
-                  </div>
-                </div>
-
-                <!-- 6 Squad Members List (Populated via JS) -->
-                <div id="memberPills">
-                  <!-- Dynamically rendered via auth.js -->
-                </div>
-
-                <div class="mt-3 p-2 px-3" style="background: rgba(10, 15, 28, 0.6); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.08); font-size: 0.72rem; color: var(--text-dim); display: flex; justify-content: space-between; align-items: center;">
-                  <span><i class="bi bi-info-circle me-1 text-warning"></i> Click any operator above to auto-dispatch credentials (Default: callisto123)</span>
-                  <span style="color: var(--callisto-cyan);">6 / 6 Connected</span>
-                </div>
-
-              </div>
-            </div>
-
+          <div>
+            <span class="login-nav-brand">CALLISTO<span style="color: var(--callisto-orange);">-ORBIT</span></span>
+            <span class="d-none d-sm-inline-block ms-2 badge" style="background: rgba(0, 229, 255, 0.12); color: var(--callisto-cyan); border: 1px solid rgba(0, 229, 255, 0.25); font-size: 0.65rem;">
+              ● SECURITY CLEARANCE V2.5
+            </span>
           </div>
+        </a>
 
+        <!-- Return Home Link & Gateway Status -->
+        <div class="d-flex align-items-center gap-2">
+          <span class="d-none d-md-flex align-items-center gap-2 px-3 py-1 glass-subcard" style="border-radius: 50px; font-size: 0.72rem; color: #fff;">
+            <span class="status-indicator-dot" style="background: #00f076; box-shadow: 0 0 8px #00f076;"></span>
+            <span>VAULT STATUS: <strong>ACTIVE</strong></span>
+          </span>
+          <a href="/" class="btn btn-sm glass-subcard d-flex align-items-center gap-2 px-3 py-1 text-decoration-none" style="border-radius: 50px; font-size: 0.75rem; color: var(--callisto-amber);">
+            <i class="bi bi-house-door-fill"></i>
+            <span>Home / Phoenix</span>
+          </a>
         </div>
 
       </div>
+    </header>
 
-    </div>
+    <!-- Main Dual Split Stage -->
+    <main class="login-main-stage">
+      <div class="row g-4 align-items-center justify-content-center w-100 m-0">
+        
+        <!-- LEFT SIDE: PROMINENT LARGE 3D FLAPPING FIRE BIRD STAGE -->
+        <div class="col-12 col-lg-7 p-2 p-md-3">
+          <div class="login-phoenix-large-stage" id="largePhoenixStage">
+            
+            <!-- Floating Cyber Badge -->
+            <div class="phoenix-stage-header mb-3">
+              <span class="phoenix-stage-pill">
+                <i class="bi bi-fire text-warning"></i>
+                <span>CALLISTO PHOENIX SENTINEL &bull; GUARDIAN ACTIVE</span>
+              </span>
+            </div>
+
+            <!-- Title & Slogan -->
+            <div class="text-center mb-3">
+              <h2 class="phoenix-large-title">
+                The Rising Phoenix <span class="phoenix-gradient-text">Of Cyber Security</span>
+              </h2>
+              <p class="phoenix-large-subtitle">
+                Guarding the internal treasury pool of 6 elite specialists ($100/mo &bull; $600 pool).
+              </p>
+            </div>
+
+            <!-- The Large 3D Flapping Phoenix Rig -->
+            <div class="phoenix-wing-stage-large">
+              <!-- Left Flapping Wing Half -->
+              <div class="phoenix-wing-half-large wing-left-large">
+                <img src="/assets/images/callisto-phoenix.jpg" alt="Phoenix Left Wing">
+              </div>
+              <!-- Right Flapping Wing Half -->
+              <div class="phoenix-wing-half-large wing-right-large">
+                <img src="/assets/images/callisto-phoenix.jpg" alt="Phoenix Right Wing">
+              </div>
+              <!-- Phoenix Body Core -->
+              <div class="phoenix-body-core-large">
+                <img src="/assets/images/callisto-phoenix.jpg" alt="Phoenix Core">
+              </div>
+              <!-- Luminous Radiant Halo -->
+              <div class="phoenix-large-halo"></div>
+            </div>
+
+            <!-- Metrics Bar Under The Bird -->
+            <div class="phoenix-metrics-bar mt-3">
+              <div class="metric-chip">
+                <span class="metric-chip-label">Target Pool</span>
+                <span class="metric-chip-value" style="color: var(--callisto-cyan);">$600/mo</span>
+              </div>
+              <div class="metric-chip">
+                <span class="metric-chip-label">Squad Roster</span>
+                <span class="metric-chip-value" style="color: #fff;">6 Specialists</span>
+              </div>
+              <div class="metric-chip">
+                <span class="metric-chip-label">Per Member</span>
+                <span class="metric-chip-value" style="color: #ff9d00;">$100.00</span>
+              </div>
+              <div class="metric-chip">
+                <span class="metric-chip-label">Vault Node</span>
+                <span class="metric-chip-value" style="color: #00f076;">Zero-DB</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE: SINGLE-FIELD NIC OPERATOR AUTHENTICATOR -->
+        <div class="col-12 col-lg-5 p-2 p-md-3">
+          <div class="login-auth-card">
+            
+            <!-- Auth Card Header -->
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="auth-icon-badge">
+                <i class="bi bi-shield-lock-fill"></i>
+              </div>
+              <div>
+                <h3 class="auth-card-title mb-0">Operator Clearance</h3>
+                <p class="auth-card-sub mb-0">Enter your Callisto Squad NIC for verified access</p>
+              </div>
+            </div>
+
+            <!-- Alert Container -->
+            <div id="alertContainer"></div>
+
+            <!-- The Single-Field Form -->
+            <form id="loginForm" autocomplete="off" class="mt-3">
+              
+              <!-- THE SINGLE INPUT FIELD: NIC NUMBER -->
+              <div class="mb-4">
+                <label for="nicInput" class="form-step-label mb-2 d-flex justify-content-between align-items-center">
+                  <span><i class="bi bi-person-vcard text-warning me-1"></i> Operator NIC Number</span>
+                  <span class="text-dim" style="font-size: 0.7rem;">9-digit or 12-digit NIC</span>
+                </label>
+                
+                <div class="input-wrap-relative">
+                  <i class="bi bi-person-badge-fill input-field-icon"></i>
+                  <input 
+                    type="text" 
+                    class="input-cyber-glass input-nic-custom" 
+                    id="nicInput" 
+                    name="nic"
+                    placeholder="Enter NIC Number (e.g. 200112345678)" 
+                    required 
+                    autofocus
+                  >
+                </div>
+              </div>
+
+              <!-- Dispatch Button -->
+              <button type="submit" class="btn-phoenix-main w-100 py-3 mb-3" id="loginBtn">
+                <i class="bi bi-fingerprint fs-5"></i>
+                <span>VERIFY NIC &amp; ENTER ORBIT</span>
+              </button>
+
+              <!-- Session Note -->
+              <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+                <label class="d-flex align-items-center gap-2 cursor-pointer" style="cursor: pointer;">
+                  <input type="checkbox" id="rememberMe" checked style="accent-color: var(--callisto-orange); width: 16px; height: 16px;">
+                  <span style="font-size: 0.78rem; color: var(--text-muted);">Remember this operator</span>
+                </label>
+                <span style="font-size: 0.72rem; color: var(--text-dim);">
+                  <i class="bi bi-lock-fill text-success"></i> HMAC Signed Token
+                </span>
+              </div>
+
+            </form>
+
+            <!-- 1-Click Specialist Quick-Select Pills -->
+            <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">
+                  <i class="bi bi-people-fill text-info me-1"></i> 1-Click Specialist Fast Fill
+                </span>
+                <span class="badge" style="background: rgba(255, 85, 0, 0.15); color: #ff9d00; font-size: 0.65rem;">
+                  6 CONNECTED
+                </span>
+              </div>
+              
+              <div class="row g-2" id="quickNicList">
+                <!-- Populated dynamically via auth.js -->
+              </div>
+            </div>
+
+            <!-- Execution Audit Log -->
+            <div class="mt-4">
+              <div class="audit-log-terminal">
+                <span class="status-indicator-dot" style="width: 6px; height: 6px;"></span>
+                <span id="auditLogText">Session Idle &bull; Awaiting Operator NIC clearance</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+
   </div>
 
   <script src="/assets/js/auth.js"></script>
