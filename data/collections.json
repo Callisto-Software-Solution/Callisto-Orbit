@@ -1,0 +1,34 @@
+[
+  {
+    "id": "col_2026_01",
+    "month": "2026-01",
+    "year": 2026,
+    "target": 600,
+    "collected": 600,
+    "status": "completed",
+    "contributions": [
+      { "userId": "usr_01", "name": "Kehan Hasalaka", "amount": 100, "paidDate": "2026-01-05", "status": "paid", "method": "Bank Transfer", "txRef": "CAL-0105" },
+      { "userId": "usr_02", "name": "Alex Chen", "amount": 100, "paidDate": "2026-01-06", "status": "paid", "method": "Crypto", "txRef": "CAL-0106" },
+      { "userId": "usr_03", "name": "Nimesha Perera", "amount": 100, "paidDate": "2026-01-08", "status": "paid", "method": "Bank Transfer", "txRef": "CAL-0108" },
+      { "userId": "usr_04", "name": "Sarah Miller", "amount": 100, "paidDate": "2026-01-10", "status": "paid", "method": "Wise", "txRef": "CAL-0110" },
+      { "userId": "usr_05", "name": "Dinuka Fernando", "amount": 100, "paidDate": "2026-01-11", "status": "paid", "method": "Bank Transfer", "txRef": "CAL-0111" },
+      { "userId": "usr_06", "name": "Kavindu Silva", "amount": 100, "paidDate": "2026-01-12", "status": "paid", "method": "Bank Transfer", "txRef": "CAL-0112" }
+    ]
+  },
+  {
+    "id": "col_2026_02",
+    "month": "2026-02",
+    "year": 2026,
+    "target": 600,
+    "collected": 400,
+    "status": "in_progress",
+    "contributions": [
+      { "userId": "usr_01", "name": "Kehan Hasalaka", "amount": 100, "paidDate": "2026-02-02", "status": "paid", "method": "Bank Transfer", "txRef": "CAL-0202" },
+      { "userId": "usr_02", "name": "Alex Chen", "amount": 100, "paidDate": "2026-02-03", "status": "paid", "method": "Crypto", "txRef": "CAL-0203" },
+      { "userId": "usr_03", "name": "Nimesha Perera", "amount": 100, "paidDate": "2026-02-05", "status": "paid", "method": "Bank Transfer", "txRef": "CAL-0205" },
+      { "userId": "usr_04", "name": "Sarah Miller", "amount": 100, "paidDate": "2026-02-06", "status": "paid", "method": "Wise", "txRef": "CAL-0206" },
+      { "userId": "usr_05", "name": "Dinuka Fernando", "amount": 0, "paidDate": null, "status": "pending", "method": null, "txRef": null },
+      { "userId": "usr_06", "name": "Kavindu Silva", "amount": 0, "paidDate": null, "status": "pending", "method": null, "txRef": null }
+    ]
+  }
+]

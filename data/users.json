@@ -1,0 +1,74 @@
+[
+  {
+    "id": "usr_01",
+    "name": "Kehan Hasalaka",
+    "username": "kehan",
+    "email": "kehan@callisto.io",
+    "password": "249e9a94909408b8ebd0fc85e2d3e7f4:ee74113147f1df24defe3d42569e0a3c751037ae06213ad24e0656b5470666fad5ba01961abae609e4616612ede48a3f720ef668a813dff9ece2030d393bfa3f",
+    "role": "admin",
+    "title": "Lead & Founder",
+    "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Kehan",
+    "joinedDate": "2026-01-01",
+    "active": true
+  },
+  {
+    "id": "usr_02",
+    "name": "Alex Chen",
+    "username": "alex",
+    "email": "alex@callisto.io",
+    "password": "249e9a94909408b8ebd0fc85e2d3e7f4:ee74113147f1df24defe3d42569e0a3c751037ae06213ad24e0656b5470666fad5ba01961abae609e4616612ede48a3f720ef668a813dff9ece2030d393bfa3f",
+    "role": "member",
+    "title": "AI & ML Specialist",
+    "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Alex",
+    "joinedDate": "2026-01-01",
+    "active": true
+  },
+  {
+    "id": "usr_03",
+    "name": "Nimesha Perera",
+    "username": "nimesha",
+    "email": "nimesha@callisto.io",
+    "password": "249e9a94909408b8ebd0fc85e2d3e7f4:ee74113147f1df24defe3d42569e0a3c751037ae06213ad24e0656b5470666fad5ba01961abae609e4616612ede48a3f720ef668a813dff9ece2030d393bfa3f",
+    "role": "member",
+    "title": "Cyber Security Engineer",
+    "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Nimesha",
+    "joinedDate": "2026-01-01",
+    "active": true
+  },
+  {
+    "id": "usr_04",
+    "name": "Sarah Miller",
+    "username": "sarah",
+    "email": "sarah@callisto.io",
+    "password": "249e9a94909408b8ebd0fc85e2d3e7f4:ee74113147f1df24defe3d42569e0a3c751037ae06213ad24e0656b5470666fad5ba01961abae609e4616612ede48a3f720ef668a813dff9ece2030d393bfa3f",
+    "role": "member",
+    "title": "Cloud Infrastructure",
+    "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Sarah",
+    "joinedDate": "2026-01-01",
+    "active": true
+  },
+  {
+    "id": "usr_05",
+    "name": "Dinuka Fernando",
+    "username": "dinuka",
+    "email": "dinuka@callisto.io",
+    "password": "249e9a94909408b8ebd0fc85e2d3e7f4:ee74113147f1df24defe3d42569e0a3c751037ae06213ad24e0656b5470666fad5ba01961abae609e4616612ede48a3f720ef668a813dff9ece2030d393bfa3f",
+    "role": "member",
+    "title": "Full-Stack Dev",
+    "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Dinuka",
+    "joinedDate": "2026-01-01",
+    "active": true
+  },
+  {
+    "id": "usr_06",
+    "name": "Kavindu Silva",
+    "username": "kavindu",
+    "email": "kavindu@callisto.io",
+    "password": "249e9a94909408b8ebd0fc85e2d3e7f4:ee74113147f1df24defe3d42569e0a3c751037ae06213ad24e0656b5470666fad5ba01961abae609e4616612ede48a3f720ef668a813dff9ece2030d393bfa3f",
+    "role": "member",
+    "title": "Security Analyst",
+    "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Kavindu",
+    "joinedDate": "2026-01-01",
+    "active": true
+  }
+]

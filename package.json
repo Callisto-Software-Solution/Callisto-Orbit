@@ -1,0 +1,25 @@
+{
+  "name": "callisto-orbit",
+  "version": "1.0.0",
+  "description": "Callisto-Orbit - Monthly Team Fund & Collection Management System for Callisto Cyber Security & AI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Callisto-Software-Solution/Callisto-Orbit.git"
+  },
+  "keywords": [
+    "callisto",
+    "orbit",
+    "fund-management",
+    "cybersecurity",
+    "ai",
+    "glassmorphism",
+    "responsive"
+  ],
+  "author": "Callisto Cyber Security & AI",
+  "license": "MIT"
+}
