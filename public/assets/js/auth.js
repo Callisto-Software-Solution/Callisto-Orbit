@@ -145,9 +145,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             auditLogText.innerHTML = `<span style="color: #00f076;">Clearance Verified:</span> Welcome Operator ${result.user.name}!`;
           }
 
-          setTimeout(() => {
-            window.location.href = '/dashboard.html';
-          }, 600);
+          if (window.triggerOrbitTransition) {
+            window.triggerOrbitTransition('/dashboard.html', `CLEARANCE GRANTED • ENTERING ORBIT...`, 1100);
+          } else {
+            setTimeout(() => {
+              window.location.href = '/dashboard.html';
+            }, 600);
+          }
         } else {
           showAlert(result.message || 'Access Denied: Unrecognized or inactive Operator NIC.');
           if (loginBtn) {
