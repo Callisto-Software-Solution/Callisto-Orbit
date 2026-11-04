@@ -101,26 +101,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. 3D PARALLAX INTERACTION ON PHOENIX
   // =========================================================================
   function initPhoenixParallax() {
-    const stage = document.querySelector('.phoenix-stage-wrap');
-    const container = document.querySelector('.phoenix-img-container');
-    if (!stage || !container) return;
+    const bgImg = document.querySelector('.phoenix-bg-animated-img') || document.querySelector('.phoenix-img-container');
+    if (!bgImg) return;
 
     window.addEventListener('mousemove', (e) => {
-      const rect = stage.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+      const deltaX = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+      const deltaY = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
 
-      const deltaX = (e.clientX - centerX) / (window.innerWidth / 2);
-      const deltaY = (e.clientY - centerY) / (window.innerHeight / 2);
+      const rotateY = deltaX * 10;  // Gentle 3D tilt
+      const rotateX = -deltaY * 8;
 
-      const rotateY = deltaX * 14;  // Max 14 deg
-      const rotateX = -deltaY * 12; // Max 12 deg
-
-      container.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      bgImg.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
     });
 
     window.addEventListener('mouseleave', () => {
-      container.style.transform = 'rotateX(0deg) rotateY(0deg)';
+      bgImg.style.transform = 'rotateX(0deg) rotateY(0deg)';
     });
   }
 
