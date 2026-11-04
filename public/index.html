@@ -3,133 +3,226 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Login | Callisto-Orbit Fund Management</title>
+  <title>Callisto-Orbit | Command Access &amp; Fund Management</title>
   
-  <!-- Favicon -->
   <link rel="icon" type="image/jpeg" href="/assets/images/callisto-logo.jpg">
 
-  <!-- Google Fonts: Inter & Rajdhani -->
+  <!-- Google Fonts: Inter & Rajdhani & Orbitron -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
   <!-- Bootstrap 5.3.3 & Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <!-- Custom Callisto-Orbit Cyber & Glassmorphic CSS -->
+  <!-- Custom Callisto Cyber-Command & Authentic Glassmorphism CSS -->
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
 
-  <!-- Ambient Glowing Orbs -->
-  <div class="glow-orb-top"></div>
-  <div class="glow-orb-bottom"></div>
+  <!-- Dynamic Cyber Grid & Moving Aurora Orbs for Glass Refraction -->
+  <div class="cyber-grid-overlay"></div>
+  <canvas id="cyberCanvas"></canvas>
+  <div class="aurora-orb aurora-1"></div>
+  <div class="aurora-orb aurora-2"></div>
+  <div class="aurora-orb aurora-3"></div>
 
-  <!-- Main Login View Container -->
-  <main class="auth-wrapper">
-    <div class="glass-panel glass-panel-accent auth-card">
+  <!-- Main View Container -->
+  <main class="auth-page-container">
+    <div class="orbit-command-console glass-box glass-cyber-frame">
       
-      <!-- Callisto Brand Header -->
-      <header class="brand-header">
-        <div class="brand-logo-wrap">
-          <img src="/assets/images/callisto-logo.jpg" alt="Callisto Logo" class="brand-logo-img">
-        </div>
-        <h1 class="brand-title">Callisto Orbit</h1>
-        <p class="brand-subtitle">Team Fund & Monthly Collection Pool</p>
-        <span class="brand-badge">
-          <i class="bi bi-shield-lock-fill me-1"></i> Cyber Security &amp; AI
-        </span>
-      </header>
+      <!-- Tech Notches -->
+      <div class="cyber-corner-tl"></div>
+      <div class="cyber-corner-tr"></div>
+      <div class="cyber-corner-bl"></div>
+      <div class="cyber-corner-br"></div>
 
-      <!-- Alert / Notification Placeholder -->
-      <div id="alertContainer"></div>
-
-      <!-- Login Form -->
-      <form id="loginForm" autocomplete="off">
+      <div class="row g-0">
         
-        <!-- Username / Email Input -->
-        <div class="form-group-custom">
-          <label for="identifier" class="form-label-custom">
-            <span>Username or Work Email</span>
-            <span class="text-dim fs-7">Team ID</span>
-          </label>
-          <div class="input-glass-wrap">
-            <i class="bi bi-person-fill input-icon-left"></i>
-            <input 
-              type="text" 
-              class="input-glass" 
-              id="identifier" 
-              placeholder="e.g. kehan or kehan@callisto.io" 
-              required 
-              autofocus
-            >
+        <!-- LEFT CONSOLE: Orbit Telemetry & Squad Matrix -->
+        <div class="col-12 col-lg-5 telemetry-panel">
+          
+          <!-- Callisto Crest & Brand Title -->
+          <div>
+            <div class="brand-crest-wrap">
+              <div class="brand-crest-logo">
+                <img src="/assets/images/callisto-logo.jpg" alt="Callisto Phoenix Crest">
+              </div>
+              <div>
+                <h1 class="brand-name-display">Callisto</h1>
+                <div class="brand-tag-display">
+                  <i class="bi bi-shield-check text-warning"></i>
+                  <span>Cyber Security &amp; AI</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <span class="badge" style="background: rgba(255, 85, 0, 0.15); color: #ff9d00; border: 1px solid rgba(255, 85, 0, 0.3); font-size: 0.68rem; letter-spacing: 1px;">
+                ● ORBIT PROTOCOL V2.4
+              </span>
+              <span class="badge" style="background: rgba(0, 229, 255, 0.12); color: var(--callisto-cyan); border: 1px solid rgba(0, 229, 255, 0.25); font-size: 0.68rem; letter-spacing: 1px;">
+                VAULT: ZERO-DB
+              </span>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+              Internal monthly squad fund pool designed for Callisto company’s future expansion and venture capital reserve.
+            </p>
           </div>
+
+          <!-- Rotating Holographic Orbit Ring Visualization -->
+          <div class="orbit-visualizer" id="orbitVisualizer">
+            <svg class="orbit-ring-svg" viewBox="0 0 300 160">
+              <ellipse cx="150" cy="80" rx="125" ry="50" fill="none" stroke="rgba(255, 85, 0, 0.25)" stroke-width="1.5" stroke-dasharray="4 6"/>
+              <ellipse cx="150" cy="80" rx="90" ry="32" fill="none" stroke="rgba(0, 229, 255, 0.2)" stroke-width="1.2"/>
+              <!-- 6 Squad Revolving Nodes -->
+              <circle id="node0" cx="25" cy="80" r="5" fill="#ff5500"/>
+              <circle id="node1" cx="75" cy="38" r="4.5" fill="#ff9d00"/>
+              <circle id="node2" cx="225" cy="38" r="4.5" fill="#00e5ff"/>
+              <circle id="node3" cx="275" cy="80" r="5" fill="#00f076"/>
+              <circle id="node4" cx="225" cy="122" r="4.5" fill="#a855f7"/>
+              <circle id="node5" cx="75" cy="122" r="4.5" fill="#ff4500"/>
+            </svg>
+            <div class="orbit-center-node">
+              <i class="bi bi-shield-shaded"></i>
+            </div>
+          </div>
+
+          <!-- Live Telemetry Stats Grid -->
+          <div class="telemetry-grid">
+            <div class="telemetry-card">
+              <div class="telemetry-label">
+                <i class="bi bi-people-fill text-warning"></i> Squad Target
+              </div>
+              <div class="telemetry-value">$600<span style="font-size: 0.8rem; color: var(--text-dim);"> / mo</span></div>
+              <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 2px;">6 members &times; $100</div>
+            </div>
+
+            <div class="telemetry-card">
+              <div class="telemetry-label">
+                <i class="bi bi-hdd-network text-info"></i> Data Vault
+              </div>
+              <div class="telemetry-value" style="color: var(--callisto-cyan);">JSON<span style="font-size: 0.75rem;"> FILE</span></div>
+              <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 2px;">Atomic File Sync</div>
+            </div>
+          </div>
+
+          <!-- Footer Telemetry Meta -->
+          <div class="d-flex justify-content-between align-items-center mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.75rem; color: var(--text-dim);">
+            <span><i class="bi bi-cpu text-warning me-1"></i> Core Integrity: 100%</span>
+            <span><i class="bi bi-lock-fill text-success me-1"></i> scrypt-256</span>
+          </div>
+
         </div>
 
-        <!-- Password Input -->
-        <div class="form-group-custom">
-          <label for="password" class="form-label-custom">
-            <span>Password</span>
-            <span class="text-dim fs-7">Encrypted</span>
-          </label>
-          <div class="input-glass-wrap">
-            <i class="bi bi-key-fill input-icon-left"></i>
-            <input 
-              type="password" 
-              class="input-glass" 
-              id="password" 
-              placeholder="Enter your security password" 
-              required
-            >
-            <button type="button" class="input-btn-right" id="togglePassword" title="Toggle password visibility" aria-label="Toggle password visibility">
-              <i class="bi bi-eye-fill" id="togglePasswordIcon"></i>
+        <!-- RIGHT CONSOLE: Operator Authentication Portal -->
+        <div class="col-12 col-lg-7 auth-panel">
+          
+          <div class="auth-header-bar">
+            <span class="cyber-badge-pill">
+              <i class="bi bi-shield-lock-fill"></i> Orbit Authentication
+            </span>
+            <span class="clearance-pill">
+              <i class="bi bi-broadcast"></i> Level 4 Clearance
+            </span>
+          </div>
+
+          <h2 class="portal-title">Operator Access Portal</h2>
+          <p class="portal-desc">
+            Authenticate your Callisto credentials to access the internal fund pool and transaction stream.
+          </p>
+
+          <!-- Alert Container -->
+          <div id="alertContainer"></div>
+
+          <!-- Form -->
+          <form id="loginForm" autocomplete="off">
+            
+            <!-- Username / Email -->
+            <div class="cyber-input-group">
+              <div class="cyber-input-label">
+                <span>Team Identification</span>
+                <span style="font-size: 0.72rem; color: var(--callisto-cyan);">Username / Email</span>
+              </div>
+              <div class="cyber-input-wrap">
+                <input 
+                  type="text" 
+                  class="cyber-input" 
+                  id="identifier" 
+                  placeholder="e.g. kehan or kehan@callisto.io" 
+                  required 
+                  autofocus
+                >
+                <i class="bi bi-person-bounding-box cyber-input-icon"></i>
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="cyber-input-group">
+              <div class="cyber-input-label">
+                <span>Security Token / Password</span>
+                <span style="font-size: 0.72rem; color: var(--text-dim);">Salted Hash</span>
+              </div>
+              <div class="cyber-input-wrap">
+                <input 
+                  type="password" 
+                  class="cyber-input" 
+                  id="password" 
+                  placeholder="Enter secret authorization key" 
+                  required
+                >
+                <i class="bi bi-key-fill cyber-input-icon"></i>
+                <button type="button" class="cyber-input-toggle" id="togglePassword" title="Show/Hide Key">
+                  <i class="bi bi-eye-fill" id="togglePasswordIcon"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Switch & Security note -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <label class="cyber-switch-wrap">
+                <input type="checkbox" id="rememberMe">
+                <span class="cyber-switch-text">Preserve Operator Session</span>
+              </label>
+              <span style="font-size: 0.75rem; color: var(--text-dim);">
+                <i class="bi bi-shield-check text-success me-1"></i> HMAC Encrypted
+              </span>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-cyber-launch" id="loginBtn">
+              <span>Authorize &amp; Launch Orbit</span>
+              <i class="bi bi-arrow-right-circle-fill fs-5"></i>
             </button>
-          </div>
+
+          </form>
+
+          <!-- 1-Click Fast Squad Access Matrix -->
+          <section class="squad-access-bar">
+            <div class="squad-access-header">
+              <div class="squad-access-title">
+                <i class="bi bi-fingerprint text-warning fs-6"></i>
+                <span>Fast Squad Biometric Access (1-Click Fill)</span>
+              </div>
+              <span class="badge" style="background: rgba(255, 85, 0, 0.12); color: #ff9d00; border: 1px solid rgba(255, 85, 0, 0.25); font-size: 0.65rem;">
+                Pass: callisto123
+              </span>
+            </div>
+
+            <div class="squad-matrix-grid" id="memberPills">
+              <!-- Dynamically populated 6 squad member chips -->
+            </div>
+          </section>
+
         </div>
 
-        <!-- Options: Remember Me & Security Note -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <label class="custom-check">
-            <input type="checkbox" id="rememberMe">
-            <span>Remember identity</span>
-          </label>
-          <span class="text-dim" style="font-size: 0.78rem;">
-            <i class="bi bi-lock-fill text-warning me-1"></i> scrypt 256-bit
-          </span>
-        </div>
-
-        <!-- Submit Button -->
-        <button type="submit" class="btn-callisto-primary" id="loginBtn">
-          <span>Access Orbit</span>
-          <i class="bi bi-arrow-right-short fs-4"></i>
-        </button>
-
-      </form>
-
-      <!-- Quick 1-Click Member Test Fill -->
-      <section class="demo-accounts-section">
-        <div class="demo-title">
-          <span><i class="bi bi-people-fill me-1 text-warning"></i> Team Members (1-Click Test)</span>
-          <span class="demo-badge">Default: callisto123</span>
-        </div>
-        <div class="member-pills-grid" id="memberPills">
-          <!-- Populated dynamically via JS -->
-        </div>
-      </section>
-
-      <!-- Footer Info -->
-      <footer class="text-center mt-4 pt-2">
-        <p class="text-dim mb-0" style="font-size: 0.75rem;">
-          Callisto Cyber Security &amp; AI &bull; Orbit Fund Portal &bull; 6 Members &bull; $100/mo
-        </p>
-      </footer>
+      </div>
 
     </div>
   </main>
 
-  <!-- Client Auth Logic -->
   <script src="/assets/js/auth.js"></script>
 </body>
 </html>
-
