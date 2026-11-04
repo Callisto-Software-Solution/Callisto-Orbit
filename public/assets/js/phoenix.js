@@ -1,25 +1,20 @@
 /**
- * Callisto Phoenix NEXT-LEVEL Cinematic Animation Engine
+ * Callisto Phoenix Landing Page Engine (Clean Luxury Edition)
  * Features:
- * - Fluid Molten Plasma Comet Ribbon Tail trailing the cursor
- * - High-Energy Phoenix Sonic Shockwaves on Click & Rapid Movement
- * - Cyber Circuit Electric Arc Lightning
- * - Real-Time Aerodynamic Web Audio API Sound (Wind modulates with hand speed)
- * - 3D Parallax & Reactive Solar Flare on Background Phoenix
- * - 150+ High-Density Fire Embers & Velocity Sparks
+ * - High-speed luxury fire cursor aura follower (Zero clutter, silky smooth)
+ * - Delicate rising fire embers & sparks
+ * - 3D Parallax & Flight Breathing on Background Phoenix
+ * - Web Audio API Ambient Soundscape
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  let globalMouseSpeed = 0;
-  let updateAudioSpeed = null;
-
   initEmberCanvas();
   initPhoenixParallax();
-  initAnimatedPhoenixCursor();
+  initLuxuryCursorAura();
   initPhoenixSoundscape();
 
   // =========================================================================
-  // 1. ADVANCED PARTICLE, SHOCKWAVE & COMET RIBBON CANVAS
+  // 1. CLEAN & DELICATE FIRE EMBERS CANVAS ANIMATION
   // =========================================================================
   function initEmberCanvas() {
     const canvas = document.getElementById('emberCanvas');
@@ -27,18 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     let width, height;
     let embers = [];
-    let shockwaves = [];
-    let electricArcs = [];
-    let ribbonTrail = [];
-    const maxTrailLength = 26;
-    const emberCount = window.innerWidth < 768 ? 70 : 150;
-
-    let cursorX = null;
-    let cursorY = null;
-    let lastX = null;
-    let lastY = null;
-    let rayAngle = 0;
-    let burstRays = 0;
+    const emberCount = window.innerWidth < 768 ? 40 : 90;
 
     function resize() {
       width = canvas.width = window.innerWidth;
@@ -49,12 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
     resize();
 
     const colors = [
-      '#ff3b00', // Intense Orange Red
-      '#ff7700', // Vivid Amber
-      '#ffa200', // Gold Fire
-      '#ffd000', // Bright Golden Spark
-      '#ff1a1a', // Crimson Flame
-      '#ffffff'  // White-hot core
+      '#ff4500', // Fiery Orange
+      '#ff8c00', // Amber
+      '#ffa200', // Gold
+      '#ffd700', // Warm Spark
+      '#ff2200'  // Crimson
     ];
 
     class Ember {
@@ -65,34 +48,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
       reset(initial = false, customX, customY) {
         if (customX !== undefined && customY !== undefined) {
-          this.x = customX + (Math.random() - 0.5) * 16;
-          this.y = customY + (Math.random() - 0.5) * 16;
-          this.speedY = (Math.random() * 2.8 + 1.2) * (this.isBurst ? 1.9 : 1);
-          this.speedX = (Math.random() - 0.5) * (this.isBurst ? 3.8 : 1.6);
-          this.alpha = 1;
+          this.x = customX + (Math.random() - 0.5) * 12;
+          this.y = customY + (Math.random() - 0.5) * 12;
+          this.speedY = Math.random() * 2.0 + 0.8;
+          this.speedX = (Math.random() - 0.5) * 1.6;
+          this.alpha = 0.9;
         } else {
           this.x = Math.random() * width;
-          this.y = initial ? Math.random() * height : height + 15;
-          this.speedY = Math.random() * 2.4 + 0.8;
-          this.speedX = (Math.random() - 0.5) * 1.3;
-          this.alpha = Math.random() * 0.85 + 0.25;
+          this.y = initial ? Math.random() * height : height + 10;
+          this.speedY = Math.random() * 1.8 + 0.7;
+          this.speedX = (Math.random() - 0.5) * 0.9;
+          this.alpha = Math.random() * 0.7 + 0.25;
         }
 
-        this.size = Math.random() * 3.4 + 0.8;
+        this.size = Math.random() * 2.6 + 0.8;
         this.color = colors[Math.floor(Math.random() * colors.length)];
-        this.fadeRate = Math.random() * 0.008 + 0.003;
-        this.oscillation = Math.random() * 0.06 + 0.02;
+        this.fadeRate = Math.random() * 0.007 + 0.003;
+        this.oscillation = Math.random() * 0.05 + 0.015;
         this.angle = Math.random() * Math.PI * 2;
-        this.tailLength = Math.random() * 9 + 4;
       }
 
       update() {
         this.y -= this.speedY;
         this.angle += this.oscillation;
-        this.x += Math.sin(this.angle) * 0.8 + this.speedX;
+        this.x += Math.sin(this.angle) * 0.6 + this.speedX;
         this.alpha -= this.fadeRate;
 
-        if (this.y < -25 || this.alpha <= 0) {
+        if (this.y < -15 || this.alpha <= 0) {
           if (this.isBurst) {
             const idx = embers.indexOf(this);
             if (idx > -1) embers.splice(idx, 1);
@@ -105,26 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
       draw() {
         ctx.save();
         ctx.globalAlpha = Math.max(0, this.alpha);
-
-        if (this.speedY > 1.3) {
-          ctx.beginPath();
-          ctx.moveTo(this.x, this.y);
-          ctx.lineTo(this.x - this.speedX * 2.2, this.y + this.tailLength);
-          ctx.strokeStyle = this.color;
-          ctx.lineWidth = this.size * 0.75;
-          ctx.lineCap = 'round';
-          ctx.shadowBlur = this.size * 5;
-          ctx.shadowColor = this.color;
-          ctx.stroke();
-        } else {
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          ctx.fillStyle = this.color;
-          ctx.shadowBlur = this.size * 6;
-          ctx.shadowColor = this.color;
-          ctx.fill();
-        }
-
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = this.size * 5;
+        ctx.shadowColor = this.color;
+        ctx.fill();
         ctx.restore();
       }
     }
@@ -133,281 +101,29 @@ document.addEventListener('DOMContentLoaded', () => {
       embers.push(new Ember());
     }
 
-    // Trigger Sonic Shockwave function
-    function createShockwave(x, y) {
-      shockwaves.push({
-        x,
-        y,
-        radius: 8,
-        maxRadius: Math.min(width, height) * 0.35,
-        alpha: 1.0,
-        speed: 14
-      });
-
-      // Displace embers outward
-      embers.forEach(e => {
-        const dx = e.x - x;
-        const dy = e.y - y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 180 && dist > 0) {
-          e.x += (dx / dist) * 25;
-          e.y += (dy / dist) * 25;
-        }
-      });
-    }
-
-    // Trigger Cyber Circuit Lightning Arcs
-    function createElectricArc(startX, startY) {
-      const branches = [];
-      let curX = startX;
-      let curY = startY;
-      const steps = Math.floor(Math.random() * 6 + 5);
-
-      for (let i = 0; i < steps; i++) {
-        const nextX = curX + (Math.random() - 0.5) * 60;
-        const nextY = curY + (Math.random() - 0.5) * 60;
-        branches.push({ x1: curX, y1: curY, x2: nextX, y2: nextY });
-        curX = nextX;
-        curY = nextY;
-      }
-
-      electricArcs.push({
-        branches,
-        alpha: 1.0,
-        color: Math.random() > 0.5 ? '#00f0ff' : '#ffaa00'
-      });
-    }
-
-    // Mouse listener with Speed calculation & Comet ribbon
-    let lastMoveTime = Date.now();
+    // Gentle, delicate spark trail on mouse movement
+    let lastSpawn = 0;
     window.addEventListener('mousemove', (e) => {
-      cursorX = e.clientX;
-      cursorY = e.clientY;
-
       const now = Date.now();
-      const dt = Math.max(1, now - lastMoveTime);
-      lastMoveTime = now;
-
-      if (lastX !== null && lastY !== null) {
-        const dist = Math.hypot(cursorX - lastX, cursorY - lastY);
-        globalMouseSpeed = dist / dt; // pixels per millisecond
-
-        if (updateAudioSpeed) {
-          updateAudioSpeed(globalMouseSpeed);
-        }
-
-        // Fast flick triggers high-energy shockwave
-        if (globalMouseSpeed > 2.8 && shockwaves.length < 3) {
-          createShockwave(cursorX, cursorY);
-        }
-
-        // Occasional lightning arc on movement
-        if (Math.random() < 0.12 && electricArcs.length < 4) {
-          createElectricArc(cursorX, cursorY);
-        }
-      }
-
-      lastX = cursorX;
-      lastY = cursorY;
-
-      // Add point to Molten Comet Ribbon Trail
-      ribbonTrail.unshift({ x: cursorX, y: cursorY, time: now });
-      if (ribbonTrail.length > maxTrailLength) {
-        ribbonTrail.pop();
-      }
-
-      // Add trailing embers
-      if (Math.random() < 0.8 && embers.length < emberCount + 50) {
-        embers.push(new Ember(cursorX, cursorY, true));
-      }
-    });
-
-    window.addEventListener('mouseleave', () => {
-      cursorX = null;
-      cursorY = null;
-      lastX = null;
-      lastY = null;
-      ribbonTrail = [];
-    });
-
-    // Click triggers massive Phoenix Sonic Shockwave & Fire Blast
-    window.addEventListener('click', (e) => {
-      burstRays = 1.2;
-      createShockwave(e.clientX, e.clientY);
-      createElectricArc(e.clientX, e.clientY);
-
-      for (let i = 0; i < 22; i++) {
+      if (now - lastSpawn > 60 && embers.length < emberCount + 25) {
+        lastSpawn = now;
         embers.push(new Ember(e.clientX, e.clientY, true));
       }
     });
 
-    // Animation Loop
+    // Soft click sparkle
+    window.addEventListener('click', (e) => {
+      for (let i = 0; i < 8; i++) {
+        embers.push(new Ember(e.clientX, e.clientY, true));
+      }
+    });
+
     function animate() {
       ctx.clearRect(0, 0, width, height);
 
-      // 1. Draw Embers
       for (let i = 0; i < embers.length; i++) {
         embers[i].update();
         embers[i].draw();
-      }
-
-      // 2. Draw Dynamic Expanding Phoenix Sonic Shockwaves
-      for (let i = shockwaves.length - 1; i >= 0; i--) {
-        const sw = shockwaves[i];
-        sw.radius += sw.speed;
-        sw.alpha -= 0.024;
-
-        if (sw.alpha <= 0 || sw.radius >= sw.maxRadius) {
-          shockwaves.splice(i, 1);
-          continue;
-        }
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(255, 120, 0, ${sw.alpha * 0.85})`;
-        ctx.lineWidth = 3.5 * sw.alpha;
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = '#ff5500';
-        ctx.stroke();
-
-        // Inner chromatic ring
-        ctx.beginPath();
-        ctx.arc(sw.x, sw.y, Math.max(0, sw.radius - 8), 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(0, 240, 255, ${sw.alpha * 0.6})`;
-        ctx.lineWidth = 1.8 * sw.alpha;
-        ctx.stroke();
-
-        ctx.restore();
-      }
-
-      // 3. Draw Cyber Circuit Electric Lightning Arcs
-      for (let i = electricArcs.length - 1; i >= 0; i--) {
-        const arc = electricArcs[i];
-        arc.alpha -= 0.06;
-
-        if (arc.alpha <= 0) {
-          electricArcs.splice(i, 1);
-          continue;
-        }
-
-        ctx.save();
-        ctx.globalAlpha = Math.max(0, arc.alpha);
-        ctx.strokeStyle = arc.color;
-        ctx.lineWidth = 1.8;
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = arc.color;
-        ctx.beginPath();
-
-        arc.branches.forEach((b, idx) => {
-          if (idx === 0) ctx.moveTo(b.x1, b.y1);
-          ctx.lineTo(b.x2, b.y2);
-        });
-
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // 4. Draw Molten Plasma Comet Ribbon Tail behind Cursor
-      if (ribbonTrail.length > 2) {
-        ctx.save();
-        for (let i = 0; i < ribbonTrail.length - 1; i++) {
-          const p1 = ribbonTrail[i];
-          const p2 = ribbonTrail[i + 1];
-          const progress = i / ribbonTrail.length; // 0 (near cursor) to 1 (tail tip)
-          const ribbonWidth = (1 - progress) * 14;
-          const alpha = (1 - progress) * 0.85;
-
-          ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
-
-          // Molten gradient from white-hot to flame red
-          let col = '#ffffff';
-          if (progress > 0.15) col = '#ffd700';
-          if (progress > 0.45) col = '#ff5500';
-          if (progress > 0.75) col = '#d61818';
-
-          ctx.strokeStyle = col;
-          ctx.globalAlpha = alpha;
-          ctx.lineWidth = Math.max(1, ribbonWidth);
-          ctx.lineCap = 'round';
-          ctx.shadowBlur = 15;
-          ctx.shadowColor = '#ff6600';
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      // 5. Draw 360-Degree Radiant Solar Rays Around Cursor
-      if (cursorX !== null && cursorY !== null) {
-        rayAngle += 0.024;
-        if (burstRays > 0) burstRays *= 0.92;
-
-        ctx.save();
-        ctx.translate(cursorX, cursorY);
-
-        // Outer Rotating Flame Rays
-        ctx.rotate(rayAngle);
-        const rayCount = 14;
-        for (let i = 0; i < rayCount; i++) {
-          const angle = (i * Math.PI * 2) / rayCount;
-          const rayLen = 45 + Math.sin(rayAngle * 3.5 + i) * 18 + burstRays * 55;
-          const ex = Math.cos(angle) * rayLen;
-          const ey = Math.sin(angle) * rayLen;
-
-          const rayGrad = ctx.createLinearGradient(0, 0, ex, ey);
-          rayGrad.addColorStop(0, 'rgba(255, 255, 210, 0.95)');
-          rayGrad.addColorStop(0.3, 'rgba(255, 150, 0, 0.7)');
-          rayGrad.addColorStop(0.7, 'rgba(255, 60, 0, 0.35)');
-          rayGrad.addColorStop(1, 'rgba(230, 20, 0, 0)');
-
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(ex, ey);
-          ctx.strokeStyle = rayGrad;
-          ctx.lineWidth = (i % 2 === 0) ? 3.5 : 2.0;
-          ctx.lineCap = 'round';
-          ctx.shadowBlur = 18;
-          ctx.shadowColor = '#ff6600';
-          ctx.stroke();
-        }
-
-        // Inner Counter-Rotating Starburst
-        ctx.rotate(-rayAngle * 2.3);
-        const innerCount = 8;
-        for (let j = 0; j < innerCount; j++) {
-          const angle2 = (j * Math.PI * 2) / innerCount;
-          const len2 = 30 + Math.cos(rayAngle * 4.5 + j) * 10 + burstRays * 30;
-          const rx = Math.cos(angle2) * len2;
-          const ry = Math.sin(angle2) * len2;
-
-          const innerGrad = ctx.createLinearGradient(0, 0, rx, ry);
-          innerGrad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-          innerGrad.addColorStop(0.45, 'rgba(255, 210, 50, 0.85)');
-          innerGrad.addColorStop(1, 'rgba(255, 80, 0, 0)');
-
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(rx, ry);
-          ctx.strokeStyle = innerGrad;
-          ctx.lineWidth = 2.5;
-          ctx.stroke();
-        }
-
-        // Central Fire Corona Core
-        const haloGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, 34 + burstRays * 25);
-        haloGrad.addColorStop(0, 'rgba(255, 255, 230, 0.95)');
-        haloGrad.addColorStop(0.3, 'rgba(255, 150, 0, 0.65)');
-        haloGrad.addColorStop(0.7, 'rgba(230, 40, 20, 0.3)');
-        haloGrad.addColorStop(1, 'transparent');
-
-        ctx.beginPath();
-        ctx.arc(0, 0, 34 + burstRays * 25, 0, Math.PI * 2);
-        ctx.fillStyle = haloGrad;
-        ctx.fill();
-
-        ctx.restore();
       }
 
       requestAnimationFrame(animate);
@@ -417,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // =========================================================================
-  // 2. 3D PARALLAX & DYNAMIC REACTIVE LIGHTING ON PHOENIX
+  // 2. 3D PARALLAX INTERACTION ON PHOENIX
   // =========================================================================
   function initPhoenixParallax() {
     const bgImg = document.querySelector('.phoenix-bg-animated-img');
@@ -427,75 +143,68 @@ document.addEventListener('DOMContentLoaded', () => {
       const deltaX = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
       const deltaY = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
 
-      const rotateY = deltaX * 14;
-      const rotateX = -deltaY * 11;
-      const speedGlow = Math.min(1.2, 1 + globalMouseSpeed * 0.2);
+      const rotateY = deltaX * 12;
+      const rotateX = -deltaY * 9;
 
-      bgImg.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${speedGlow})`;
+      bgImg.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
     });
 
     window.addEventListener('mouseleave', () => {
-      bgImg.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+      bgImg.style.transform = 'rotateX(0deg) rotateY(0deg)';
     });
   }
 
   // =========================================================================
-  // 3. LIVING FLAPPING PHOENIX CURSOR FOLLOWER
+  // 3. SILKY MINIMALIST FIRE AURA FOLLOWER (Zero Clutter, Pure Elegance)
   // =========================================================================
-  function initAnimatedPhoenixCursor() {
-    const cursorEl = document.getElementById('animatedPhoenixCursor');
-    if (!cursorEl) return;
+  function initLuxuryCursorAura() {
+    const aura = document.getElementById('cursorFireAura');
+    if (!aura) return;
 
-    let targetX = -100, targetY = -100;
+    let mouseX = -100, mouseY = -100;
     let currentX = -100, currentY = -100;
-    let prevX = -100;
-    let tilt = 0;
 
     window.addEventListener('mousemove', (e) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
-      cursorEl.style.opacity = '1';
-
-      // Flight banking when moving fast left or right
-      const vx = targetX - prevX;
-      prevX = targetX;
-      tilt = Math.max(-28, Math.min(28, vx * 1.8));
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      aura.style.opacity = '1';
     });
 
     document.addEventListener('mouseleave', () => {
-      cursorEl.style.opacity = '0';
+      aura.style.opacity = '0';
     });
 
-    // Hover acceleration & click burst
+    // Elegant hover expansion on links and buttons
     const interactives = 'a, button, input, [role="button"], .glass-subcard, .btn';
     document.querySelectorAll(interactives).forEach(el => {
-      el.addEventListener('mouseenter', () => cursorEl.classList.add('cursor-hover'));
-      el.addEventListener('mouseleave', () => cursorEl.classList.remove('cursor-hover'));
+      el.addEventListener('mouseenter', () => aura.classList.add('aura-hover'));
+      el.addEventListener('mouseleave', () => aura.classList.remove('aura-hover'));
     });
 
-    window.addEventListener('mousedown', () => cursorEl.classList.add('cursor-click'));
-    window.addEventListener('mouseup', () => cursorEl.classList.remove('cursor-click'));
+    window.addEventListener('mousedown', () => aura.classList.add('aura-click'));
+    window.addEventListener('mouseup', () => aura.classList.remove('aura-click'));
 
-    // Smooth tracking loop
-    function updateCursor() {
-      currentX += (targetX - currentX) * 0.48;
-      currentY += (targetY - currentY) * 0.48;
-      tilt *= 0.88;
+    // Smooth spring physics loop
+    function updateAura() {
+      currentX += (mouseX - currentX) * 0.28;
+      currentY += (mouseY - currentY) * 0.28;
 
-      cursorEl.style.transform = `translate3d(${currentX - 20}px, ${currentY - 2}px, 0) rotate(${tilt}deg)`;
-      requestAnimationFrame(updateCursor);
+      const halfW = aura.offsetWidth / 2;
+      const halfH = aura.offsetHeight / 2;
+      aura.style.transform = `translate3d(${currentX - halfW}px, ${currentY - halfH}px, 0)`;
+
+      requestAnimationFrame(updateAura);
     }
-    requestAnimationFrame(updateCursor);
+    requestAnimationFrame(updateAura);
   }
 
   // =========================================================================
-  // 4. AERODYNAMIC SOUND ENGINE (SOUND RESPONDS TO MOVEMENT SPEED)
+  // 4. CINEMATIC AMBIENT AUDIO ENGINE
   // =========================================================================
   function initPhoenixSoundscape() {
     let audioCtx = null;
     let isPlaying = false;
     let masterGain = null;
-    let fireFilter = null;
     let intervalCry = null;
 
     const toggleBtn = document.getElementById('toggleAudioBtn');
@@ -532,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ambientNoiseNode.buffer = noiseBuffer;
       ambientNoiseNode.loop = true;
 
-      fireFilter = audioCtx.createBiquadFilter();
+      const fireFilter = audioCtx.createBiquadFilter();
       fireFilter.type = 'lowpass';
       fireFilter.frequency.setValueAtTime(280, audioCtx.currentTime);
 
@@ -540,9 +249,9 @@ document.addEventListener('DOMContentLoaded', () => {
       fireGain.gain.setValueAtTime(0.65, audioCtx.currentTime);
 
       const lfo = audioCtx.createOscillator();
-      lfo.frequency.setValueAtTime(0.25, audioCtx.currentTime);
+      lfo.frequency.setValueAtTime(0.22, audioCtx.currentTime);
       const lfoGain = audioCtx.createGain();
-      lfoGain.gain.setValueAtTime(90, audioCtx.currentTime);
+      lfoGain.gain.setValueAtTime(80, audioCtx.currentTime);
       lfo.connect(lfoGain);
       lfoGain.connect(fireFilter.frequency);
       lfo.start();
@@ -566,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
       droneFilter.frequency.setValueAtTime(160, audioCtx.currentTime);
 
       const droneGain = audioCtx.createGain();
-      droneGain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      droneGain.gain.setValueAtTime(0.18, audioCtx.currentTime);
 
       droneOsc1.connect(droneFilter);
       droneOsc2.connect(droneFilter);
@@ -575,13 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       droneOsc1.start();
       droneOsc2.start();
-
-      // Hook aerodynamic speed to filter frequency
-      updateAudioSpeed = (speed) => {
-        if (!fireFilter || !audioCtx) return;
-        const targetFreq = 260 + Math.min(650, speed * 220);
-        fireFilter.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, 0.08);
-      };
 
       // Periodic ethereal Phoenix call
       function triggerPhoenixCall() {
