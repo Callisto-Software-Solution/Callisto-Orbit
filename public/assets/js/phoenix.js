@@ -171,3 +171,213 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+  // =========================================================================
+  // 3. CINEMATIC WEB AUDIO API PHOENIX SOUNDSCAPE
+  // =========================================================================
+  initPhoenixSoundscape();
+
+  function initPhoenixSoundscape() {
+    let audioCtx = null;
+    let isPlaying = false;
+    let masterGain = null;
+    let ambientNoiseNode = null;
+    let droneOsc1 = null;
+    let droneOsc2 = null;
+    let intervalCry = null;
+
+    const toggleBtn = document.getElementById('toggleAudioBtn');
+    const audioWaves = document.getElementById('audioWaves');
+    const audioBtnText = document.getElementById('audioBtnText');
+
+    function createAudioEngine() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return false;
+      audioCtx = new AudioContext();
+
+      masterGain = audioCtx.createGain();
+      masterGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+      masterGain.connect(audioCtx.destination);
+
+      // A. Fiery Wind & Crackle Ambient Generator (Pink/Brown noise filter)
+      const bufferSize = audioCtx.sampleRate * 2;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
+        b6 = white * 0.115926;
+      }
+
+      ambientNoiseNode = audioCtx.createBufferSource();
+      ambientNoiseNode.buffer = noiseBuffer;
+      ambientNoiseNode.loop = true;
+
+      const fireFilter = audioCtx.createBiquadFilter();
+      fireFilter.type = 'lowpass';
+      fireFilter.frequency.setValueAtTime(280, audioCtx.currentTime);
+
+      const fireGain = audioCtx.createGain();
+      fireGain.gain.setValueAtTime(0.65, audioCtx.currentTime);
+
+      // Low frequency modulation for fire roar gust
+      const lfo = audioCtx.createOscillator();
+      lfo.frequency.setValueAtTime(0.25, audioCtx.currentTime);
+      const lfoGain = audioCtx.createGain();
+      lfoGain.gain.setValueAtTime(90, audioCtx.currentTime);
+      lfo.connect(lfoGain);
+      lfoGain.connect(fireFilter.frequency);
+      lfo.start();
+
+      ambientNoiseNode.connect(fireFilter);
+      fireFilter.connect(fireGain);
+      fireGain.connect(masterGain);
+      ambientNoiseNode.start();
+
+      // B. Mystical Warm Drone (D2 & A2 Harmonic Chords)
+      droneOsc1 = audioCtx.createOscillator();
+      droneOsc1.type = 'triangle';
+      droneOsc1.frequency.setValueAtTime(73.42, audioCtx.currentTime); // D2
+
+      droneOsc2 = audioCtx.createOscillator();
+      droneOsc2.type = 'sine';
+      droneOsc2.frequency.setValueAtTime(110.00, audioCtx.currentTime); // A2
+
+      const droneFilter = audioCtx.createBiquadFilter();
+      droneFilter.type = 'lowpass';
+      droneFilter.frequency.setValueAtTime(160, audioCtx.currentTime);
+
+      const droneGain = audioCtx.createGain();
+      droneGain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+
+      droneOsc1.connect(droneFilter);
+      droneOsc2.connect(droneFilter);
+      droneFilter.connect(droneGain);
+      droneGain.connect(masterGain);
+
+      droneOsc1.start();
+      droneOsc2.start();
+
+      // C. Periodic Ethereal Phoenix Chime / Call
+      function triggerPhoenixCall() {
+        if (!isPlaying || !audioCtx) return;
+        try {
+          const callOsc = audioCtx.createOscillator();
+          const callGain = audioCtx.createGain();
+          const callFilter = audioCtx.createBiquadFilter();
+
+          callOsc.type = 'sine';
+          const now = audioCtx.currentTime;
+          callOsc.frequency.setValueAtTime(587.33, now); // D5
+          callOsc.frequency.exponentialRampToValueAtTime(880.00, now + 1.2); // Bend up to A5
+          callOsc.frequency.exponentialRampToValueAtTime(440.00, now + 3.2); // Glide down
+
+          callFilter.type = 'bandpass';
+          callFilter.frequency.setValueAtTime(750, now);
+          callFilter.Q.setValueAtTime(4.0, now);
+
+          callGain.gain.setValueAtTime(0.001, now);
+          callGain.gain.linearRampToValueAtTime(0.12, now + 0.8);
+          callGain.gain.exponentialRampToValueAtTime(0.0001, now + 3.8);
+
+          callOsc.connect(callFilter);
+          callFilter.connect(callGain);
+          callGain.connect(masterGain);
+
+          callOsc.start(now);
+          callOsc.stop(now + 4.0);
+        } catch (e) {}
+      }
+
+      intervalCry = setInterval(triggerPhoenixCall, 14000);
+      return true;
+    }
+
+    function startSound() {
+      if (!audioCtx) {
+        createAudioEngine();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      if (masterGain) {
+        masterGain.gain.linearRampToValueAtTime(0.7, audioCtx.currentTime + 1.5);
+      }
+      isPlaying = true;
+      if (audioWaves) audioWaves.classList.add('audio-playing');
+      if (audioBtnText) audioBtnText.textContent = 'SOUND: ON';
+      if (toggleBtn) {
+        toggleBtn.style.color = '#ff9d00';
+        toggleBtn.style.borderColor = 'rgba(255, 85, 0, 0.5)';
+      }
+    }
+
+    function stopSound() {
+      if (masterGain && audioCtx) {
+        masterGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
+      }
+      isPlaying = false;
+      if (audioWaves) audioWaves.classList.remove('audio-playing');
+      if (audioBtnText) audioBtnText.textContent = 'SOUND: MUTED';
+      if (toggleBtn) {
+        toggleBtn.style.color = '#64748b';
+        toggleBtn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      }
+    }
+
+    // Try starting audio on page load
+    try {
+      startSound();
+    } catch (e) {}
+
+    // First user click starts audio if browser autoplay policy blocked it
+    const startOnFirstGesture = () => {
+      if (!isPlaying) {
+        startSound();
+      }
+      window.removeEventListener('click', startOnFirstGesture);
+      window.removeEventListener('keydown', startOnFirstGesture);
+    };
+    window.addEventListener('click', startOnFirstGesture, { once: true });
+    window.addEventListener('keydown', startOnFirstGesture, { once: true });
+
+    // Toggle button handler
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isPlaying) {
+          stopSound();
+        } else {
+          startSound();
+        }
+      });
+    }
+
+    // Enter Portal Click Fire Blast SFX
+    const portalBtn = document.querySelector('.btn-phoenix-main');
+    if (portalBtn) {
+      portalBtn.addEventListener('click', (e) => {
+        if (audioCtx && audioCtx.state === 'running') {
+          const blastOsc = audioCtx.createOscillator();
+          const blastGain = audioCtx.createGain();
+          blastOsc.type = 'sawtooth';
+          const now = audioCtx.currentTime;
+          blastOsc.frequency.setValueAtTime(220, now);
+          blastOsc.frequency.exponentialRampToValueAtTime(60, now + 0.4);
+          blastGain.gain.setValueAtTime(0.3, now);
+          blastGain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+          blastOsc.connect(blastGain);
+          blastGain.connect(masterGain);
+          blastOsc.start(now);
+          blastOsc.stop(now + 0.4);
+        }
+      });
+    }
+  }
