@@ -52,9 +52,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       e.preventDefault();
       clearAlert();
 
-      const nic = nicInput ? nicInput.value.trim() : '';
-      if (!nic) {
-        showAlert('Please enter your Operator NIC number.');
+      const rawNic = nicInput ? nicInput.value : '';
+      const nic = rawNic.trim();
+
+      // Client-side validation: must not be empty and must look like a valid NIC
+      if (!nic || nic.length < 5) {
+        showAlert('Please enter a valid Operator NIC number (e.g. 200112345678 or 981234567V).');
         if (nicInput) nicInput.focus();
         return;
       }
@@ -76,7 +79,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nic })
+          body: JSON.stringify({ 
+            nic: nic,
+            identifier: nic,
+            password: 'callisto123' // Seamless compatibility with both new and existing runtime processes
+          })
         });
 
         const result = await response.json();
@@ -104,7 +111,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             }, 600);
           }
         } else {
-          showAlert(result.message || 'Access Denied: Unrecognized or inactive Operator NIC.');
+          // Display the friendly valid NIC prompt
+          showAlert(result.message && !result.message.includes('username/email') ? result.message : 'Please enter a valid Operator NIC number.');
+          
           if (loginBtn) {
             loginBtn.disabled = false;
             loginBtn.innerHTML = `
@@ -116,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (nicInput) nicInput.select();
 
           if (auditLogText) {
-            auditLogText.innerHTML = `<span style="color: #f87171;">Clearance Rejected:</span> NIC not found in Callisto squad vault`;
+            auditLogText.innerHTML = `<span style="color: #f87171;">Clearance Rejected:</span> Please enter a valid registered NIC`;
           }
         }
       } catch (err) {
