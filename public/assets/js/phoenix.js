@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Portal button click cinematic fire takeoff sequence
+    // Portal button click: Cinematic Portal Loading Animation Sequence
     const portalBtn = document.getElementById('btnLaunchOrbit');
     if (portalBtn) {
       let isLaunching = false;
@@ -399,58 +399,93 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isLaunching) return;
         isLaunching = true;
 
-        // 1. Play high-energy sonic fire blast SFX
+        // Button feedback
+        portalBtn.style.pointerEvents = 'none';
+        portalBtn.innerHTML = `
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          <span>LAUNCHING ORBIT...</span>
+        `;
+
+        const loader = document.getElementById('phoenixPortalLoader');
+        const statusElem = document.getElementById('portalLoaderStatus');
+        const progressBar = document.getElementById('portalProgressBar');
+
+        // 1. Activate Portal Loader Overlay
+        if (loader) {
+          loader.classList.add('active');
+        }
+
+        // 2. Play Audio Charging SFX
         if (audioCtx) {
           try {
             if (audioCtx.state !== 'running') audioCtx.resume();
             const now = audioCtx.currentTime;
-            
-            // Rising whoosh pitch
-            const blastOsc = audioCtx.createOscillator();
-            const blastGain = audioCtx.createGain();
-            blastOsc.type = 'sawtooth';
-            blastOsc.frequency.setValueAtTime(140, now);
-            blastOsc.frequency.exponentialRampToValueAtTime(820, now + 0.45);
-            
-            blastGain.gain.setValueAtTime(0.45, now);
-            blastGain.gain.exponentialRampToValueAtTime(0.01, now + 0.65);
-            
-            blastOsc.connect(blastGain);
-            blastGain.connect(masterGain || audioCtx.destination);
-            blastOsc.start(now);
-            blastOsc.stop(now + 0.65);
 
-            // Phoenix screech at launch
-            const cryOsc = audioCtx.createOscillator();
-            const cryGain = audioCtx.createGain();
-            cryOsc.type = 'sine';
-            cryOsc.frequency.setValueAtTime(950, now);
-            cryOsc.frequency.exponentialRampToValueAtTime(1800, now + 0.3);
-            cryGain.gain.setValueAtTime(0.35, now);
-            cryGain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-            cryOsc.connect(cryGain);
-            cryGain.connect(masterGain || audioCtx.destination);
-            cryOsc.start(now);
-            cryOsc.stop(now + 0.5);
+            // Power-up ascending warp tone
+            const chargeOsc = audioCtx.createOscillator();
+            const chargeGain = audioCtx.createGain();
+            chargeOsc.type = 'sawtooth';
+            chargeOsc.frequency.setValueAtTime(120, now);
+            chargeOsc.frequency.exponentialRampToValueAtTime(750, now + 1.2);
+
+            chargeGain.gain.setValueAtTime(0.25, now);
+            chargeGain.gain.exponentialRampToValueAtTime(0.01, now + 1.4);
+
+            chargeOsc.connect(chargeGain);
+            chargeGain.connect(masterGain || audioCtx.destination);
+            chargeOsc.start(now);
+            chargeOsc.stop(now + 1.4);
           } catch (err) {}
         }
 
-        // 2. Add visual launch takeoff animation to Phoenix and Flash
-        document.body.classList.add('phoenix-launching');
+        // 3. Multi-Step Cyber Security Loading Progression
+        // Step 1: 0ms
+        if (progressBar) progressBar.style.width = '25%';
+        if (statusElem) statusElem.textContent = 'INITIALIZING ORBIT GATEWAY...';
 
-        let flash = document.getElementById('phoenixLaunchFlash');
-        if (!flash) {
-          flash = document.createElement('div');
-          flash.id = 'phoenixLaunchFlash';
-          flash.className = 'phoenix-launch-flash';
-          document.body.appendChild(flash);
-        }
-        setTimeout(() => flash.classList.add('active'), 200);
-
-        // 3. Smooth transition to Login page
+        // Step 2: 450ms
         setTimeout(() => {
-          window.location.href = '/login.html?flyIn=true';
-        }, 620);
+          if (progressBar) progressBar.style.width = '58%';
+          if (statusElem) statusElem.textContent = 'SYNCHRONIZING ZERO-DB ENCRYPTED VAULT...';
+        }, 450);
+
+        // Step 3: 950ms
+        setTimeout(() => {
+          if (progressBar) progressBar.style.width = '88%';
+          if (statusElem) statusElem.textContent = 'ESTABLISHING OPERATOR CLEARANCE MATRIX...';
+        }, 950);
+
+        // Step 4: 1400ms (Granted)
+        setTimeout(() => {
+          if (progressBar) progressBar.style.width = '100%';
+          if (statusElem) {
+            statusElem.style.color = '#00f076';
+            statusElem.textContent = 'ACCESS GRANTED • ENTERING ORBIT...';
+          }
+
+          // Chime on success
+          if (audioCtx) {
+            try {
+              const now = audioCtx.currentTime;
+              const chime = audioCtx.createOscillator();
+              const chimeGain = audioCtx.createGain();
+              chime.type = 'sine';
+              chime.frequency.setValueAtTime(587.33, now); // D5
+              chime.frequency.setValueAtTime(880, now + 0.1); // A5
+              chimeGain.gain.setValueAtTime(0.3, now);
+              chimeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+              chime.connect(chimeGain);
+              chimeGain.connect(masterGain || audioCtx.destination);
+              chime.start(now);
+              chime.stop(now + 0.35);
+            } catch (err) {}
+          }
+        }, 1400);
+
+        // Step 5: 1750ms -> Navigate to Login
+        setTimeout(() => {
+          window.location.href = '/login.html';
+        }, 1750);
       });
     }
   }

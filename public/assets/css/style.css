@@ -1363,6 +1363,185 @@ body.viewport-100vh .cursor-pointer {
   opacity: 1;
 }
 
+/* ==========================================================================
+   CINEMATIC PHOENIX ORBIT PORTAL LOADER OVERLAY
+   ========================================================================== */
+
+.portal-loader-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(4, 7, 16, 0.82);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
+}
+
+.portal-loader-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.portal-loader-card {
+  background: rgba(12, 18, 38, 0.84);
+  border: 1.5px solid rgba(255, 100, 0, 0.45);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 50px rgba(255, 85, 0, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  border-radius: 28px;
+  padding: 2.5rem 2.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 440px;
+  width: 90%;
+  animation: loaderCardEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes loaderCardEnter {
+  0% {
+    transform: scale(0.85) translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.portal-ring-stage {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.portal-ring {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.ring-outer {
+  width: 130px;
+  height: 130px;
+  border: 2px dashed rgba(255, 85, 0, 0.75);
+  box-shadow: 0 0 25px rgba(255, 85, 0, 0.4);
+  animation: spinPortalClockwise 3s linear infinite;
+}
+
+.ring-middle {
+  width: 100px;
+  height: 100px;
+  border: 2.5px solid transparent;
+  border-top-color: #00f0ff;
+  border-bottom-color: #ffaa00;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
+  animation: spinPortalCounter 2s linear infinite;
+}
+
+.ring-inner {
+  width: 72px;
+  height: 72px;
+  border: 2px dotted #ff3700;
+  animation: spinPortalClockwise 1.4s linear infinite;
+}
+
+@keyframes spinPortalClockwise {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spinPortalCounter {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+
+.portal-core-bird {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #0b1122;
+  border: 2px solid #ff5500;
+  box-shadow: 0 0 25px #ff5500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  z-index: 5;
+  animation: corePulsePortal 1.2s infinite alternate ease-in-out;
+}
+
+.portal-core-bird img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+@keyframes corePulsePortal {
+  0% { transform: scale(0.92); box-shadow: 0 0 15px #ff3700; }
+  100% { transform: scale(1.08); box-shadow: 0 0 35px #ffaa00; }
+}
+
+.portal-loader-brand {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #fff;
+  margin-top: 1rem;
+}
+
+.portal-status-ticker {
+  font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ff9d00;
+  letter-spacing: 1px;
+  margin-top: 0.4rem;
+  text-transform: uppercase;
+  min-height: 1.4rem;
+  text-shadow: 0 0 10px rgba(255, 157, 0, 0.5);
+}
+
+.portal-progress-track {
+  width: 280px;
+  max-width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0.9rem auto 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.portal-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff3700 0%, #ff9d00 50%, #00f0ff 100%);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.85);
+  transition: width 0.35s ease;
+}
+
+.portal-loader-sub {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
 /* 2. Login Page Phoenix Sentinel Card */
 .login-phoenix-sentinel-box {
   background: rgba(12, 18, 34, 0.68);
