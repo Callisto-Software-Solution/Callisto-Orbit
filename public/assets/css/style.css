@@ -394,53 +394,32 @@ body::before {
 
 /* Input Fields (High-Contrast Cyber Glass Inputs & Clear Placeholders) */
 ::placeholder {
-  color: #cbd5e1 !important; /* Luminous silver slate - crystal clear contrast */
+  color: #94a3b8 !important; /* Clear slate gray, readable against dark UI */
   opacity: 1 !important;
-  font-weight: 500 !important;
+  font-weight: 400;
 }
 
 ::-webkit-input-placeholder {
-  color: #cbd5e1 !important;
+  color: #94a3b8 !important;
   opacity: 1 !important;
-  font-weight: 500 !important;
 }
 
 ::-moz-placeholder {
-  color: #cbd5e1 !important;
+  color: #94a3b8 !important;
   opacity: 1 !important;
-  font-weight: 500 !important;
 }
 
 :-ms-input-placeholder {
-  color: #cbd5e1 !important;
+  color: #94a3b8 !important;
   opacity: 1 !important;
-  font-weight: 500 !important;
 }
 
 .input-cyber-glass::placeholder,
 .form-control::placeholder,
 .input-nic-custom::placeholder {
-  color: #cbd5e1 !important;
-  opacity: 1 !important;
-  font-weight: 500 !important;
-}
-
-/* Global High-Contrast Text Overrides for Dark Themes */
-.text-muted,
-p.text-muted,
-span.text-muted,
-div.text-muted,
-small.text-muted,
-ul.text-muted {
-  color: #cbd5e1 !important; /* Crisp luminous slate */
-}
-
-.text-dim,
-p.text-dim,
-span.text-dim,
-div.text-dim,
-small.text-dim {
   color: #94a3b8 !important;
+  opacity: 1 !important;
+  font-weight: 400;
 }
 
 .form-step-label {
@@ -2197,9 +2176,9 @@ body.viewport-100vh .cursor-pointer {
 }
 
 .input-nic-custom::placeholder {
-  color: #cbd5e1 !important;
+  color: #94a3b8 !important;
   opacity: 1 !important;
-  font-weight: 500 !important;
+  font-weight: 400 !important;
   letter-spacing: 0.5px !important;
   font-family: var(--font-sans) !important;
   font-size: 0.95rem !important;
