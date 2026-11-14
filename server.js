@@ -419,7 +419,7 @@ async function handleRequest(req, res) {
 
         // Only super_admin can create another super_admin
         if (assignRole === 'super_admin' && session.role !== 'super_admin') {
-          return sendJson(res, 403, { success: false, message: 'Only Super Admin can assign Super Admin clearance' });
+          return sendJson(res, 403, { success: false, message: 'Access Denied: Only Super Admin can register a Super Admin specialist' });
         }
 
         // Require password for admin / super_admin clearance
@@ -502,9 +502,28 @@ async function handleRequest(req, res) {
           return sendJson(res, 404, { success: false, message: 'Member not found' });
         }
 
-        // Only super_admin can change or grant super_admin role
+        // 1. Normal admins cannot edit a Super Admin
+        if (users[userIndex].role === 'super_admin' && session.role !== 'super_admin') {
+          return sendJson(res, 403, {
+            success: false,
+            message: 'Access Denied: Only Super Admin can modify a Super Admin specialist'
+          });
+        }
+
+        // 2. An admin cannot change their own clearance role
+        if (session.userId === memberId && role && role !== users[userIndex].role) {
+          return sendJson(res, 403, {
+            success: false,
+            message: 'Access Denied: You cannot modify your own clearance tier or role'
+          });
+        }
+
+        // 3. Only Super Admin can assign the Super Admin clearance role
         if (role === 'super_admin' && session.role !== 'super_admin') {
-          return sendJson(res, 403, { success: false, message: 'Only Super Admin can assign Super Admin clearance' });
+          return sendJson(res, 403, {
+            success: false,
+            message: 'Access Denied: Only Super Admin can assign Super Admin clearance'
+          });
         }
 
         if (role) users[userIndex].role = role;
@@ -527,12 +546,17 @@ async function handleRequest(req, res) {
         });
       }
 
-      // 8. ADMIN: DELETE SPECIALIST FROM VAULT
+      // 8. ADMIN: DELETE SPECIALIST FROM VAULT (Super Admin Only)
       if (pathname.startsWith('/api/admin/members/') && method === 'DELETE') {
         const token = getAuthToken(req);
         const session = verifySessionToken(token);
-        if (!session || (session.role !== 'admin' && session.role !== 'super_admin')) {
-          return sendJson(res, 403, { success: false, message: 'Forbidden: Admin or Super Admin clearance required' });
+        
+        // Strict: Only Super Admin can delete specialists (normal admins cannot delete members or other admins)
+        if (!session || session.role !== 'super_admin') {
+          return sendJson(res, 403, {
+            success: false,
+            message: 'Access Denied: Only Super Admin has clearance to revoke or delete specialists from the vault'
+          });
         }
 
         const memberId = pathname.replace('/api/admin/members/', '').trim();
@@ -545,11 +569,6 @@ async function handleRequest(req, res) {
         // Prevent self-deletion
         if (session.userId === targetUser.id) {
           return sendJson(res, 400, { success: false, message: 'You cannot delete your own active operator account' });
-        }
-
-        // Only super_admin can delete a super_admin
-        if (targetUser.role === 'super_admin' && session.role !== 'super_admin') {
-          return sendJson(res, 403, { success: false, message: 'Only Super Admin can delete a Super Admin specialist' });
         }
 
         const remainingUsers = users.filter(u => u.id !== memberId);

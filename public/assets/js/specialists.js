@@ -152,6 +152,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (role !== 'super_admin') {
         if (optSuperAdmin) optSuperAdmin.disabled = true;
         if (optEditSuperAdmin) optEditSuperAdmin.disabled = true;
+      } else {
+        if (optSuperAdmin) optSuperAdmin.disabled = false;
+        if (optEditSuperAdmin) optEditSuperAdmin.disabled = false;
       }
     } else {
       if (btnOpenRegisterModal) btnOpenRegisterModal.classList.add('d-none');
@@ -225,13 +228,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (noSpecialistsState) noSpecialistsState.classList.add('d-none');
 
     const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin');
+    const isSuperAdminUser = currentUser && currentUser.role === 'super_admin';
 
     specialistsTableBody.innerHTML = filtered.map(m => {
       const avatarUrl = m.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(m.name)}`;
       const isSuperAdminTarget = m.role === 'super_admin';
-      const canEditThisUser = canEdit && (currentUser.role === 'super_admin' || !isSuperAdminTarget);
+      const canEditThisUser = canEdit && (isSuperAdminUser || !isSuperAdminTarget);
 
       const isSelf = currentUser && currentUser.id === m.id;
+      // Strict rule: Only Super Admin can delete specialists, and cannot delete themselves
+      const canDeleteThisUser = isSuperAdminUser && !isSelf;
       let actionBtn = '';
 
       if (canEditThisUser) {
@@ -240,15 +246,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             <button type="button" class="btn btn-sm glass-subcard text-info btn-edit-specialist" data-member-id="${m.id}" style="border: 1px solid rgba(0,210,255,0.4); border-radius: 8px; padding: 0.35rem 0.65rem; font-size: 0.75rem; font-weight: 600;" title="Edit Specialist Clearance">
               <i class="bi bi-pencil-square me-1"></i> Edit
             </button>
-            ${!isSelf ? `
+            ${canDeleteThisUser ? `
               <button type="button" class="btn btn-sm glass-subcard text-danger btn-delete-specialist" data-member-id="${m.id}" style="border: 1px solid rgba(230,32,32,0.4); border-radius: 8px; padding: 0.35rem 0.65rem; font-size: 0.75rem; font-weight: 600;" title="Revoke & Delete Specialist">
                 <i class="bi bi-trash3-fill me-1"></i> Delete
               </button>
-            ` : `
-              <span class="badge" style="background: rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.68rem; padding: 0.35rem 0.5rem; border: 1px solid rgba(255,255,255,0.1);">You</span>
-            `}
+            ` : (isSelf ? `<span class="badge" style="background: rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.68rem; padding: 0.35rem 0.5rem; border: 1px solid rgba(255,255,255,0.1);">You</span>` : '')}
           </div>
         `;
+      } else if (isSuperAdminTarget) {
+        actionBtn = `<span class="badge" style="background: linear-gradient(135deg, rgba(255,85,0,0.2), rgba(216,27,27,0.2)); border: 1px solid rgba(255,85,0,0.5); color: #ff9d00; font-size: 0.72rem; padding: 0.35rem 0.65rem; font-weight: 700;"><i class="bi bi-shield-lock-fill me-1"></i>Protected</span>`;
       } else {
         actionBtn = `<span class="badge" style="background: rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.7rem; border: 1px solid rgba(255,255,255,0.1);">Verified</span>`;
       }
@@ -313,6 +319,27 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (eyeIconEditPassword) eyeIconEditPassword.className = 'bi bi-eye';
           updateEditPasswordVisibility();
           if (modalEditAlert) modalEditAlert.innerHTML = '';
+
+          // Self-role protection & Super Admin assignment check
+          const isSelf = currentUser && currentUser.id === target.id;
+          const editRoleHelp = document.getElementById('editRoleHelp');
+          if (isSelf) {
+            editRole.disabled = true;
+            if (editRoleHelp) {
+              editRoleHelp.textContent = 'You cannot modify your own clearance role';
+              editRoleHelp.classList.remove('d-none');
+            }
+          } else {
+            editRole.disabled = false;
+            if (editRoleHelp) {
+              editRoleHelp.textContent = '';
+              editRoleHelp.classList.add('d-none');
+            }
+            if (optEditSuperAdmin) {
+              optEditSuperAdmin.disabled = (currentUser && currentUser.role !== 'super_admin');
+            }
+          }
+
           bsEditModal.show();
         }
       });
@@ -400,6 +427,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 5. Open Register Modal
   if (btnOpenRegisterModal) {
     btnOpenRegisterModal.addEventListener('click', () => {
+      if (optSuperAdmin) {
+        optSuperAdmin.disabled = (currentUser && currentUser.role !== 'super_admin');
+      }
       if (modalRegAlert) modalRegAlert.innerHTML = '';
       if (formRegisterSpecialist) formRegisterSpecialist.reset();
       if (regPassword) {
