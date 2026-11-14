@@ -174,17 +174,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // 2. Handle Logout
-  const executeLogout = async () => {
+  // 2. Handle Logout & Exit Session
+  const executeLogout = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
-      sessionStorage.removeItem('callisto_active_user');
+    } catch (err) {
+      console.warn('Logout API error:', err);
+    }
+
+    try {
+      sessionStorage.clear();
+      document.cookie = 'callisto_token=; Path=/; SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
     } catch (e) {}
 
     if (window.triggerOrbitTransition) {
-      window.triggerOrbitTransition('/', 'SESSION TERMINATED • RETURNING TO PHOENIX...', 1000);
+      window.triggerOrbitTransition('/login.html', 'SESSION TERMINATED • EXITING CLEARANCE...', 800);
     } else {
-      window.location.href = '/';
+      window.location.replace('/login.html');
     }
   };
 
@@ -196,7 +203,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     sideBtnRegisterSpecialist.addEventListener('click', () => {
       btnOpenRegisterModal.click();
     });
-  }
   }
 
   // 3. Load Dashboard & Collections Data

@@ -358,7 +358,7 @@ async function handleRequest(req, res) {
         if (token) {
           activeSessions.delete(token);
         }
-        const clearCookie = 'callisto_token=; Path=/; HttpOnly; Max-Age=0';
+        const clearCookie = 'callisto_token=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
         return sendJson(res, 200, { success: true, message: 'Logged out successfully' }, {
           'Set-Cookie': clearCookie
         });
