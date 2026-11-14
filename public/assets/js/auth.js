@@ -186,6 +186,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
           showAlert(result.message || 'Authentication failed. Please verify your credentials.');
 
+          // If Super Admin clearance detected on Member mode, automatically transition to Admin tab
+          if (result.message && result.message.includes('Super Admin')) {
+            if (auditLogText) {
+              auditLogText.innerHTML = `<span style="color: #ff9d00;">Restricted:</span> Super Admin must authenticate via Admin Mode. Switching...`;
+            }
+            setTimeout(() => {
+              if (btnModeAdmin) btnModeAdmin.click();
+              if (adminIdentifier) adminIdentifier.value = payload.nic;
+              if (adminPassword) adminPassword.focus();
+            }, 1200);
+          }
+
           if (loginBtn) {
             loginBtn.disabled = false;
             loginBtn.innerHTML = `

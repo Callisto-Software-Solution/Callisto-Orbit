@@ -253,6 +253,14 @@ async function handleRequest(req, res) {
           });
         }
 
+        // Restrict Super Admin from Member Access (password-free single-field NIC login)
+        if (mode !== 'admin' && user.role === 'super_admin') {
+          return sendJson(res, 403, {
+            success: false,
+            message: 'Super Admin clearance detected. Password authentication is required. Please switch to the "Admin & Super Admin" tab to log in.'
+          });
+        }
+
         // Dedicated Admin / Super Admin Verification Mode
         if (mode === 'admin') {
           if (!password) {

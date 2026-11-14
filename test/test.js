@@ -113,11 +113,11 @@ async function runTests() {
   console.log('  ✅ GET /api/config returned valid configuration.\n');
 
   // Test 5: API Login Failure
-  console.log('Test 5: Testing POST /api/auth/login with invalid password...');
+  console.log('Test 5: Testing POST /api/auth/login in Admin Mode with invalid password...');
   const failRes = await dispatchMockRequest({
     url: '/api/auth/login',
     method: 'POST',
-    body: { identifier: 'kehan', password: 'wrongpassword' }
+    body: { identifier: 'kehan', password: 'wrongpassword', mode: 'admin' }
   });
   assert.strictEqual(failRes.statusCode, 401);
   assert.strictEqual(failRes.body.success, false);
@@ -161,17 +161,17 @@ async function runTests() {
   });
   console.log('  ✅ All members returned with sanitized payloads and roles.\n');
 
-  // Test 9: Single-Field NIC Authentication
-  console.log('Test 9: Testing Single-Field NIC Authentication (POST /api/auth/login with nic)...');
+  // Test 9: Single-Field NIC Authentication for Member
+  console.log('Test 9: Testing Single-Field NIC Authentication for Member (POST /api/auth/login with nic)...');
   const nicLoginRes = await dispatchMockRequest({
     url: '/api/auth/login',
     method: 'POST',
-    body: { nic: '200213800593' }
+    body: { nic: '199912345672' }
   });
   assert.strictEqual(nicLoginRes.statusCode, 200);
   assert.strictEqual(nicLoginRes.body.success, true);
-  assert.strictEqual(nicLoginRes.body.user.username, 'kehan');
-  assert.strictEqual(nicLoginRes.body.user.nic, '200213800593');
+  assert.strictEqual(nicLoginRes.body.user.username, 'nimesha');
+  assert.strictEqual(nicLoginRes.body.user.nic, '199912345672');
   assert.ok(nicLoginRes.body.token, 'Must return session token for valid NIC');
 
   // Test invalid NIC
@@ -182,10 +182,22 @@ async function runTests() {
   });
   assert.strictEqual(badNicRes.statusCode, 401);
   assert.strictEqual(badNicRes.body.success, false);
-  console.log('  ✅ Single-field NIC clearance verified successfully.\n');
+  console.log('  ✅ Single-field NIC clearance verified successfully for member.\n');
 
-  // Test 10: Unauthorized Member attempting Admin Mode
-  console.log('Test 10: Testing Member attempting Admin Mode Login (should reject with 403)...');
+  // Test 10: Super Admin attempting Member Access mode (MUST reject with 403)
+  console.log('Test 10: Testing Super Admin attempting Member Access mode (should reject with 403)...');
+  const superAdminMemberAttempt = await dispatchMockRequest({
+    url: '/api/auth/login',
+    method: 'POST',
+    body: { nic: '200213800593', mode: 'member' }
+  });
+  assert.strictEqual(superAdminMemberAttempt.statusCode, 403, 'Super Admin must be rejected from Member Access with 403');
+  assert.strictEqual(superAdminMemberAttempt.body.success, false);
+  assert.ok(superAdminMemberAttempt.body.message.includes('Super Admin clearance detected'));
+  console.log('  ✅ Security verified: Super Admin rejected from Member Access with 403.\n');
+
+  // Test 11: Unauthorized Member attempting Admin Mode
+  console.log('Test 11: Testing Member attempting Admin Mode Login (should reject with 403)...');
   const memberAdminAttempt = await dispatchMockRequest({
     url: '/api/auth/login',
     method: 'POST',
@@ -195,8 +207,8 @@ async function runTests() {
   assert.strictEqual(memberAdminAttempt.body.success, false);
   console.log('  ✅ Role security verified: Non-admin rejected with 403.\n');
 
-  // Test 11: Register New Specialist via Admin Endpoint and Instant Login
-  console.log('Test 11: Registering New Specialist with NIC and verifying instant clearance login...');
+  // Test 12: Register New Specialist via Admin Endpoint and Instant Login
+  console.log('Test 12: Registering New Specialist with NIC and verifying instant clearance login...');
   const adminToken = loginRes.body.token;
   const newSpecialistNic = `2003${Math.floor(10000000 + Math.random() * 90000000)}`;
   const regRes = await dispatchMockRequest({
@@ -226,8 +238,8 @@ async function runTests() {
   assert.strictEqual(newNicLoginRes.body.user.name, 'Kaveen Test Specialist');
   console.log(`  ✅ New specialist registered with NIC (${newSpecialistNic}) and authenticated immediately.\n`);
 
-  // Test 12: Updating Specialist NIC & Role via PUT /api/admin/members/:id
-  console.log('Test 12: Testing Specialist NIC & Role Update...');
+  // Test 13: Updating Specialist NIC & Role via PUT /api/admin/members/:id
+  console.log('Test 13: Testing Specialist NIC & Role Update...');
   const updatedNic = `2004${Math.floor(10000000 + Math.random() * 90000000)}`;
   const updateRes = await dispatchMockRequest({
     url: `/api/admin/members/${regRes.body.member.id}`,
@@ -248,7 +260,7 @@ async function runTests() {
   const updatedNicLogin = await dispatchMockRequest({
     url: '/api/auth/login',
     method: 'POST',
-    body: { nic: updatedNic }
+    body: { nic: updatedNic, mode: 'admin', password: 'callisto123' }
   });
   assert.strictEqual(updatedNicLogin.statusCode, 200);
   assert.strictEqual(updatedNicLogin.body.user.role, 'admin');
@@ -262,8 +274,8 @@ async function runTests() {
   cleanConfig.monthlyTarget = cleanUsers.length * 100;
   fs.writeFileSync(configPath, JSON.stringify(cleanConfig, null, 2), 'utf8');
 
-  // Test 13: Static UI Files Check
-  console.log('Test 13: Testing UI Assets Existence...');
+  // Test 14: Static UI Files Check
+  console.log('Test 14: Testing UI Assets Existence...');
   const indexHtml = path.join(__dirname, '../public/index.html');
   const loginHtml = path.join(__dirname, '../public/login.html');
   const dashHtml = path.join(__dirname, '../public/dashboard.html');

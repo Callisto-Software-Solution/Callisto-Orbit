@@ -24,7 +24,7 @@
 ### 1. 🛡️ Three-Tier Role Hierarchy (Clearance Tiers)
 | Clearance Tier | Specialist | Credentials | Permissions |
 | :--- | :--- | :--- | :--- |
-| **`super_admin`** | **Kehan Hasalawa** (Founder & Lead) | NIC: `200213800593`<br>Password: `callisto123` | Full Zero-DB ledger control, register specialists across all tiers (Member, Admin, Super Admin), edit NICs, adjust fund targets. |
+| **`super_admin`** | **Kehan Hasalawa** (Founder & Lead) | NIC: `200213800593`<br>Password: `callisto123` | Full Zero-DB ledger control, register specialists across all tiers, edit NICs. Restricted from password-free Member Access (must authenticate via Admin Mode with password for security). |
 | **`admin`** | **Alex Chen** (AI & ML) | NIC: `199812345671`<br>Password: `callisto123` | Squad administration, register new specialists with Member/Admin clearance, modify records. |
 | **`member`** | Nimesha, Sarah, Dinuka, Kavindu | Registered NIC only | Single-field instant password-free clearance login. View fund progress and personal payments. |
 
