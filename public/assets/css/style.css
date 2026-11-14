@@ -28,12 +28,12 @@
   --specular-top: inset 0 1px 1px 0 rgba(255, 255, 255, 0.16);
   --shadow-card: 0 16px 40px -10px rgba(0, 0, 0, 0.75);
 
-  /* Typography */
+  /* Typography - High Contrast Cyber Colors */
   --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-display: 'Rajdhani', sans-serif;
-  --text-main: #f1f5f9;
-  --text-muted: #8e9cb2;
-  --text-dim: #54647c;
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --text-dim: #94a3b8;
 }
 
 * {
@@ -394,32 +394,53 @@ body::before {
 
 /* Input Fields (High-Contrast Cyber Glass Inputs & Clear Placeholders) */
 ::placeholder {
-  color: #94a3b8 !important; /* Clear slate gray, readable against dark UI */
+  color: #cbd5e1 !important; /* Luminous silver slate - crystal clear contrast */
   opacity: 1 !important;
-  font-weight: 400;
+  font-weight: 500 !important;
 }
 
 ::-webkit-input-placeholder {
-  color: #94a3b8 !important;
+  color: #cbd5e1 !important;
   opacity: 1 !important;
+  font-weight: 500 !important;
 }
 
 ::-moz-placeholder {
-  color: #94a3b8 !important;
+  color: #cbd5e1 !important;
   opacity: 1 !important;
+  font-weight: 500 !important;
 }
 
 :-ms-input-placeholder {
-  color: #94a3b8 !important;
+  color: #cbd5e1 !important;
   opacity: 1 !important;
+  font-weight: 500 !important;
 }
 
 .input-cyber-glass::placeholder,
 .form-control::placeholder,
 .input-nic-custom::placeholder {
-  color: #94a3b8 !important;
+  color: #cbd5e1 !important;
   opacity: 1 !important;
-  font-weight: 400;
+  font-weight: 500 !important;
+}
+
+/* Global High-Contrast Text Overrides for Dark Themes */
+.text-muted,
+p.text-muted,
+span.text-muted,
+div.text-muted,
+small.text-muted,
+ul.text-muted {
+  color: #cbd5e1 !important; /* Crisp luminous slate */
+}
+
+.text-dim,
+p.text-dim,
+span.text-dim,
+div.text-dim,
+small.text-dim {
+  color: #94a3b8 !important;
 }
 
 .form-step-label {
@@ -2176,9 +2197,9 @@ body.viewport-100vh .cursor-pointer {
 }
 
 .input-nic-custom::placeholder {
-  color: #94a3b8 !important;
+  color: #cbd5e1 !important;
   opacity: 1 !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   letter-spacing: 0.5px !important;
   font-family: var(--font-sans) !important;
   font-size: 0.95rem !important;
