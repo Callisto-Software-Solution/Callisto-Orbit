@@ -397,7 +397,7 @@ async function handleRequest(req, res) {
         }
 
         const body = await parseBody(req);
-        const { name, username, nic, email, role, title } = body;
+        const { name, username, nic, email, role, title, password } = body;
 
         if (!name || !nic) {
           return sendJson(res, 400, { success: false, message: 'Name and NIC number are required' });
@@ -411,6 +411,16 @@ async function handleRequest(req, res) {
           return sendJson(res, 403, { success: false, message: 'Only Super Admin can assign Super Admin clearance' });
         }
 
+        // Require password for admin / super_admin clearance
+        if (assignRole === 'admin' || assignRole === 'super_admin') {
+          if (!password || password.trim().length < 6) {
+            return sendJson(res, 400, {
+              success: false,
+              message: 'Password is required for Admin clearance (minimum 6 characters)'
+            });
+          }
+        }
+
         const users = readJson(USERS_FILE, []);
         const cleanNic = nic.trim().replace(/[\s-]/g, '');
         if (users.some(u => (u.nic || '').replace(/[\s-]/g, '') === cleanNic)) {
@@ -419,13 +429,21 @@ async function handleRequest(req, res) {
 
         const uname = (username || name.toLowerCase().split(' ')[0] + Math.floor(Math.random() * 899 + 100)).trim();
         const newId = `usr_${String(users.length + 1).padStart(2, '0')}`;
+        
+        let storedPassword = null;
+        if (assignRole === 'admin' || assignRole === 'super_admin') {
+          storedPassword = hashPassword(password.trim());
+        } else if (password && password.trim()) {
+          storedPassword = hashPassword(password.trim());
+        }
+
         const newMember = {
           id: newId,
           name: name.trim(),
           username: uname,
           nic: nic.trim(),
           email: (email || `${uname}@callisto.io`).trim(),
-          password: hashPassword('callisto123'),
+          password: storedPassword,
           role: assignRole,
           title: (title || (assignRole === 'admin' ? 'Squad Admin' : 'Squad Specialist')).trim(),
           avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`,
@@ -465,7 +483,7 @@ async function handleRequest(req, res) {
 
         const memberId = pathname.replace('/api/admin/members/', '').trim();
         const body = await parseBody(req);
-        const { role, nic, title, name } = body;
+        const { role, nic, title, name, password } = body;
 
         const users = readJson(USERS_FILE, []);
         const userIndex = users.findIndex(u => u.id === memberId);
@@ -482,6 +500,12 @@ async function handleRequest(req, res) {
         if (nic) users[userIndex].nic = nic.trim();
         if (title) users[userIndex].title = title.trim();
         if (name) users[userIndex].name = name.trim();
+        if (password && password.trim()) {
+          if (password.trim().length < 6) {
+            return sendJson(res, 400, { success: false, message: 'Password must be at least 6 characters' });
+          }
+          users[userIndex].password = hashPassword(password.trim());
+        }
 
         writeJson(USERS_FILE, users);
 

@@ -285,53 +285,57 @@
   <div class="glow-orb-top"></div>
   <div class="glow-orb-bottom"></div>
 
-  <!-- Top Navigation Bar -->
-  <nav class="dash-navbar d-flex justify-content-between align-items-center" style="position: relative; z-index: 10;">
-    <div class="d-flex align-items-center gap-2 gap-md-3">
+  <!-- Top Navigation Bar (Fully Fluid Responsive) -->
+  <nav class="dash-navbar d-flex justify-content-between align-items-center px-2 px-sm-3 px-md-4 py-2" style="position: relative; z-index: 10;">
+    <div class="d-flex align-items-center gap-2 gap-sm-3">
       
       <!-- Mobile Sidebar Toggle Hamburger Button -->
       <button class="btn btn-sm d-lg-none glass-subcard p-1 px-2 text-warning" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas" title="Toggle Sidebar">
         <i class="bi bi-list fs-5"></i>
       </button>
 
-      <div style="width: 42px; height: 42px; border-radius: 50%; overflow: hidden; border: 1.5px solid rgba(255,85,0,0.6); background: #0c1222; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 18px rgba(255,85,0,0.45);">
+      <div style="width: 38px; height: 38px; min-width: 38px; border-radius: 50%; overflow: hidden; border: 1.5px solid rgba(255,85,0,0.6); background: #0c1222; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 14px rgba(255,85,0,0.45);">
         <img src="/assets/images/callisto-logo.jpg" alt="Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
       </div>
       <div>
-        <div class="d-flex align-items-center gap-2">
-          <span style="font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; letter-spacing: 1px; color: #fff;">
+        <div class="d-flex align-items-center gap-1 gap-sm-2 flex-wrap">
+          <span style="font-family: var(--font-display); font-weight: 700; font-size: clamp(1rem, 3.2vw, 1.25rem); letter-spacing: 0.8px; color: #fff;">
             CALLISTO<span class="phoenix-gradient-text">-ORBIT</span>
           </span>
-          <span class="badge" style="background: rgba(0, 230, 118, 0.15); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.3); font-size: 0.65rem;">
-            ● ORBIT ONLINE
+          <span class="badge d-none d-sm-inline-flex align-items-center" style="background: rgba(0, 230, 118, 0.15); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.3); font-size: 0.65rem;">
+            ● ONLINE
           </span>
         </div>
-        <div style="font-size: 0.72rem; color: var(--text-dim);" id="squadMetaHeader">
+        <div style="font-size: 0.72rem; color: #cbd5e1;" id="squadMetaHeader">
           6 Members &bull; Rs. 100/mo Fund Pool
         </div>
       </div>
     </div>
 
-    <!-- Active User & Logout (Top Right) -->
-    <div class="d-flex align-items-center gap-2 gap-md-3">
+    <!-- Active User & Quick Actions (Top Right) -->
+    <div class="d-flex align-items-center gap-2">
+      <!-- Active User Chip (Hidden on mobile phones, shown sm+) -->
       <div class="d-none d-sm-flex align-items-center gap-2 px-3 py-1 glass-panel" style="border-radius: 50px;">
-        <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=User" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; background: #1e293b;">
+        <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=User" alt="Avatar" style="width: 28px; height: 28px; border-radius: 50%; background: #1e293b;">
         <div class="d-flex flex-column text-start">
           <div class="d-flex align-items-center gap-1">
             <span id="userName" style="font-size: 0.82rem; font-weight: 600; color: #fff; line-height: 1.1;">Loading...</span>
             <span id="userRoleBadge" class="badge" style="font-size: 0.62rem; padding: 0.2rem 0.45rem;">MEMBER</span>
           </div>
-          <span id="userRole" style="font-size: 0.68rem; color: var(--text-muted); line-height: 1;">User</span>
+          <span id="userRole" style="font-size: 0.68rem; color: #cbd5e1; line-height: 1;">User</span>
         </div>
       </div>
 
-      <a href="/" class="btn btn-sm d-flex align-items-center gap-2 glass-subcard text-decoration-none" style="border-radius: 10px; font-size: 0.8rem; color: var(--callisto-amber); border: 1px solid rgba(255, 85, 0, 0.35); padding: 0.45rem 0.85rem;" title="Return to Landing Page">
+      <!-- Landing Phoenix Link -->
+      <a href="/" class="btn btn-sm d-flex align-items-center gap-1 glass-subcard text-decoration-none px-2 px-sm-3 py-1" style="border-radius: 10px; font-size: 0.8rem; color: var(--callisto-amber); border: 1px solid rgba(255, 85, 0, 0.35);" title="Return to Landing Page">
         <i class="bi bi-house-door-fill"></i>
         <span class="d-none d-md-inline">Phoenix</span>
       </a>
 
-      <button id="logoutBtn" class="btn btn-sm" style="background: rgba(230, 32, 32, 0.15); color: #ff6b6b; border: 1px solid rgba(230, 32, 32, 0.3); border-radius: 10px; padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 600;">
-        <i class="bi bi-box-arrow-right me-1"></i> Logout
+      <!-- Logout Button -->
+      <button id="logoutBtn" class="btn btn-sm d-flex align-items-center gap-1 px-2 px-sm-3 py-1" style="background: rgba(230, 32, 32, 0.15); color: #ff6b6b; border: 1px solid rgba(230, 32, 32, 0.3); border-radius: 10px; font-size: 0.82rem; font-weight: 600;" title="Exit Session">
+        <i class="bi bi-box-arrow-right"></i>
+        <span class="d-none d-sm-inline">Logout</span>
       </button>
     </div>
   </nav>
@@ -705,15 +709,29 @@
               <div class="col-6">
                 <label class="form-label text-dim" style="font-size: 0.78rem;">Clearance Role *</label>
                 <select class="form-select input-cyber-glass" id="regRole" style="background: #111a2e; color: #fff;">
-                  <option value="member" selected>Member</option>
-                  <option value="admin">Admin</option>
-                  <option value="super_admin" id="optSuperAdmin">Super Admin</option>
+                  <option value="member" selected>Member (NIC Only)</option>
+                  <option value="admin">Admin (Password Required)</option>
+                  <option value="super_admin" id="optSuperAdmin">Super Admin (Password Required)</option>
                 </select>
               </div>
               <div class="col-6">
                 <label class="form-label text-dim" style="font-size: 0.78rem;">Username</label>
                 <input type="text" class="form-control input-cyber-glass" id="regUsername" placeholder="e.g. kaveen">
               </div>
+            </div>
+
+            <!-- Dynamic Password Field for Admin / Super Admin (Hidden for Member) -->
+            <div class="mb-3 d-none" id="regPasswordGroup">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">
+                Admin Security Password * <span class="text-warning">(Required for Admin Login)</span>
+              </label>
+              <div class="position-relative">
+                <input type="password" class="form-control input-cyber-glass pe-5" id="regPassword" placeholder="Enter secure admin password (min 6 chars)">
+                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted text-decoration-none pe-3" id="btnToggleRegPassword" style="border: none; background: transparent; cursor: pointer;">
+                  <i class="bi bi-eye" id="eyeIconRegPassword"></i>
+                </button>
+              </div>
+              <small class="text-dim" style="font-size: 0.68rem;">Admins authenticate using their username/NIC and this password.</small>
             </div>
 
             <div class="mb-3">
@@ -789,6 +807,20 @@
                 <input type="text" class="form-control input-cyber-glass" id="editTitle" placeholder="e.g. Threat Intelligence Analyst">
               </div>
             </div>
+
+            <!-- Dynamic Password Field for Admin (Leave blank to keep existing) -->
+            <div class="mb-3 d-none" id="editPasswordGroup">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">
+                Admin Security Password <span class="text-warning">(Leave blank to keep current)</span>
+              </label>
+              <div class="position-relative">
+                <input type="password" class="form-control input-cyber-glass pe-5" id="editPassword" placeholder="Enter new password (min 6 chars) or leave empty">
+                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted text-decoration-none pe-3" id="btnToggleEditPassword" style="border: none; background: transparent; cursor: pointer;">
+                  <i class="bi bi-eye" id="eyeIconEditPassword"></i>
+                </button>
+              </div>
+              <small class="text-dim" style="font-size: 0.68rem;">Update password when assigning Admin clearance.</small>
+            </div>
           </div>
 
           <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
@@ -802,6 +834,76 @@
       </div>
     </div>
   </div>
+
+  <!-- ==========================================
+       CALLISTO-ORBIT CYBER-PHOENIX FOOTER
+       ========================================== -->
+  <footer class="dash-footer mt-5 py-4" style="position: relative; z-index: 5; border-top: 1px solid rgba(255, 85, 0, 0.2); background: linear-gradient(180deg, rgba(8, 12, 24, 0.88) 0%, rgba(5, 8, 17, 0.98) 100%); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+    <div class="container-fluid px-3 px-md-4" style="max-width: 1560px;">
+      <div class="row g-4 align-items-center justify-content-between">
+        
+        <!-- Left: Brand & Architecture -->
+        <div class="col-12 col-md-5">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <div style="width: 30px; height: 30px; border-radius: 50%; overflow: hidden; border: 1.5px solid rgba(255,85,0,0.6); background: #0c1222; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(255,85,0,0.35);">
+              <img src="/assets/images/callisto-logo.jpg" alt="Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            </div>
+            <span style="font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; letter-spacing: 1px; color: #fff;">
+              CALLISTO<span class="phoenix-gradient-text">-ORBIT</span>
+            </span>
+            <span class="badge" style="background: rgba(255, 85, 0, 0.15); color: #ff9d00; border: 1px solid rgba(255, 85, 0, 0.35); font-size: 0.65rem;">
+              v2.6 &bull; Rising Phoenix
+            </span>
+          </div>
+          <p class="mb-0" style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.5;">
+            Autonomous Fund &amp; Treasury Command for <strong>Callisto Cyber Security &amp; AI</strong>. Zero-database architecture powered by atomic cryptographic JSON state.
+          </p>
+        </div>
+
+        <!-- Middle: Live Vault Telemetry & Security Clearance -->
+        <div class="col-12 col-sm-6 col-md-4">
+          <div class="d-flex flex-column gap-1">
+            <div class="d-flex align-items-center gap-2" style="font-size: 0.78rem; color: #cbd5e1;">
+              <span class="status-indicator-dot" style="width: 7px; height: 7px; background: #00e676; box-shadow: 0 0 8px #00e676;"></span>
+              <span><strong>Zero-DB Vault Ledger:</strong> Live Sync Active</span>
+            </div>
+            <div class="d-flex align-items-center gap-2" style="font-size: 0.78rem; color: #cbd5e1;">
+              <i class="bi bi-shield-check text-warning"></i>
+              <span><strong>Security:</strong> Scrypt 256-bit + HMAC-SHA256</span>
+            </div>
+            <div class="d-flex align-items-center gap-2" style="font-size: 0.78rem; color: #cbd5e1;">
+              <i class="bi bi-wallet2 text-info"></i>
+              <span><strong>Pool Target:</strong> 6 Specialists &times; Rs. 100 / month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Copyright & Quick Links -->
+        <div class="col-12 col-sm-6 col-md-3 text-sm-end">
+          <div class="d-flex flex-column gap-1">
+            <div style="font-size: 0.8rem; color: #ffffff; font-weight: 600;">
+              &copy; 2026 Callisto Software Solution
+            </div>
+            <div style="font-size: 0.74rem; color: #94a3b8;">
+              Crafted by <strong>Kehan Rajapaksha</strong> &bull; MIT License
+            </div>
+            <div class="d-flex align-items-center justify-content-sm-end gap-3 mt-1">
+              <a href="/" class="text-decoration-none" style="font-size: 0.75rem; color: var(--callisto-amber);">
+                <i class="bi bi-house-door-fill me-1"></i>Home
+              </a>
+              <a href="/login.html" class="text-decoration-none" style="font-size: 0.75rem; color: #cbd5e1;">
+                <i class="bi bi-shield-lock me-1"></i>Portal
+              </a>
+              <a href="https://github.com/Callisto-Software-Solution/Callisto-Orbit" target="_blank" rel="noopener" class="text-decoration-none" style="font-size: 0.75rem; color: #cbd5e1;">
+                <i class="bi bi-github me-1"></i>GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/assets/js/portal-loader.js"></script>

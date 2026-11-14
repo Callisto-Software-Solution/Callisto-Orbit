@@ -239,7 +239,7 @@ async function runTests() {
   console.log(`  ✅ New specialist registered with NIC (${newSpecialistNic}) and authenticated immediately.\n`);
 
   // Test 13: Updating Specialist NIC & Role via PUT /api/admin/members/:id
-  console.log('Test 13: Testing Specialist NIC & Role Update...');
+  console.log('Test 13: Testing Specialist NIC & Role Update with Admin Password...');
   const updatedNic = `2004${Math.floor(10000000 + Math.random() * 90000000)}`;
   const updateRes = await dispatchMockRequest({
     url: `/api/admin/members/${regRes.body.member.id}`,
@@ -249,7 +249,8 @@ async function runTests() {
       name: 'Kaveen Promoted',
       nic: updatedNic,
       role: 'admin',
-      title: 'Promoted Squad Administrator'
+      title: 'Promoted Squad Administrator',
+      password: 'callisto123'
     }
   });
   assert.strictEqual(updateRes.statusCode, 200);
@@ -266,8 +267,53 @@ async function runTests() {
   assert.strictEqual(updatedNicLogin.body.user.role, 'admin');
   console.log('  ✅ Specialist NIC and Role update verified successfully.\n');
 
-  // Cleanup: Reset test user from data/users.json to keep pristine state
-  const cleanUsers = JSON.parse(fs.readFileSync(usersPath, 'utf8')).filter(u => u.id !== regRes.body.member.id);
+  // Test 13B: Registering Admin with & without password validation
+  console.log('Test 13B: Verifying Admin Password Requirement during Registration...');
+  const adminTestNic = `2005${Math.floor(10000000 + Math.random() * 90000000)}`;
+  
+  // Attempt to create admin without password -> should fail with 400
+  const failAdminRes = await dispatchMockRequest({
+    url: '/api/admin/members',
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${adminToken}` },
+    body: {
+      name: 'Admin Without Password',
+      nic: adminTestNic,
+      role: 'admin'
+    }
+  });
+  assert.strictEqual(failAdminRes.statusCode, 400);
+  assert.strictEqual(failAdminRes.body.success, false);
+
+  // Now create admin with password -> should succeed with 201
+  const successAdminRes = await dispatchMockRequest({
+    url: '/api/admin/members',
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${adminToken}` },
+    body: {
+      name: 'New Admin Specialist',
+      nic: adminTestNic,
+      role: 'admin',
+      password: 'adminSecretPass123'
+    }
+  });
+  assert.strictEqual(successAdminRes.statusCode, 201);
+  assert.strictEqual(successAdminRes.body.success, true);
+  assert.strictEqual(successAdminRes.body.member.role, 'admin');
+
+  // Verify new admin can log in with their created password
+  const newAdminLoginRes = await dispatchMockRequest({
+    url: '/api/auth/login',
+    method: 'POST',
+    body: { nic: adminTestNic, mode: 'admin', password: 'adminSecretPass123' }
+  });
+  assert.strictEqual(newAdminLoginRes.statusCode, 200);
+  assert.strictEqual(newAdminLoginRes.body.user.role, 'admin');
+  console.log('  ✅ Admin password validation and authentication verified successfully.\n');
+
+  // Cleanup: Reset test users from data/users.json to keep pristine state
+  const testIds = [regRes.body.member.id, successAdminRes.body.member.id];
+  const cleanUsers = JSON.parse(fs.readFileSync(usersPath, 'utf8')).filter(u => !testIds.includes(u.id));
   fs.writeFileSync(usersPath, JSON.stringify(cleanUsers, null, 2), 'utf8');
   const cleanConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   cleanConfig.totalMembers = cleanUsers.length;

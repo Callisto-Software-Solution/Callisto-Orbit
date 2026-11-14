@@ -53,6 +53,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const regEmail = document.getElementById('regEmail');
   const optSuperAdmin = document.getElementById('optSuperAdmin');
   const btnSubmitRegister = document.getElementById('btnSubmitRegister');
+  const regPasswordGroup = document.getElementById('regPasswordGroup');
+  const regPassword = document.getElementById('regPassword');
+  const btnToggleRegPassword = document.getElementById('btnToggleRegPassword');
+  const eyeIconRegPassword = document.getElementById('eyeIconRegPassword');
 
   // Edit Modal elements
   const modalEditSpecialist = document.getElementById('modalEditSpecialist');
@@ -65,6 +69,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const editTitle = document.getElementById('editTitle');
   const optEditSuperAdmin = document.getElementById('optEditSuperAdmin');
   const btnSubmitEdit = document.getElementById('btnSubmitEdit');
+  const editPasswordGroup = document.getElementById('editPasswordGroup');
+  const editPassword = document.getElementById('editPassword');
+  const btnToggleEditPassword = document.getElementById('btnToggleEditPassword');
+  const eyeIconEditPassword = document.getElementById('eyeIconEditPassword');
 
   let bsRegisterModal = null;
   let bsEditModal = null;
@@ -338,10 +346,64 @@ document.addEventListener('DOMContentLoaded', async () => {
           editNic.value = target.nic;
           editRole.value = target.role || 'member';
           editTitle.value = target.title || '';
+          if (editPassword) {
+            editPassword.value = '';
+            editPassword.type = 'password';
+          }
+          if (eyeIconEditPassword) eyeIconEditPassword.className = 'bi bi-eye';
+          updateEditPasswordVisibility();
           if (modalEditAlert) modalEditAlert.innerHTML = '';
           bsEditModal.show();
         }
       });
+    });
+  }
+
+  // Dynamic Password Visibility Helpers
+  function updateRegPasswordVisibility() {
+    if (!regPasswordGroup || !regRole) return;
+    const isPrivileged = regRole.value === 'admin' || regRole.value === 'super_admin';
+    if (isPrivileged) {
+      regPasswordGroup.classList.remove('d-none');
+    } else {
+      regPasswordGroup.classList.add('d-none');
+      if (regPassword) regPassword.value = '';
+    }
+  }
+
+  function updateEditPasswordVisibility() {
+    if (!editPasswordGroup || !editRole) return;
+    const isPrivileged = editRole.value === 'admin' || editRole.value === 'super_admin';
+    if (isPrivileged) {
+      editPasswordGroup.classList.remove('d-none');
+    } else {
+      editPasswordGroup.classList.add('d-none');
+      if (editPassword) editPassword.value = '';
+    }
+  }
+
+  if (regRole) {
+    regRole.addEventListener('change', updateRegPasswordVisibility);
+  }
+
+  if (editRole) {
+    editRole.addEventListener('change', updateEditPasswordVisibility);
+  }
+
+  // Password Visibility Toggle Eye Buttons
+  if (btnToggleRegPassword && regPassword && eyeIconRegPassword) {
+    btnToggleRegPassword.addEventListener('click', () => {
+      const isPass = regPassword.type === 'password';
+      regPassword.type = isPass ? 'text' : 'password';
+      eyeIconRegPassword.className = isPass ? 'bi bi-eye-slash text-warning' : 'bi bi-eye';
+    });
+  }
+
+  if (btnToggleEditPassword && editPassword && eyeIconEditPassword) {
+    btnToggleEditPassword.addEventListener('click', () => {
+      const isPass = editPassword.type === 'password';
+      editPassword.type = isPass ? 'text' : 'password';
+      eyeIconEditPassword.className = isPass ? 'bi bi-eye-slash text-warning' : 'bi bi-eye';
     });
   }
 
@@ -369,6 +431,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnOpenRegisterModal.addEventListener('click', () => {
       if (modalRegAlert) modalRegAlert.innerHTML = '';
       if (formRegisterSpecialist) formRegisterSpecialist.reset();
+      if (regPassword) {
+        regPassword.value = '';
+        regPassword.type = 'password';
+      }
+      if (eyeIconRegPassword) eyeIconRegPassword.className = 'bi bi-eye';
+      updateRegPasswordVisibility();
       if (bsRegisterModal) bsRegisterModal.show();
     });
   }
@@ -385,9 +453,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       const unameVal = regUsername.value.trim();
       const titleVal = regTitle.value.trim();
       const emailVal = regEmail.value.trim();
+      const passVal = regPassword ? regPassword.value.trim() : '';
 
       if (!nameVal || !nicVal) {
         modalRegAlert.innerHTML = `<div class="alert alert-danger py-2" style="font-size: 0.78rem;">Name and NIC Number are required.</div>`;
+        return;
+      }
+
+      // If Admin or Super Admin, require password
+      if ((roleVal === 'admin' || roleVal === 'super_admin') && (!passVal || passVal.length < 6)) {
+        modalRegAlert.innerHTML = `<div class="alert alert-danger py-2" style="font-size: 0.78rem;">A secure password (minimum 6 characters) is required for Admin clearance.</div>`;
+        if (regPassword) regPassword.focus();
         return;
       }
 
@@ -404,7 +480,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             role: roleVal,
             username: unameVal,
             title: titleVal,
-            email: emailVal
+            email: emailVal,
+            password: passVal
           })
         });
 
@@ -412,10 +489,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (res.ok && data.success) {
           if (bsRegisterModal) bsRegisterModal.hide();
           if (adminConsoleAlert) {
+            const loginInfo = (roleVal === 'admin' || roleVal === 'super_admin')
+              ? `The Admin can log in using Admin mode with their NIC/Username and the created password.`
+              : `The operator can now log in instantly using single-field NIC clearance (<strong>${nicVal}</strong>)!`;
             adminConsoleAlert.innerHTML = `
               <div class="alert alert-success d-flex align-items-center gap-2 py-2 mb-3" style="background: rgba(0,230,118,0.15); border: 1px solid #00e676; color: #00e676; font-size: 0.82rem; border-radius: 10px;">
                 <i class="bi bi-check-circle-fill"></i>
-                <div>${data.message}. The operator can now log in instantly using their NIC <strong>${nicVal}</strong>!</div>
+                <div>${data.message}. ${loginInfo}</div>
               </div>
             `;
           }
@@ -444,9 +524,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       const nicVal = editNic.value.trim();
       const roleVal = editRole.value;
       const titleVal = editTitle.value.trim();
+      const passVal = editPassword ? editPassword.value.trim() : '';
 
       if (!nameVal || !nicVal) {
         modalEditAlert.innerHTML = `<div class="alert alert-danger py-2" style="font-size: 0.78rem;">Name and NIC Number are required.</div>`;
+        return;
+      }
+
+      if (passVal && passVal.length < 6) {
+        modalEditAlert.innerHTML = `<div class="alert alert-danger py-2" style="font-size: 0.78rem;">Password must be at least 6 characters.</div>`;
+        if (editPassword) editPassword.focus();
         return;
       }
 
@@ -454,15 +541,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       btnSubmitEdit.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Saving...`;
 
       try {
+        const payload = {
+          name: nameVal,
+          nic: nicVal,
+          role: roleVal,
+          title: titleVal
+        };
+        if (passVal) {
+          payload.password = passVal;
+        }
+
         const res = await fetch(`/api/admin/members/${memId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: nameVal,
-            nic: nicVal,
-            role: roleVal,
-            title: titleVal
-          })
+          body: JSON.stringify(payload)
         });
 
         const data = await res.json();
