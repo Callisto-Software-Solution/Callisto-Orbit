@@ -9,6 +9,7 @@ const DATA_DIR = path.join(__dirname, 'data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const COLLECTIONS_FILE = path.join(DATA_DIR, 'collections.json');
 const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+const PAYMENTS_FILE = path.join(DATA_DIR, 'payments.json');
 
 // Secret key for HMAC token signing
 const JWT_SECRET = process.env.JWT_SECRET || 'callisto-orbit-cyber-ai-secret-2026';
@@ -103,6 +104,72 @@ function writeJson(filePath, data) {
     }
   } catch (err) {
     fs.writeFileSync(filePath, content, 'utf8');
+  }
+}
+
+// Helper to sync verified/rejected payments into collections.json ledger
+function syncPaymentToCollections(payment, isPaid) {
+  try {
+    const collections = readJson(COLLECTIONS_FILE, []);
+    const config = readJson(CONFIG_FILE, {});
+
+    let col = collections.find(c => c.month === payment.month);
+    if (!col) {
+      col = {
+        id: `col_${payment.month.replace('-', '_')}`,
+        month: payment.month,
+        year: parseInt(payment.month.split('-')[0]),
+        target: config.monthlyTarget || 600,
+        collected: 0,
+        status: 'in_progress',
+        contributions: []
+      };
+      collections.push(col);
+    }
+
+    if (!Array.isArray(col.contributions)) {
+      col.contributions = [];
+    }
+
+    const cIndex = col.contributions.findIndex(c => c.userId === payment.userId);
+    if (isPaid) {
+      const contribObj = {
+        userId: payment.userId,
+        name: payment.userName,
+        amount: payment.amount,
+        paidDate: payment.paidDate || new Date().toISOString().split('T')[0],
+        status: 'paid',
+        method: payment.method,
+        txRef: payment.txRef
+      };
+      if (cIndex !== -1) {
+        col.contributions[cIndex] = { ...col.contributions[cIndex], ...contribObj };
+      } else {
+        col.contributions.push(contribObj);
+      }
+    } else {
+      // Revert / set to pending if rejected
+      if (cIndex !== -1) {
+        col.contributions[cIndex].status = 'pending';
+        col.contributions[cIndex].amount = 0;
+        col.contributions[cIndex].paidDate = null;
+      }
+    }
+
+    // Recalculate collected
+    col.collected = col.contributions
+      .filter(c => c.status === 'paid')
+      .reduce((sum, c) => sum + (c.amount || 0), 0);
+
+    if (col.collected >= col.target) {
+      col.status = 'completed';
+    } else {
+      col.status = 'in_progress';
+    }
+
+    writeJson(COLLECTIONS_FILE, collections);
+  } catch (err) {
+    console.error('Error syncing payment to collections:', err);
   }
 }
 
@@ -612,6 +679,229 @@ async function handleRequest(req, res) {
         });
       }
 
+      // 10. PAYMENTS: GET /api/payments (List Payments & Audit Trail)
+      if (pathname === '/api/payments' && method === 'GET') {
+        const token = getAuthToken(req);
+        const session = verifySessionToken(token);
+        if (!session) {
+          return sendJson(res, 401, { success: false, message: 'Unauthorized: Clearance required' });
+        }
+
+        const payments = readJson(PAYMENTS_FILE, []);
+        const config = readJson(CONFIG_FILE, {});
+
+        // Summary calculations
+        const totalCount = payments.length;
+        const pendingCount = payments.filter(p => p.status === 'pending_verification').length;
+        const verifiedCount = payments.filter(p => p.status === 'verified').length;
+        const rejectedCount = payments.filter(p => p.status === 'rejected').length;
+        const verifiedTotalAmount = payments.filter(p => p.status === 'verified').reduce((s, p) => s + (p.amount || 0), 0);
+
+        // Sort newest first
+        const sortedPayments = payments.slice().sort((a, b) => {
+          return new Date(b.submittedAt || b.paidDate || 0) - new Date(a.submittedAt || a.paidDate || 0);
+        });
+
+        return sendJson(res, 200, {
+          success: true,
+          summary: {
+            totalCount,
+            pendingCount,
+            verifiedCount,
+            rejectedCount,
+            verifiedTotalAmount,
+            currency: config.currency || 'Rs. ',
+            activeMonth: '2026-02'
+          },
+          canVerify: session.role === 'admin' || session.role === 'super_admin',
+          currentUser: {
+            id: session.userId,
+            username: session.username,
+            role: session.role
+          },
+          payments: sortedPayments
+        });
+      }
+
+      // 11. PAYMENTS: POST /api/payments (Add / Submit Payment)
+      if (pathname === '/api/payments' && method === 'POST') {
+        const token = getAuthToken(req);
+        const session = verifySessionToken(token);
+        if (!session) {
+          return sendJson(res, 401, { success: false, message: 'Unauthorized: Clearance required' });
+        }
+
+        const body = await parseJsonBody(req);
+        const { userId, month, amount, method: payMethod, txRef, paidDate, notes, autoVerify } = body;
+
+        const users = readJson(USERS_FILE, []);
+        const config = readJson(CONFIG_FILE, {});
+
+        // If member, target user is always self. If admin/super_admin, can submit for another user or self.
+        let targetUserId = session.userId;
+        if ((session.role === 'admin' || session.role === 'super_admin') && userId) {
+          targetUserId = userId;
+        }
+
+        const targetUser = users.find(u => u.id === targetUserId);
+        if (!targetUser) {
+          return sendJson(res, 404, { success: false, message: 'Target specialist not found in vault' });
+        }
+
+        if (!payMethod || !payMethod.trim()) {
+          return sendJson(res, 400, { success: false, message: 'Payment method is required (e.g. Bank Transfer, Crypto)' });
+        }
+
+        if (!txRef || !txRef.trim()) {
+          return sendJson(res, 400, { success: false, message: 'Transaction Reference or Slip ID is required' });
+        }
+
+        const payAmount = Number(amount) > 0 ? Number(amount) : (config.monthlyContributionPerMember || 100);
+        const payMonth = month && month.trim() ? month.trim() : '2026-02';
+        const datePaid = paidDate && paidDate.trim() ? paidDate.trim() : new Date().toISOString().split('T')[0];
+
+        // Only admin or super_admin can auto-verify on create
+        const isAutoVerify = Boolean(autoVerify && (session.role === 'admin' || session.role === 'super_admin'));
+
+        const newPayment = {
+          id: `pay_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`,
+          userId: targetUser.id,
+          userName: targetUser.name,
+          userNic: targetUser.nic,
+          userRole: targetUser.role,
+          userAvatar: targetUser.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(targetUser.name)}`,
+          month: payMonth,
+          amount: payAmount,
+          currency: config.currency || 'Rs. ',
+          method: payMethod.trim(),
+          txRef: txRef.trim(),
+          paidDate: datePaid,
+          notes: notes ? notes.trim() : '',
+          submittedBy: session.username,
+          submittedByName: session.name || session.username,
+          submittedAt: new Date().toISOString(),
+          status: isAutoVerify ? 'verified' : 'pending_verification',
+          verifiedBy: isAutoVerify ? session.username : null,
+          verifiedByName: isAutoVerify ? (session.name || session.username) : null,
+          verifiedAt: isAutoVerify ? new Date().toISOString() : null
+        };
+
+        const payments = readJson(PAYMENTS_FILE, []);
+        payments.unshift(newPayment);
+        writeJson(PAYMENTS_FILE, payments);
+
+        if (isAutoVerify) {
+          syncPaymentToCollections(newPayment, true);
+        }
+
+        return sendJson(res, 201, {
+          success: true,
+          message: isAutoVerify
+            ? `Payment of Rs. ${payAmount} for ${targetUser.name} recorded and verified directly into Treasury`
+            : `Payment of Rs. ${payAmount} submitted successfully. Awaiting verification by Administrator`,
+          payment: newPayment
+        });
+      }
+
+      // 12. PAYMENTS: PUT /api/payments/:id/verify (Admin & Super Admin)
+      if (pathname.startsWith('/api/payments/') && pathname.endsWith('/verify') && method === 'PUT') {
+        const token = getAuthToken(req);
+        const session = verifySessionToken(token);
+        if (!session || (session.role !== 'admin' && session.role !== 'super_admin')) {
+          return sendJson(res, 403, { success: false, message: 'Forbidden: Only Admin or Super Admin has clearance to verify payments' });
+        }
+
+        const paymentId = pathname.replace('/api/payments/', '').replace('/verify', '').trim();
+        const payments = readJson(PAYMENTS_FILE, []);
+        const payIndex = payments.findIndex(p => p.id === paymentId);
+        if (payIndex === -1) {
+          return sendJson(res, 404, { success: false, message: 'Payment record not found' });
+        }
+
+        const body = await parseJsonBody(req);
+        payments[payIndex].status = 'verified';
+        payments[payIndex].verifiedBy = session.username;
+        payments[payIndex].verifiedByName = session.name || session.username;
+        payments[payIndex].verifiedAt = new Date().toISOString();
+        if (body.notes) {
+          payments[payIndex].verificationNotes = body.notes.trim();
+        }
+
+        writeJson(PAYMENTS_FILE, payments);
+
+        // Sync into collections.json ledger
+        syncPaymentToCollections(payments[payIndex], true);
+
+        return sendJson(res, 200, {
+          success: true,
+          message: `Payment of Rs. ${payments[payIndex].amount} for ${payments[payIndex].userName} successfully verified and credited to Treasury`,
+          payment: payments[payIndex]
+        });
+      }
+
+      // 13. PAYMENTS: PUT /api/payments/:id/reject (Admin & Super Admin)
+      if (pathname.startsWith('/api/payments/') && pathname.endsWith('/reject') && method === 'PUT') {
+        const token = getAuthToken(req);
+        const session = verifySessionToken(token);
+        if (!session || (session.role !== 'admin' && session.role !== 'super_admin')) {
+          return sendJson(res, 403, { success: false, message: 'Forbidden: Only Admin or Super Admin has clearance to reject payments' });
+        }
+
+        const paymentId = pathname.replace('/api/payments/', '').replace('/reject', '').trim();
+        const payments = readJson(PAYMENTS_FILE, []);
+        const payIndex = payments.findIndex(p => p.id === paymentId);
+        if (payIndex === -1) {
+          return sendJson(res, 404, { success: false, message: 'Payment record not found' });
+        }
+
+        const body = await parseJsonBody(req);
+        payments[payIndex].status = 'rejected';
+        payments[payIndex].rejectedBy = session.username;
+        payments[payIndex].rejectedByName = session.name || session.username;
+        payments[payIndex].rejectedAt = new Date().toISOString();
+        payments[payIndex].rejectReason = body.reason ? body.reason.trim() : 'Payment proof could not be verified';
+
+        writeJson(PAYMENTS_FILE, payments);
+
+        // If previously verified, revert contribution in collections
+        syncPaymentToCollections(payments[payIndex], false);
+
+        return sendJson(res, 200, {
+          success: true,
+          message: `Payment record rejected`,
+          payment: payments[payIndex]
+        });
+      }
+
+      // 14. PAYMENTS: DELETE /api/payments/:id (Super Admin Only)
+      if (pathname.startsWith('/api/payments/') && method === 'DELETE') {
+        const token = getAuthToken(req);
+        const session = verifySessionToken(token);
+        if (!session || session.role !== 'super_admin') {
+          return sendJson(res, 403, { success: false, message: 'Forbidden: Only Super Admin can delete payment entries' });
+        }
+
+        const paymentId = pathname.replace('/api/payments/', '').trim();
+        const payments = readJson(PAYMENTS_FILE, []);
+        const targetPayment = payments.find(p => p.id === paymentId);
+        if (!targetPayment) {
+          return sendJson(res, 404, { success: false, message: 'Payment record not found' });
+        }
+
+        const remaining = payments.filter(p => p.id !== paymentId);
+        writeJson(PAYMENTS_FILE, remaining);
+
+        if (targetPayment.status === 'verified') {
+          syncPaymentToCollections(targetPayment, false);
+        }
+
+        return sendJson(res, 200, {
+          success: true,
+          message: 'Payment record permanently removed',
+          deletedId: paymentId
+        });
+      }
+
       return sendJson(res, 404, { success: false, message: 'API endpoint not found' });
     } catch (err) {
       console.error('API Error:', err);
@@ -639,4 +929,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { server, handleRequest, hashPassword, verifyPassword, createSessionToken, verifySessionToken };
+module.exports = { server, handleRequest, hashPassword, verifyPassword, createSessionToken, verifySessionToken, syncPaymentToCollections };

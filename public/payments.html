@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Verification | Callisto-Orbit Treasury</title>
+
+  <link rel="icon" type="image/jpeg" href="/assets/images/callisto-logo.jpg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="/assets/css/style.css?v=2.7">
+
+  <style>
+    .text-muted, p.text-muted, span.text-muted, div.text-muted, small.text-muted { color: #cbd5e1 !important; }
+    .text-dim, p.text-dim, span.text-dim, div.text-dim, small.text-dim { color: #94a3b8 !important; }
+
+    input::placeholder, textarea::placeholder,
+    .form-control::placeholder, .input-cyber-glass::placeholder { color: #cbd5e1 !important; opacity: 1 !important; }
+    ::-webkit-input-placeholder { color: #cbd5e1 !important; opacity: 1 !important; }
+
+    .modal-content input.form-control,
+    .modal-content select.form-select,
+    .modal-content textarea.form-control {
+      background: #0f172a !important;
+      border: 1.5px solid rgba(255,255,255,0.28) !important;
+      color: #ffffff !important;
+    }
+    .modal-content input.form-control:focus,
+    .modal-content select.form-select:focus,
+    .modal-content textarea.form-control:focus {
+      background: #131d35 !important;
+      border-color: #ff5500 !important;
+      box-shadow: 0 0 0 3px rgba(255,85,0,0.25) !important;
+      color: #fff !important;
+    }
+    .modal-content .form-label { color: #f1f5f9 !important; font-size: 0.82rem !important; font-weight: 600 !important; }
+    .modal-content small.text-dim, .modal-content .text-dim { color: #cbd5e1 !important; }
+
+    .glass-panel {
+      background: rgba(12,18,36,0.85) !important;
+      backdrop-filter: blur(24px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+      border: 1px solid rgba(255,85,0,0.28) !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,120,0,0.2) !important;
+      border-radius: 16px;
+    }
+    .dash-navbar {
+      background: rgba(8,13,26,0.88) !important;
+      backdrop-filter: blur(25px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(25px) saturate(190%) !important;
+      border-bottom: 1.5px solid rgba(255,85,0,0.3) !important;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6) !important;
+    }
+    .command-sidebar {
+      background: rgba(10,16,32,0.88);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,85,0,0.28);
+      box-shadow: 0 10px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,120,0,0.15);
+      border-radius: 18px;
+      padding: 1.25rem 1rem;
+    }
+    @media (min-width: 992px) {
+      .command-sidebar-sticky { position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,85,0,0.3) transparent; }
+    }
+    .sidebar-user-card { background: rgba(14,22,42,0.88); border-radius: 14px; border: 1px solid rgba(255,85,0,0.2); padding: 0.85rem; }
+    .sidebar-nav-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 1.2px; color: #94a3b8; text-transform: uppercase; padding: 0 0.5rem; margin-bottom: 0.45rem; }
+    .sidebar-nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0.85rem; border-radius: 10px; color: #94a3b8; font-size: 0.84rem; font-weight: 500; text-decoration: none; transition: all 0.2s ease; margin-bottom: 0.25rem; border: 1px solid transparent; }
+    .sidebar-nav-link:hover { color: #fff; background: rgba(255,255,255,0.06); border-color: rgba(255,85,0,0.25); }
+    .sidebar-nav-link.active { color: #fff; background: rgba(255,85,0,0.12); border-color: rgba(255,85,0,0.4); }
+
+    /* Payment Cards */
+    .pay-card {
+      background: rgba(14,20,36,0.80);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .pay-card:hover { border-color: rgba(255,85,0,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+    .pay-card.status-pending { border-left: 3px solid #f59e0b; }
+    .pay-card.status-verified { border-left: 3px solid #10b981; }
+    .pay-card.status-rejected { border-left: 3px solid #ef4444; }
+
+    /* Status badges */
+    .badge-pending {
+      background: rgba(245,158,11,0.18); border: 1px solid #f59e0b;
+      color: #fbbf24; font-size: 0.72rem; font-weight: 700;
+      padding: 0.3rem 0.6rem; border-radius: 6px;
+    }
+    .badge-verified {
+      background: rgba(16,185,129,0.18); border: 1px solid #10b981;
+      color: #34d399; font-size: 0.72rem; font-weight: 700;
+      padding: 0.3rem 0.6rem; border-radius: 6px;
+    }
+    .badge-rejected {
+      background: rgba(239,68,68,0.18); border: 1px solid #ef4444;
+      color: #f87171; font-size: 0.72rem; font-weight: 700;
+      padding: 0.3rem 0.6rem; border-radius: 6px;
+    }
+
+    /* Summary stat cards */
+    .stat-pill {
+      background: rgba(14,20,36,0.7);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 0.85rem 1.1rem;
+      text-align: center;
+    }
+    .stat-pill .num { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; line-height: 1; }
+
+    /* Filter pills */
+    .filter-pill-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #94a3b8;
+      border-radius: 8px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-pill-btn:hover { border-color: rgba(255,85,0,0.4); color: #fff; }
+    .filter-pill-btn.active { background: rgba(255,85,0,0.15); border-color: #ff5500; color: #ff9d00; }
+    .filter-pill-btn.f-verified.active { background: rgba(16,185,129,0.15); border-color: #10b981; color: #34d399; }
+    .filter-pill-btn.f-pending.active { background: rgba(245,158,11,0.15); border-color: #f59e0b; color: #fbbf24; }
+    .filter-pill-btn.f-rejected.active { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #f87171; }
+
+    /* Btn verify / reject */
+    .btn-verify-pay { background: rgba(16,185,129,0.15); border: 1px solid #10b981; color: #34d399; border-radius: 8px; font-size: 0.75rem; font-weight: 700; padding: 0.3rem 0.7rem; transition: all 0.2s; }
+    .btn-verify-pay:hover { background: rgba(16,185,129,0.3); color: #fff; }
+    .btn-reject-pay { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.5); color: #f87171; border-radius: 8px; font-size: 0.75rem; font-weight: 700; padding: 0.3rem 0.7rem; transition: all 0.2s; }
+    .btn-reject-pay:hover { background: rgba(239,68,68,0.28); color: #fff; }
+    .btn-delete-pay { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #64748b; border-radius: 8px; font-size: 0.72rem; padding: 0.28rem 0.6rem; transition: all 0.2s; }
+    .btn-delete-pay:hover { border-color: #ef4444; color: #f87171; }
+  </style>
+</head>
+<body>
+
+<!-- Portal Loader Overlay -->
+<div id="portalLoader" style="position: fixed; inset: 0; background: #060b18; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease;">
+  <img src="/assets/images/callisto-logo.jpg" alt="Callisto" style="width: 56px; height: 56px; border-radius: 50%; border: 2px solid rgba(255,85,0,0.6); box-shadow: 0 0 24px rgba(255,85,0,0.5); margin-bottom: 1rem; animation: pulse 1.5s infinite;">
+  <div style="font-family: var(--font-display); color: #fff; font-size: 1.1rem; font-weight: 700; letter-spacing: 2px;">CALLISTO ORBIT</div>
+  <div style="font-size: 0.72rem; color: #ff9d00; letter-spacing: 1.5px; margin-top: 0.4rem;">LOADING PAYMENT VAULT...</div>
+</div>
+
+<!-- Background Phoenix -->
+<div style="position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;">
+  <img src="/assets/images/callisto-phoenix.jpg" alt="" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 900px; opacity: 0.045; filter: blur(2px) saturate(1.4);">
+</div>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar dash-navbar sticky-top px-3 px-md-4" style="z-index: 100;">
+  <div class="d-flex align-items-center gap-3">
+    <button class="btn btn-sm d-lg-none" style="background: rgba(255,85,0,0.1); border: 1px solid rgba(255,85,0,0.3); border-radius: 8px; color: #ff9d00; padding: 0.4rem 0.6rem;" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
+      <i class="bi bi-layout-sidebar"></i>
+    </button>
+    <a href="/" class="d-flex align-items-center gap-2 text-decoration-none">
+      <img src="/assets/images/callisto-logo.jpg" alt="Logo" style="width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255,85,0,0.5); box-shadow: 0 0 10px rgba(255,85,0,0.4);">
+      <span style="font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; color: #fff; letter-spacing: 1px;">CALLISTO <span style="color: #ff5500;">ORBIT</span></span>
+    </a>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center gap-2 px-3 py-1" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;">
+      <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=User" alt="Avatar" style="width: 28px; height: 28px; border-radius: 8px;">
+      <div>
+        <div id="userName" style="font-size: 0.78rem; font-weight: 600; color: #fff; line-height: 1;">Operator</div>
+        <div id="userRole" style="font-size: 0.65rem; color: #94a3b8;">Loading...</div>
+      </div>
+    </div>
+    <span id="userRoleBadge" class="badge" style="background: rgba(0,240,118,0.15); border: 1px solid #00f076; color: #00f076; font-size: 0.65rem;">MEMBER</span>
+  </div>
+</nav>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<div class="container-fluid px-3 px-md-4 py-3 py-md-4" style="position: relative; z-index: 1; max-width: 1560px;">
+  <div class="row g-4">
+
+    <!-- ===== LEFT SIDEBAR ===== -->
+    <aside class="col-12 col-lg-3 col-xl-2">
+      <div class="offcanvas-lg offcanvas-start command-sidebar-offcanvas" tabindex="-1" id="sidebarOffcanvas">
+        <div class="d-flex justify-content-between align-items-center d-lg-none mb-3 pb-2" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+          <span style="font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 1rem;">CALLISTO ORBIT</span>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#sidebarOffcanvas"></button>
+        </div>
+        <div class="command-sidebar command-sidebar-sticky">
+
+          <!-- Active User Card -->
+          <div class="sidebar-user-card mb-3">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <img id="sideUserAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=User" alt="Specialist" style="width: 40px; height: 40px; border-radius: 12px; background: #131c31; border: 1.5px solid rgba(255,85,0,0.5); box-shadow: 0 0 10px rgba(255,85,0,0.3);">
+              <div style="min-width: 0;">
+                <div id="sideUserName" class="text-truncate text-white" style="font-weight: 700; font-size: 0.88rem; line-height: 1.2;">Specialist</div>
+                <div id="sideUserRoleBadge" class="mt-1"></div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between pt-2 mt-2" style="border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.72rem; color: #cbd5e1;">
+              <span>Operator Status:</span>
+              <span class="d-flex align-items-center gap-1 text-success" style="font-weight: 600;">
+                <span class="status-indicator-dot" style="width: 6px; height: 6px; background:#00f076; box-shadow:0 0 8px #00f076;"></span>
+                Clearance Active
+              </span>
+            </div>
+          </div>
+
+          <!-- Navigation -->
+          <div class="sidebar-nav-title">Navigation</div>
+          <nav class="d-flex flex-column gap-1 mb-3">
+            <a href="/dashboard.html" class="sidebar-nav-link">
+              <i class="bi bi-speedometer2 text-info"></i>
+              <span>Treasury Dashboard</span>
+            </a>
+            <a href="/specialists.html" class="sidebar-nav-link">
+              <i class="bi bi-people-fill text-warning"></i>
+              <span>Specialist Directory</span>
+            </a>
+            <a href="/payments.html" class="sidebar-nav-link active">
+              <i class="bi bi-cash-coin" style="color: #10b981;"></i>
+              <span>Payment Verification</span>
+            </a>
+            <a href="/dashboard.html#sectionHistory" class="sidebar-nav-link">
+              <i class="bi bi-clock-history text-warning"></i>
+              <span>Collection History</span>
+            </a>
+          </nav>
+
+          <!-- Admin-only Quick Action -->
+          <div id="sideAdminGroup" class="d-none mb-3">
+            <div class="sidebar-nav-title d-flex justify-content-between align-items-center">
+              <span>Admin Actions</span>
+              <span class="badge" style="background: rgba(255,85,0,0.2); color:#ff9d00; font-size:0.6rem;">ADMIN</span>
+            </div>
+            <button type="button" class="btn btn-sm w-100 py-2 d-flex align-items-center justify-content-center gap-2 mt-1" id="sideBtnAddPayment" style="background: rgba(16,185,129,0.15); border: 1px solid #10b981; color: #34d399; border-radius: 10px; font-size: 0.78rem; font-weight: 600;">
+              <i class="bi bi-plus-circle-fill"></i>
+              <span>+ Add Payment</span>
+            </button>
+          </div>
+
+          <!-- Logout -->
+          <div class="d-flex flex-column gap-1 pt-2" style="border-top: 1px solid rgba(255,255,255,0.06);">
+            <a href="/" class="sidebar-nav-link text-decoration-none">
+              <i class="bi bi-house-door-fill text-warning"></i>
+              <span>Landing Phoenix</span>
+            </a>
+            <button type="button" class="sidebar-nav-link text-start text-danger border-0 bg-transparent w-100" id="sideLogoutBtn" style="cursor: pointer;">
+              <i class="bi bi-box-arrow-right text-danger"></i>
+              <span>Exit Session</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="col-12 col-lg-9 col-xl-10">
+
+      <!-- Hero Banner -->
+      <div class="glass-panel p-3 p-md-4 mb-4" style="background: linear-gradient(135deg, rgba(16,22,42,0.92) 0%, rgba(5,25,15,0.9) 100%); border: 1.5px solid rgba(16,185,129,0.4) !important; box-shadow: 0 12px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(16,185,129,0.25) !important;">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+          <div>
+            <div class="phoenix-badge mb-2" style="padding: 0.35rem 0.95rem; font-size: 0.72rem; display: inline-flex; background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.4);">
+              <i class="bi bi-cash-coin" style="color: #10b981;"></i>
+              <span>The Rising Phoenix &bull; Payment Verification Vault</span>
+            </div>
+            <h2 style="font-family: var(--font-display); font-weight: 800; font-size: clamp(1.55rem, 3vw, 2.25rem); color: #fff; margin-bottom: 0.25rem;">
+              Payment <span style="color: #10b981;">Verification</span>
+            </h2>
+            <p class="mb-0" style="font-size: 0.9rem; color: #cbd5e1;">
+              Submit monthly contributions and verify payment proofs for the <strong>Callisto Future Growth Fund</strong>.
+            </p>
+          </div>
+          <div class="text-md-end d-flex flex-md-column align-items-center align-items-md-end gap-2">
+            <!-- Submit own payment button (all logged-in users) -->
+            <button type="button" class="btn btn-sm d-flex align-items-center gap-2" id="btnOpenPayModal" style="background: rgba(16,185,129,0.15); border: 1px solid #10b981; color: #34d399; border-radius: 10px; font-size: 0.82rem; font-weight: 700; padding: 0.5rem 1.1rem;">
+              <i class="bi bi-plus-circle-fill"></i> Submit My Payment
+            </button>
+            <!-- Admin: Add payment for any member -->
+            <button type="button" class="btn btn-sm d-none d-flex align-items-center gap-2" id="btnAddPaymentAdmin" style="background: rgba(255,85,0,0.12); border: 1px solid rgba(255,85,0,0.4); color: #ff9d00; border-radius: 10px; font-size: 0.82rem; font-weight: 700; padding: 0.5rem 1.1rem;">
+              <i class="bi bi-person-plus-fill"></i> Add for Member
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert area -->
+      <div id="paymentsAlert"></div>
+
+      <!-- Summary Stats -->
+      <div class="row g-3 mb-4" id="paymentsSummary">
+        <div class="col-6 col-sm-3">
+          <div class="stat-pill">
+            <div class="num text-white" id="statTotal">—</div>
+            <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px;">Total Submissions</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3">
+          <div class="stat-pill">
+            <div class="num" id="statPending" style="color: #fbbf24;">—</div>
+            <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px;">Pending Verification</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3">
+          <div class="stat-pill">
+            <div class="num" id="statVerified" style="color: #34d399;">—</div>
+            <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px;">Verified &amp; Credited</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3">
+          <div class="stat-pill">
+            <div class="num" id="statAmount" style="color: #10b981;">—</div>
+            <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px;">Amount Collected</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="glass-panel p-3 mb-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap" id="filterBtns">
+            <button class="filter-pill-btn active" data-filter="all">All</button>
+            <button class="filter-pill-btn f-pending" data-filter="pending_verification">
+              <i class="bi bi-hourglass-split me-1"></i>Pending
+            </button>
+            <button class="filter-pill-btn f-verified" data-filter="verified">
+              <i class="bi bi-check-circle-fill me-1"></i>Verified
+            </button>
+            <button class="filter-pill-btn f-rejected" data-filter="rejected">
+              <i class="bi bi-x-circle-fill me-1"></i>Rejected
+            </button>
+          </div>
+          <div style="font-size: 0.75rem; color: #94a3b8;" id="filterMonthLabel">
+            <i class="bi bi-calendar3 me-1 text-warning"></i>Showing: All Months
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments List -->
+      <div id="paymentsLoadingState" class="text-center py-5" style="color: #94a3b8;">
+        <div class="spinner-border spinner-border-sm text-warning me-2" role="status"></div>
+        Loading payment vault...
+      </div>
+      <div id="paymentsEmptyState" class="d-none text-center py-5">
+        <i class="bi bi-inbox" style="font-size: 2.5rem; color: #334155; display: block; margin-bottom: 1rem;"></i>
+        <div style="color: #94a3b8; font-size: 0.95rem;">No payment records found</div>
+        <div style="color: #64748b; font-size: 0.8rem; margin-top: 0.4rem;">Submit your first contribution using the button above</div>
+      </div>
+      <div id="paymentsList" class="d-flex flex-column gap-3"></div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer style="position: relative; z-index: 1; margin-top: 4rem; border-top: 1px solid rgba(255,85,0,0.2); background: rgba(5,8,18,0.9); padding: 1.5rem 2rem; text-align: center;">
+  <div style="font-size: 0.75rem; color: #64748b;">
+    <span style="color: #ff9d00; font-weight: 700; font-family: var(--font-display);">CALLISTO ORBIT</span>
+    &bull; Payment Verification Vault &bull; Zero-DB Architecture
+    <span class="d-block mt-1" style="color: #334155;">© 2026 Callisto Cyber Security &amp; AI — Encrypted Atomic JSON Engine</span>
+  </div>
+</footer>
+
+
+<!-- =====================================================
+     MODAL 1: SUBMIT PAYMENT (Member submits own / Admin adds for anyone)
+     ===================================================== -->
+<div class="modal fade" id="modalSubmitPayment" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-panel" style="background: rgba(13,19,36,0.98); border: 1px solid rgba(16,185,129,0.4); border-radius: 18px;">
+      <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <div class="d-flex align-items-center gap-2">
+          <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(16,185,129,0.15); display: flex; align-items: center; justify-content: center; color: #10b981;">
+            <i class="bi bi-cash-coin"></i>
+          </div>
+          <div>
+            <h5 class="modal-title text-white mb-0" style="font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;" id="payModalTitle">Submit Payment</h5>
+            <div style="font-size: 0.72rem; color: #94a3b8;" id="payModalSub">Record your monthly contribution</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formSubmitPayment">
+        <div class="modal-body">
+          <div id="payModalAlert"></div>
+
+          <!-- For Admin: select member. Hidden for regular members -->
+          <div class="mb-3 d-none" id="payForMemberGroup">
+            <label class="form-label text-dim">Submit Payment For</label>
+            <select class="form-select input-cyber-glass" id="payForMemberId" style="background: #111a2e; color: #fff;"></select>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dim">Month *</label>
+              <select class="form-select input-cyber-glass" id="payMonth" style="background: #111a2e; color: #fff;">
+                <option value="2026-11">November 2026</option>
+                <option value="2026-10">October 2026</option>
+                <option value="2026-09">September 2026</option>
+                <option value="2026-08">August 2026</option>
+                <option value="2026-07">July 2026</option>
+                <option value="2026-06">June 2026</option>
+                <option value="2026-05">May 2026</option>
+                <option value="2026-04">April 2026</option>
+                <option value="2026-03">March 2026</option>
+                <option value="2026-02" selected>February 2026</option>
+                <option value="2026-01">January 2026</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dim">Amount (Rs.) *</label>
+              <input type="number" class="form-control input-cyber-glass" id="payAmount" value="100" min="1" placeholder="100">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dim">Payment Method *</label>
+            <select class="form-select input-cyber-glass" id="payMethod" style="background: #111a2e; color: #fff;">
+              <option value="">— Select Method —</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Commercial Bank">Commercial Bank</option>
+              <option value="Sampath Bank">Sampath Bank</option>
+              <option value="Peoples Bank">People's Bank</option>
+              <option value="HNB">HNB</option>
+              <option value="Cash">Cash</option>
+              <option value="Crypto">Crypto</option>
+              <option value="Wise">Wise</option>
+              <option value="PayPal">PayPal</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dim">Transaction Reference / Slip ID *</label>
+            <input type="text" class="form-control input-cyber-glass" id="payTxRef" placeholder="e.g. CB-89472105 or CAL-0214">
+            <small class="text-dim" style="font-size: 0.68rem;">Bank slip number, transaction ID, or unique reference</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dim">Payment Date *</label>
+            <input type="date" class="form-control input-cyber-glass" id="payDate">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dim">Notes <span style="color: #64748b;">(optional)</span></label>
+            <textarea class="form-control input-cyber-glass" id="payNotes" rows="2" placeholder="e.g. February contribution deposited via app"></textarea>
+          </div>
+
+          <!-- Admin-only: auto-verify toggle -->
+          <div class="d-none" id="payAutoVerifyGroup">
+            <div class="d-flex align-items-center gap-2 p-2" style="background: rgba(255,85,0,0.08); border: 1px solid rgba(255,85,0,0.3); border-radius: 8px;">
+              <input type="checkbox" class="form-check-input" id="payAutoVerify" style="width: 1rem; height: 1rem; accent-color: #ff5500; cursor: pointer;">
+              <label for="payAutoVerify" style="font-size: 0.8rem; color: #ff9d00; font-weight: 600; cursor: pointer; margin: 0;">
+                <i class="bi bi-lightning-charge-fill me-1"></i>Auto-Verify (Admin verified — credit directly to Treasury)
+              </label>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-sm d-flex align-items-center gap-2" id="btnSubmitPay" style="background: rgba(16,185,129,0.2); border: 1px solid #10b981; color: #34d399; border-radius: 8px; font-weight: 700;">
+            <i class="bi bi-send-fill"></i> Submit Payment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- =====================================================
+     MODAL 2: REJECT PAYMENT (Admin only)
+     ===================================================== -->
+<div class="modal fade" id="modalRejectPayment" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-panel" style="background: rgba(13,19,36,0.98); border: 1px solid rgba(239,68,68,0.4); border-radius: 18px;">
+      <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <div class="d-flex align-items-center gap-2">
+          <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(239,68,68,0.15); display: flex; align-items: center; justify-content: center; color: #ef4444;">
+            <i class="bi bi-x-circle-fill"></i>
+          </div>
+          <h5 class="modal-title text-white mb-0" style="font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;">Reject Payment</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="rejectPayAlert"></div>
+        <p style="color: #cbd5e1; font-size: 0.88rem;" class="mb-3">
+          Rejecting this payment will mark it as <strong class="text-danger">Rejected</strong> and revert any credited amount from the treasury.
+        </p>
+        <div class="mb-3">
+          <label class="form-label text-dim">Reason for Rejection</label>
+          <textarea class="form-control input-cyber-glass" id="rejectReason" rows="3" placeholder="e.g. Transaction reference not found, duplicate submission..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-sm d-flex align-items-center gap-2" id="btnConfirmReject" style="background: rgba(239,68,68,0.15); border: 1px solid #ef4444; color: #f87171; border-radius: 8px; font-weight: 700;">
+          <i class="bi bi-x-circle-fill"></i> Confirm Reject
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Portal Loader -->
+<script src="/assets/js/portal-loader.js"></script>
+
+<!-- Payments JS -->
+<script src="/assets/js/payments.js?v=1.0"></script>
+
+</body>
+</html>

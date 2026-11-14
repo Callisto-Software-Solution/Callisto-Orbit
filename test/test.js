@@ -443,12 +443,14 @@ async function runTests() {
   const loginHtml = path.join(__dirname, '../public/login.html');
   const dashHtml = path.join(__dirname, '../public/dashboard.html');
   const specialistsHtml = path.join(__dirname, '../public/specialists.html');
+  const paymentsHtml = path.join(__dirname, '../public/payments.html');
   const cssFile = path.join(__dirname, '../public/assets/css/style.css');
   const authJs = path.join(__dirname, '../public/assets/js/auth.js');
   const phoenixJs = path.join(__dirname, '../public/assets/js/phoenix.js');
   const portalLoaderJs = path.join(__dirname, '../public/assets/js/portal-loader.js');
   const dashJs = path.join(__dirname, '../public/assets/js/dashboard.js');
   const specialistsJs = path.join(__dirname, '../public/assets/js/specialists.js');
+  const paymentsJs = path.join(__dirname, '../public/assets/js/payments.js');
   const logoFile = path.join(__dirname, '../public/assets/images/callisto-logo.jpg');
   const phoenixFile = path.join(__dirname, '../public/assets/images/callisto-phoenix.jpg');
 
@@ -456,12 +458,14 @@ async function runTests() {
   assert.ok(fs.existsSync(loginHtml), 'login.html must exist');
   assert.ok(fs.existsSync(dashHtml), 'dashboard.html must exist');
   assert.ok(fs.existsSync(specialistsHtml), 'specialists.html must exist');
+  assert.ok(fs.existsSync(paymentsHtml), 'payments.html must exist');
   assert.ok(fs.existsSync(cssFile), 'style.css must exist');
   assert.ok(fs.existsSync(authJs), 'auth.js must exist');
   assert.ok(fs.existsSync(phoenixJs), 'phoenix.js must exist');
   assert.ok(fs.existsSync(portalLoaderJs), 'portal-loader.js must exist');
   assert.ok(fs.existsSync(dashJs), 'dashboard.js must exist');
   assert.ok(fs.existsSync(specialistsJs), 'specialists.js must exist');
+  assert.ok(fs.existsSync(paymentsJs), 'payments.js must exist');
   assert.ok(fs.existsSync(logoFile), 'callisto-logo.jpg must exist');
   assert.ok(fs.existsSync(phoenixFile), 'callisto-phoenix.jpg must exist');
   console.log('  ✅ All UI and asset files verified.\n');
