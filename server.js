@@ -511,7 +511,7 @@ async function handleRequest(req, res) {
             totalExpected,
             monthlyTarget: config.monthlyTarget || 600,
             perMember: config.monthlyContributionPerMember || 100,
-            currency: config.currency || '$'
+            currency: config.currency || 'Rs. '
           },
           collections
         });

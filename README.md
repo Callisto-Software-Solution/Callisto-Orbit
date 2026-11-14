@@ -13,8 +13,8 @@
 ## 🌟 Overview
 **Callisto-Orbit** is a high-tech, responsive web application engineered to manage and monitor a monthly team collection fund for the core specialists of Callisto Cyber Security & AI.
 - **Squad Size**: 6 Core Specialists (Dynamically expandable via Admin Console)
-- **Monthly Contribution**: $100 per specialist
-- **Monthly Target**: $600 / month (Auto-scales with roster size)
+- **Monthly Contribution**: Rs. 100 per specialist
+- **Monthly Target**: Rs. 600 / month (Auto-scales with roster size)
 - **Purpose**: Future venture capital, security infrastructure, operations, and growth reserve for Callisto.
 
 ---

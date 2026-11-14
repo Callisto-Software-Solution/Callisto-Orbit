@@ -202,17 +202,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       const colData = await colRes.json();
       const memData = await memRes.json();
 
+      const stats = colData.success && colData.stats ? colData.stats : {};
+      const currency = stats.currency || 'Rs. ';
+
       if (memData.success && memData.members) {
         cachedMembers = memData.members;
         renderAdminSpecialists(cachedMembers);
         if (statRosterCount) statRosterCount.textContent = `${cachedMembers.length} Active`;
-        if (squadMetaHeader) squadMetaHeader.innerHTML = `${cachedMembers.length} Members &bull; $100/mo Fund Pool`;
+        if (squadMetaHeader) squadMetaHeader.innerHTML = `${cachedMembers.length} Members &bull; ${currency}100/mo Fund Pool`;
         if (sideTargetMembers) sideTargetMembers.textContent = `${cachedMembers.length} Specialists`;
       }
 
       if (colData.success) {
-        const stats = colData.stats;
-        const currency = stats.currency || '$';
         if (statTotalCollected) statTotalCollected.textContent = `${currency}${stats.totalCollected.toLocaleString()}`;
         if (statMonthlyTarget) statMonthlyTarget.textContent = `${currency}${stats.monthlyTarget.toLocaleString()}`;
         if (statMonthlyTargetFormula) {
@@ -234,7 +235,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (sideTargetProgress) sideTargetProgress.textContent = `${pct}%`;
           if (sideProgressBar) sideProgressBar.style.width = `${pct}%`;
 
-          renderActiveMembers(activeMonth.contributions, cachedMembers);
+          renderActiveMembers(activeMonth.contributions, cachedMembers, currency);
         }
 
         renderHistory(collections, currency);
@@ -245,7 +246,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Render Member Contribution Cards
-  function renderActiveMembers(contributions = [], members = []) {
+  function renderActiveMembers(contributions = [], members = [], currency = 'Rs. ') {
     if (!membersGrid) return;
 
     const contribMap = {};
@@ -276,11 +277,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="text-end">
               <div>
                 <span class="${isPaid ? 'member-badge-paid' : 'member-badge-pending'}">
-                  ${isPaid ? '<i class="bi bi-check-circle-fill me-1"></i> PAID $100' : '<i class="bi bi-hourglass-split me-1"></i> PENDING $100'}
+                  ${isPaid ? `<i class="bi bi-check-circle-fill me-1"></i> PAID ${currency}100` : `<i class="bi bi-hourglass-split me-1"></i> PENDING ${currency}100`}
                 </span>
               </div>
               <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">
-                ${isPaid && contrib.method ? `${contrib.method} • ${contrib.txRef || 'Verified'}` : 'Target: $100/mo'}
+                ${isPaid && contrib.method ? `${contrib.method} • ${contrib.txRef || 'Verified'}` : `Target: ${currency}100/mo`}
               </div>
             </div>
           </div>
