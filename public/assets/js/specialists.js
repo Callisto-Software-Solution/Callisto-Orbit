@@ -67,11 +67,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnToggleEditPassword = document.getElementById('btnToggleEditPassword');
   const eyeIconEditPassword = document.getElementById('eyeIconEditPassword');
 
+  // Delete Modal elements
+  const modalDeleteSpecialist = document.getElementById('modalDeleteSpecialist');
+  const modalDeleteAlert = document.getElementById('modalDeleteAlert');
+  const delSpecialistAvatar = document.getElementById('delSpecialistAvatar');
+  const delSpecialistName = document.getElementById('delSpecialistName');
+  const delSpecialistUsername = document.getElementById('delSpecialistUsername');
+  const delSpecialistNic = document.getElementById('delSpecialistNic');
+  const delSpecialistRoleBadge = document.getElementById('delSpecialistRoleBadge');
+  const btnConfirmDelete = document.getElementById('btnConfirmDelete');
+  let targetDeleteMemberId = null;
+
   let bsRegisterModal = null;
   let bsEditModal = null;
+  let bsDeleteModal = null;
   if (typeof bootstrap !== 'undefined') {
     if (modalRegisterSpecialist) bsRegisterModal = new bootstrap.Modal(modalRegisterSpecialist);
     if (modalEditSpecialist) bsEditModal = new bootstrap.Modal(modalEditSpecialist);
+    if (modalDeleteSpecialist) bsDeleteModal = new bootstrap.Modal(modalDeleteSpecialist);
   }
 
   let currentUser = null;
@@ -218,11 +231,27 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isSuperAdminTarget = m.role === 'super_admin';
       const canEditThisUser = canEdit && (currentUser.role === 'super_admin' || !isSuperAdminTarget);
 
-      const actionBtn = canEditThisUser
-        ? `<button type="button" class="btn btn-sm glass-subcard text-info btn-edit-specialist" data-member-id="${m.id}" style="border: 1px solid rgba(0,210,255,0.4); border-radius: 8px; padding: 0.35rem 0.75rem; font-size: 0.75rem; font-weight: 600;" title="Edit Specialist Clearance">
-             <i class="bi bi-pencil-square me-1"></i> Edit
-           </button>`
-        : `<span class="badge" style="background: rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.7rem; border: 1px solid rgba(255,255,255,0.1);">Verified</span>`;
+      const isSelf = currentUser && currentUser.id === m.id;
+      let actionBtn = '';
+
+      if (canEditThisUser) {
+        actionBtn = `
+          <div class="d-flex align-items-center justify-content-end gap-1">
+            <button type="button" class="btn btn-sm glass-subcard text-info btn-edit-specialist" data-member-id="${m.id}" style="border: 1px solid rgba(0,210,255,0.4); border-radius: 8px; padding: 0.35rem 0.65rem; font-size: 0.75rem; font-weight: 600;" title="Edit Specialist Clearance">
+              <i class="bi bi-pencil-square me-1"></i> Edit
+            </button>
+            ${!isSelf ? `
+              <button type="button" class="btn btn-sm glass-subcard text-danger btn-delete-specialist" data-member-id="${m.id}" style="border: 1px solid rgba(230,32,32,0.4); border-radius: 8px; padding: 0.35rem 0.65rem; font-size: 0.75rem; font-weight: 600;" title="Revoke & Delete Specialist">
+                <i class="bi bi-trash3-fill me-1"></i> Delete
+              </button>
+            ` : `
+              <span class="badge" style="background: rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.68rem; padding: 0.35rem 0.5rem; border: 1px solid rgba(255,255,255,0.1);">You</span>
+            `}
+          </div>
+        `;
+      } else {
+        actionBtn = `<span class="badge" style="background: rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.7rem; border: 1px solid rgba(255,255,255,0.1);">Verified</span>`;
+      }
 
       return `
         <tr class="specialist-table-row" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
@@ -285,6 +314,24 @@ document.addEventListener('DOMContentLoaded', async () => {
           updateEditPasswordVisibility();
           if (modalEditAlert) modalEditAlert.innerHTML = '';
           bsEditModal.show();
+        }
+      });
+    });
+
+    // Attach click events to delete buttons
+    document.querySelectorAll('.btn-delete-specialist').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-member-id');
+        const target = cachedMembers.find(m => m.id === id);
+        if (target && bsDeleteModal) {
+          targetDeleteMemberId = target.id;
+          if (delSpecialistAvatar) delSpecialistAvatar.src = target.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(target.name)}`;
+          if (delSpecialistName) delSpecialistName.textContent = target.name;
+          if (delSpecialistUsername) delSpecialistUsername.textContent = `@${target.username || 'user'}`;
+          if (delSpecialistNic) delSpecialistNic.textContent = target.nic;
+          if (delSpecialistRoleBadge) delSpecialistRoleBadge.innerHTML = getRoleBadge(target.role);
+          if (modalDeleteAlert) modalDeleteAlert.innerHTML = '';
+          bsDeleteModal.show();
         }
       });
     });
@@ -511,7 +558,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 8. Logout & Exit Session
+  // 8. Submit Delete Specialist
+  if (btnConfirmDelete) {
+    btnConfirmDelete.addEventListener('click', async () => {
+      if (!targetDeleteMemberId) return;
+
+      btnConfirmDelete.disabled = true;
+      btnConfirmDelete.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Deleting...`;
+
+      try {
+        const res = await fetch(`/api/admin/members/${targetDeleteMemberId}`, {
+          method: 'DELETE'
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          if (bsDeleteModal) bsDeleteModal.hide();
+          if (specialistsAlert) {
+            specialistsAlert.innerHTML = `
+              <div class="alert alert-warning d-flex align-items-center gap-2 py-2 mb-3" style="background: rgba(255,85,0,0.15); border: 1px solid #ff5500; color: #ff9d00; font-size: 0.82rem; border-radius: 10px;">
+                <i class="bi bi-trash3-fill"></i>
+                <div>${data.message}</div>
+              </div>
+            `;
+          }
+          targetDeleteMemberId = null;
+          await loadSpecialists();
+        } else {
+          if (modalDeleteAlert) {
+            modalDeleteAlert.innerHTML = `<div class="alert alert-danger py-2" style="font-size: 0.78rem;">${data.message || 'Failed to delete specialist'}</div>`;
+          }
+        }
+      } catch (err) {
+        console.error('Delete error:', err);
+        if (modalDeleteAlert) {
+          modalDeleteAlert.innerHTML = `<div class="alert alert-danger py-2" style="font-size: 0.78rem;">Network error. Please try again.</div>`;
+        }
+      } finally {
+        btnConfirmDelete.disabled = false;
+        btnConfirmDelete.innerHTML = `<i class="bi bi-trash3-fill me-1"></i> Revoke &amp; Delete Specialist`;
+      }
+    });
+  }
+
+  // 9. Logout & Exit Session
   const executeLogout = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     try {

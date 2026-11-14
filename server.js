@@ -527,7 +527,48 @@ async function handleRequest(req, res) {
         });
       }
 
-      // 6. COLLECTIONS: GET /api/collections
+      // 8. ADMIN: DELETE SPECIALIST FROM VAULT
+      if (pathname.startsWith('/api/admin/members/') && method === 'DELETE') {
+        const token = getAuthToken(req);
+        const session = verifySessionToken(token);
+        if (!session || (session.role !== 'admin' && session.role !== 'super_admin')) {
+          return sendJson(res, 403, { success: false, message: 'Forbidden: Admin or Super Admin clearance required' });
+        }
+
+        const memberId = pathname.replace('/api/admin/members/', '').trim();
+        const users = readJson(USERS_FILE, []);
+        const targetUser = users.find(u => u.id === memberId);
+        if (!targetUser) {
+          return sendJson(res, 404, { success: false, message: 'Specialist not found' });
+        }
+
+        // Prevent self-deletion
+        if (session.userId === targetUser.id) {
+          return sendJson(res, 400, { success: false, message: 'You cannot delete your own active operator account' });
+        }
+
+        // Only super_admin can delete a super_admin
+        if (targetUser.role === 'super_admin' && session.role !== 'super_admin') {
+          return sendJson(res, 403, { success: false, message: 'Only Super Admin can delete a Super Admin specialist' });
+        }
+
+        const remainingUsers = users.filter(u => u.id !== memberId);
+        writeJson(USERS_FILE, remainingUsers);
+
+        // Update config total members and monthly target
+        const config = readJson(CONFIG_FILE, {});
+        config.totalMembers = remainingUsers.length;
+        config.monthlyTarget = remainingUsers.length * (config.monthlyContributionPerMember || 100);
+        writeJson(CONFIG_FILE, config);
+
+        return sendJson(res, 200, {
+          success: true,
+          message: `Specialist ${targetUser.name} (${targetUser.nic}) successfully removed from vault`,
+          deletedId: memberId
+        });
+      }
+
+      // 9. COLLECTIONS: GET /api/collections
       if (pathname === '/api/collections' && method === 'GET') {
         const collections = readJson(COLLECTIONS_FILE, []);
         const config = readJson(CONFIG_FILE, {});

@@ -311,6 +311,43 @@ async function runTests() {
   assert.strictEqual(newAdminLoginRes.body.user.role, 'admin');
   console.log('  ✅ Admin password validation and authentication verified successfully.\n');
 
+  // Test 13C: Deleting Specialist via DELETE /api/admin/members/:id
+  console.log('Test 13C: Testing Specialist Deletion and Permissions...');
+  // 1. Member attempting to delete -> 403
+  const memberToken = newNicLoginRes.body.token;
+  const unauthDelRes = await dispatchMockRequest({
+    url: `/api/admin/members/${successAdminRes.body.member.id}`,
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${memberToken}` }
+  });
+  assert.strictEqual(unauthDelRes.statusCode, 403);
+
+  // 2. Admin attempting to delete own active account -> 400
+  const selfDelRes = await dispatchMockRequest({
+    url: `/api/admin/members/${loginRes.body.user.id}`,
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${adminToken}` }
+  });
+  assert.strictEqual(selfDelRes.statusCode, 400);
+
+  // 3. Admin successfully deleting the registered specialist -> 200
+  const deleteRes = await dispatchMockRequest({
+    url: `/api/admin/members/${successAdminRes.body.member.id}`,
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${adminToken}` }
+  });
+  assert.strictEqual(deleteRes.statusCode, 200);
+  assert.strictEqual(deleteRes.body.success, true);
+
+  // 4. Confirm deleted specialist cannot authenticate anymore -> 401
+  const deletedLoginRes = await dispatchMockRequest({
+    url: '/api/auth/login',
+    method: 'POST',
+    body: { nic: adminTestNic, mode: 'admin', password: 'adminSecretPass123' }
+  });
+  assert.strictEqual(deletedLoginRes.statusCode, 401);
+  console.log('  ✅ Specialist deletion and security permission checks verified successfully.\n');
+
   // Cleanup: Reset test users from data/users.json to keep pristine state
   const testIds = [regRes.body.member.id, successAdminRes.body.member.id];
   const cleanUsers = JSON.parse(fs.readFileSync(usersPath, 'utf8')).filter(u => !testIds.includes(u.id));
