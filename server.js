@@ -91,8 +91,19 @@ function readJson(filePath, defaultValue = []) {
 
 function writeJson(filePath, data) {
   const tmpPath = `${filePath}.tmp`;
-  fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2), 'utf8');
-  fs.renameSync(tmpPath, filePath);
+  const content = JSON.stringify(data, null, 2);
+  try {
+    fs.writeFileSync(tmpPath, content, 'utf8');
+    try {
+      fs.renameSync(tmpPath, filePath);
+    } catch (renameErr) {
+      // Windows lock fallback: copy & unlink
+      fs.copyFileSync(tmpPath, filePath);
+      try { fs.unlinkSync(tmpPath); } catch (e) {}
+    }
+  } catch (err) {
+    fs.writeFileSync(filePath, content, 'utf8');
+  }
 }
 
 // Parse request body

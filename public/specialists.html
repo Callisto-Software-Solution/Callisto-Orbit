@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Specialist Directory &amp; NIC Registry | Callisto-Orbit</title>
+  
+  <link rel="icon" type="image/jpeg" href="/assets/images/callisto-logo.jpg">
+
+  <!-- Fonts: Inter, Rajdhani, Orbitron -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 & Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="/assets/css/style.css?v=2.6">
+
+  <style>
+    /* High-Contrast Readability Overrides */
+    .text-muted,
+    p.text-muted,
+    span.text-muted,
+    div.text-muted,
+    small.text-muted,
+    ul.text-muted {
+      color: #cbd5e1 !important;
+    }
+
+    .text-dim,
+    p.text-dim,
+    span.text-dim,
+    div.text-dim,
+    small.text-dim {
+      color: #94a3b8 !important;
+    }
+
+    input::placeholder,
+    textarea::placeholder,
+    .form-control::placeholder,
+    .input-cyber-glass::placeholder,
+    .input-nic-custom::placeholder {
+      color: #cbd5e1 !important;
+      opacity: 1 !important;
+      font-weight: 500 !important;
+    }
+    
+    ::-webkit-input-placeholder {
+      color: #cbd5e1 !important;
+      opacity: 1 !important;
+      font-weight: 500 !important;
+    }
+
+    .modal-content input.form-control,
+    .modal-content select.form-select {
+      background: #0f172a !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.28) !important;
+      color: #ffffff !important;
+      font-size: 0.92rem !important;
+    }
+
+    .modal-content input.form-control:focus,
+    .modal-content select.form-select:focus {
+      background: #131d35 !important;
+      border-color: #ff5500 !important;
+      box-shadow: 0 0 0 3px rgba(255, 85, 0, 0.25) !important;
+      color: #ffffff !important;
+    }
+
+    .modal-content input.form-control::placeholder {
+      color: #cbd5e1 !important;
+      opacity: 1 !important;
+      font-weight: 500 !important;
+    }
+
+    .modal-content .form-label {
+      color: #f1f5f9 !important;
+      font-size: 0.82rem !important;
+      font-weight: 600 !important;
+    }
+
+    .modal-content small.text-dim,
+    .modal-content .text-dim {
+      color: #cbd5e1 !important;
+    }
+
+    .glass-panel {
+      background: rgba(12, 18, 36, 0.85) !important;
+      backdrop-filter: blur(24px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+      border: 1px solid rgba(255, 85, 0, 0.28) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 120, 0, 0.2) !important;
+      border-radius: 16px;
+    }
+
+    .dash-navbar {
+      background: rgba(8, 13, 26, 0.88) !important;
+      backdrop-filter: blur(25px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(25px) saturate(190%) !important;
+      border-bottom: 1.5px solid rgba(255, 85, 0, 0.28) !important;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    .command-sidebar {
+      background: rgba(10, 16, 32, 0.88);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 85, 0, 0.28);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 120, 0, 0.15);
+      border-radius: 18px;
+      padding: 1.25rem 1rem;
+    }
+
+    @media (min-width: 992px) {
+      .command-sidebar-sticky {
+        position: sticky;
+        top: 5rem;
+        max-height: calc(100vh - 6rem);
+        overflow-y: auto;
+      }
+    }
+
+    .sidebar-user-card {
+      background: rgba(14, 22, 42, 0.88);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 85, 0, 0.2);
+      padding: 0.85rem;
+    }
+
+    .sidebar-nav-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: #ff9d00 !important;
+      text-transform: uppercase;
+      padding: 0 0.5rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 10px;
+      color: #cbd5e1;
+      font-size: 0.84rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      margin-bottom: 0.25rem;
+      border: 1px solid transparent;
+    }
+
+    .sidebar-nav-link:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 85, 0, 0.25);
+    }
+
+    .sidebar-nav-link.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(255, 85, 0, 0.22), rgba(216, 27, 27, 0.15));
+      border: 1px solid rgba(255, 85, 0, 0.45);
+      box-shadow: 0 0 15px rgba(255, 85, 0, 0.2);
+    }
+
+    .filter-pill-btn {
+      background: rgba(16, 24, 44, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.4rem 0.85rem;
+      border-radius: 50px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .filter-pill-btn:hover {
+      background: rgba(255, 85, 0, 0.15);
+      color: #ffffff;
+      border-color: rgba(255, 85, 0, 0.4);
+    }
+
+    .filter-pill-btn.active {
+      background: linear-gradient(135deg, rgba(255, 85, 0, 0.35), rgba(216, 27, 27, 0.35));
+      border-color: #ff5500;
+      color: #ff9d00;
+      box-shadow: 0 0 10px rgba(255, 85, 0, 0.3);
+    }
+
+    .search-cyber-input {
+      background: rgba(11, 17, 32, 0.88);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 0.55rem 1rem 0.55rem 2.4rem;
+      font-size: 0.88rem;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    .search-cyber-input:focus {
+      background: rgba(15, 23, 42, 0.95);
+      border-color: #ff5500;
+      box-shadow: 0 0 15px rgba(255, 85, 0, 0.3);
+      color: #ffffff;
+    }
+
+    .specialist-table-row {
+      transition: background 0.2s ease;
+    }
+
+    .specialist-table-row:hover {
+      background: rgba(255, 85, 0, 0.06) !important;
+    }
+  </style>
+</head>
+<body style="position: relative; background: #050811;">
+
+  <!-- Minimal Elegant Fire Cursor Glow Follower -->
+  <div id="cursorFireAura" class="cursor-fire-aura" aria-hidden="true"></div>
+
+  <!-- 1. FULL BACKGROUND ANIMATED FIRE PHOENIX BIRD STAGE -->
+  <div class="phoenix-bg-stage" style="opacity: 0.35; pointer-events: none; z-index: 0; position: fixed;">
+    <div class="phoenix-shockwave shockwave-1" style="width: 500px; height: 500px;"></div>
+    <div class="phoenix-shockwave shockwave-2" style="width: 780px; height: 780px;"></div>
+    <div class="phoenix-glow-halo" style="width: 75vw; height: 75vh;"></div>
+    <img src="/assets/images/callisto-phoenix.jpg" alt="Callisto Fire Phoenix" class="phoenix-bg-animated-img">
+    <div class="phoenix-bg-vignette"></div>
+  </div>
+
+  <!-- Embers Canvas Sparks -->
+  <canvas id="emberCanvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0;"></canvas>
+
+  <div class="glow-orb-top"></div>
+  <div class="glow-orb-bottom"></div>
+
+  <!-- Top Navigation Bar -->
+  <nav class="dash-navbar d-flex justify-content-between align-items-center px-2 px-sm-3 px-md-4 py-2" style="position: relative; z-index: 10;">
+    <div class="d-flex align-items-center gap-2 gap-sm-3">
+      
+      <!-- Mobile Sidebar Toggle Hamburger Button -->
+      <button class="btn btn-sm d-lg-none glass-subcard p-1 px-2 text-warning" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas" title="Toggle Sidebar">
+        <i class="bi bi-list fs-5"></i>
+      </button>
+
+      <div style="width: 38px; height: 38px; min-width: 38px; border-radius: 50%; overflow: hidden; border: 1.5px solid rgba(255,85,0,0.6); background: #0c1222; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 14px rgba(255,85,0,0.45);">
+        <img src="/assets/images/callisto-logo.jpg" alt="Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+      </div>
+      <div>
+        <div class="d-flex align-items-center gap-1 gap-sm-2 flex-wrap">
+          <span style="font-family: var(--font-display); font-weight: 700; font-size: clamp(1rem, 3.2vw, 1.25rem); letter-spacing: 0.8px; color: #fff;">
+            CALLISTO<span class="phoenix-gradient-text">-ORBIT</span>
+          </span>
+          <span class="badge d-none d-sm-inline-flex align-items-center" style="background: rgba(0, 230, 118, 0.15); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.3); font-size: 0.65rem;">
+            ● DIRECTORY
+          </span>
+        </div>
+        <div style="font-size: 0.72rem; color: #cbd5e1;" id="squadMetaHeader">
+          Specialist Registry &bull; Zero-DB Vault
+        </div>
+      </div>
+    </div>
+
+    <!-- Active User & Quick Actions (Top Right) -->
+    <div class="d-flex align-items-center gap-2">
+      <!-- Active User Chip -->
+      <div class="d-none d-sm-flex align-items-center gap-2 px-3 py-1 glass-panel" style="border-radius: 50px;">
+        <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=User" alt="Avatar" style="width: 28px; height: 28px; border-radius: 50%; background: #1e293b;">
+        <div class="d-flex flex-column text-start">
+          <div class="d-flex align-items-center gap-1">
+            <span id="userName" style="font-size: 0.82rem; font-weight: 600; color: #fff; line-height: 1.1;">Loading...</span>
+            <span id="userRoleBadge" class="badge" style="font-size: 0.62rem; padding: 0.2rem 0.45rem;">MEMBER</span>
+          </div>
+          <span id="userRole" style="font-size: 0.68rem; color: #cbd5e1; line-height: 1;">Specialist</span>
+        </div>
+      </div>
+
+      <!-- Jump to Treasury Dashboard -->
+      <a href="/dashboard.html" class="btn btn-sm d-flex align-items-center gap-1 glass-subcard text-decoration-none px-2 px-sm-3 py-1" style="border-radius: 10px; font-size: 0.8rem; color: var(--callisto-cyan); border: 1px solid rgba(0, 210, 255, 0.35);" title="Go to Treasury Dashboard">
+        <i class="bi bi-speedometer2"></i>
+        <span class="d-none d-md-inline">Dashboard</span>
+      </a>
+
+      <!-- Landing Phoenix Link -->
+      <a href="/" class="btn btn-sm d-flex align-items-center gap-1 glass-subcard text-decoration-none px-2 px-sm-3 py-1" style="border-radius: 10px; font-size: 0.8rem; color: var(--callisto-amber); border: 1px solid rgba(255, 85, 0, 0.35);" title="Return to Landing Page">
+        <i class="bi bi-house-door-fill"></i>
+        <span class="d-none d-md-inline">Phoenix</span>
+      </a>
+
+      <!-- Logout Button -->
+      <button id="logoutBtn" class="btn btn-sm d-flex align-items-center gap-1 px-2 px-sm-3 py-1" style="background: rgba(230, 32, 32, 0.15); color: #ff6b6b; border: 1px solid rgba(230, 32, 32, 0.3); border-radius: 10px; font-size: 0.82rem; font-weight: 600;" title="Exit Session">
+        <i class="bi bi-box-arrow-right"></i>
+        <span class="d-none d-sm-inline">Logout</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Layout (Sidebar + Specialists Grid) -->
+  <div class="container-fluid px-3 px-md-4 py-3 py-md-4" style="position: relative; z-index: 1; max-width: 1560px;">
+    <div class="row g-4">
+      
+      <!-- LEFT SIDEBAR -->
+      <aside class="col-12 col-lg-3 col-xl-2">
+        <div class="offcanvas-lg offcanvas-start command-sidebar-offcanvas" tabindex="-1" id="sidebarOffcanvas">
+          
+          <div class="d-flex justify-content-between align-items-center d-lg-none mb-3 pb-2" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div class="d-flex align-items-center gap-2">
+              <img src="/assets/images/callisto-logo.jpg" alt="Logo" style="width: 28px; height: 28px; border-radius: 50%;">
+              <span style="font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 1rem;">CALLISTO ORBIT</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#sidebarOffcanvas" aria-label="Close"></button>
+          </div>
+
+          <div class="command-sidebar command-sidebar-sticky">
+            
+            <!-- 1. Active Specialist Card -->
+            <div class="sidebar-user-card mb-3">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <img id="sideUserAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=User" alt="Specialist" style="width: 40px; height: 40px; border-radius: 12px; background: #131c31; border: 1.5px solid rgba(255,85,0,0.5); box-shadow: 0 0 10px rgba(255,85,0,0.3);">
+                <div style="min-width: 0;">
+                  <div id="sideUserName" class="text-truncate text-white" style="font-weight: 700; font-size: 0.88rem; line-height: 1.2;">Specialist</div>
+                  <div id="sideUserRoleBadge" class="mt-1">
+                    <span class="badge" style="background: rgba(0,240,118,0.15); border: 1px solid #00f076; color: #00f076; font-size: 0.62rem;">MEMBER</span>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between pt-2 mt-2" style="border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.72rem; color: #cbd5e1;">
+                <span>Operator Status:</span>
+                <span class="d-flex align-items-center gap-1 text-success" style="font-weight: 600;">
+                  <span class="status-indicator-dot" style="width: 6px; height: 6px; background:#00f076; box-shadow:0 0 8px #00f076;"></span>
+                  Clearance Active
+                </span>
+              </div>
+            </div>
+
+            <!-- 2. Main Navigation Menu -->
+            <div class="sidebar-nav-title">Navigation</div>
+            <nav class="d-flex flex-column gap-1 mb-3">
+              <a href="/dashboard.html" class="sidebar-nav-link">
+                <i class="bi bi-speedometer2 text-info"></i>
+                <span>Treasury Dashboard</span>
+              </a>
+              <a href="/specialists.html" class="sidebar-nav-link active">
+                <i class="bi bi-people-fill text-warning"></i>
+                <span>Specialist Directory</span>
+              </a>
+              <a href="/dashboard.html#sectionMonthStatus" class="sidebar-nav-link">
+                <i class="bi bi-pie-chart-fill text-info"></i>
+                <span>Monthly Pool Status</span>
+              </a>
+              <a href="/dashboard.html#sectionHistory" class="sidebar-nav-link">
+                <i class="bi bi-clock-history text-warning"></i>
+                <span>Collection History</span>
+              </a>
+              <a href="/dashboard.html#sectionArchitecture" class="sidebar-nav-link">
+                <i class="bi bi-shield-check text-success"></i>
+                <span>Zero-DB Vault Info</span>
+              </a>
+            </nav>
+
+            <!-- 3. Privileged Admin Quick Action -->
+            <div id="sideAdminGroup" class="d-none mb-3">
+              <div class="sidebar-nav-title d-flex justify-content-between align-items-center">
+                <span>Admin Actions</span>
+                <span class="badge" style="background: rgba(255,85,0,0.2); color:#ff9d00; font-size:0.6rem;">ADMIN</span>
+              </div>
+              <button type="button" class="btn btn-sm btn-phoenix-main w-100 py-2 text-start d-flex align-items-center justify-content-center gap-2" id="sideBtnRegisterSpecialist" style="border-radius: 10px; font-size: 0.78rem; font-weight: 600;">
+                <i class="bi bi-person-plus-fill"></i>
+                <span>+ Register Specialist</span>
+              </button>
+            </div>
+
+            <!-- 4. Quick Return & Logout Buttons -->
+            <div class="d-flex flex-column gap-1 pt-2" style="border-top: 1px solid rgba(255,255,255,0.06);">
+              <a href="/" class="sidebar-nav-link text-decoration-none">
+                <i class="bi bi-house-door-fill text-warning"></i>
+                <span>Landing Phoenix</span>
+              </a>
+              <button type="button" class="sidebar-nav-link text-start text-danger border-0 bg-transparent w-100" id="sideLogoutBtn" style="cursor: pointer;">
+                <i class="bi bi-box-arrow-right text-danger"></i>
+                <span>Exit Session</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </aside>
+
+      <!-- ==========================================
+           MAIN CONTENT: SPECIALISTS DIRECTORY & REGISTRY
+           ========================================== -->
+      <main class="col-12 col-lg-9 col-xl-10">
+        
+        <!-- Hero Banner: Specialists Registry -->
+        <div class="glass-panel p-3 p-md-4 mb-4 glass-panel-accent" style="background: linear-gradient(135deg, rgba(16, 22, 42, 0.92) 0%, rgba(32, 14, 20, 0.9) 100%); border: 1.5px solid rgba(255, 85, 0, 0.35); box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 120, 0, 0.3);">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+              <div class="phoenix-badge mb-2" style="padding: 0.35rem 0.95rem; font-size: 0.72rem; display: inline-flex;">
+                <i class="bi bi-shield-lock-fill text-warning"></i>
+                <span>The Rising Phoenix &bull; Specialist Clearance Directory</span>
+              </div>
+              <h2 style="font-family: var(--font-display); font-weight: 800; font-size: clamp(1.65rem, 3.2vw, 2.35rem); color: #fff; margin-bottom: 0.25rem;">
+                Specialist Directory &amp; <span class="phoenix-gradient-text">NIC Registry</span>
+              </h2>
+              <p class="mb-0" style="font-size: 0.92rem; color: #e2e8f0;">
+                Comprehensive clearance roster of all <strong>Callisto Cyber Security &amp; AI</strong> specialists, single-field NIC logins, and role authorizations.
+              </p>
+            </div>
+            <div class="text-md-end">
+              <span style="font-size: 0.72rem; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1.2px;">Zero-DB Vault Ledger</span>
+              <div style="font-size: 0.92rem; color: var(--callisto-cyan); font-weight: 700; margin-top: 2px;">
+                <i class="bi bi-filetype-json me-1 text-warning"></i> Atomic JSON Engine
+              </div>
+              <div class="d-flex align-items-center justify-content-md-end gap-1 mt-1" style="font-size: 0.72rem; color: #00e676;">
+                <span class="status-indicator-dot" style="width: 6px; height: 6px; background: #00e676;"></span>
+                <span>Encrypted &bull; Live Orbit Sync</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Alert Notification Banner -->
+        <div id="specialistsAlert"></div>
+
+        <!-- Search, Filter & Register Toolbar -->
+        <div class="glass-panel p-3 mb-4">
+          <div class="row g-3 align-items-center justify-content-between">
+            
+            <!-- Left: Search Box -->
+            <div class="col-12 col-md-5 col-lg-4">
+              <div class="position-relative">
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-warning"></i>
+                <input type="text" class="search-cyber-input w-100" id="searchSpecialistInput" placeholder="Search by name, NIC, role, title...">
+              </div>
+            </div>
+
+            <!-- Middle: Role Filter Pills -->
+            <div class="col-12 col-md-7 col-lg-5">
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button" class="filter-pill-btn active" data-filter="all" id="filterAll">
+                  All (<span id="countFilterAll">0</span>)
+                </button>
+                <button type="button" class="filter-pill-btn" data-filter="super_admin" id="filterSuperAdmin">
+                  Super Admin (<span id="countFilterSuperAdmin">0</span>)
+                </button>
+                <button type="button" class="filter-pill-btn" data-filter="admin" id="filterAdmin">
+                  Admin (<span id="countFilterAdmin">0</span>)
+                </button>
+                <button type="button" class="filter-pill-btn" data-filter="member" id="filterMember">
+                  Member (<span id="countFilterMember">0</span>)
+                </button>
+              </div>
+            </div>
+
+            <!-- Right: Action Button (Register Specialist) -->
+            <div class="col-12 col-lg-3 text-lg-end">
+              <button type="button" class="btn btn-sm btn-phoenix-main px-3 py-2 w-100 w-lg-auto d-none" id="btnOpenRegisterModal" style="border-radius: 10px; font-size: 0.84rem; font-weight: 600;">
+                <i class="bi bi-person-plus-fill me-1"></i> Register New Specialist (NIC)
+              </button>
+              <div id="memberNotice" class="text-dim" style="font-size: 0.75rem;">
+                <i class="bi bi-info-circle me-1 text-info"></i> Member View Clearance
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Specialists Directory Table Card -->
+        <div class="glass-panel p-3 p-md-4 mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div>
+              <h5 class="text-white mb-0" style="font-family: var(--font-display); font-weight: 700;">
+                <i class="bi bi-people-fill text-warning me-2"></i> Vault Specialists Roster
+              </h5>
+              <span class="text-muted" style="font-size: 0.78rem;">All registered team members authorized to access Callisto Orbit</span>
+            </div>
+            <span class="badge" style="background: rgba(0, 210, 255, 0.12); color: var(--callisto-cyan); border: 1px solid rgba(0, 210, 255, 0.3);" id="totalRosterBadge">
+              Loading Roster...
+            </span>
+          </div>
+
+          <!-- Table Container -->
+          <div class="table-responsive">
+            <table class="table table-dark align-middle mb-0" style="background: transparent;">
+              <thead>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.14); font-size: 0.75rem; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.8px;">
+                  <th>Specialist</th>
+                  <th>Registered NIC</th>
+                  <th>Clearance Tier</th>
+                  <th>Specialization / Role</th>
+                  <th>Email</th>
+                  <th>Joined Date</th>
+                  <th class="text-end" id="thActions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="specialistsTableBody">
+                <!-- Dynamically populated via specialists.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty search result state -->
+          <div id="noSpecialistsState" class="text-center py-5 d-none">
+            <i class="bi bi-search text-warning" style="font-size: 2.5rem; opacity: 0.5;"></i>
+            <h5 class="text-white mt-3 mb-1">No Specialists Found</h5>
+            <p class="text-dim mb-0" style="font-size: 0.85rem;">No specialists match your search criteria. Try a different keyword or reset filters.</p>
+          </div>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 1: REGISTER NEW SPECIALIST (NIC)
+       ========================================== -->
+  <div class="modal fade" id="modalRegisterSpecialist" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-panel" style="background: rgba(13, 19, 36, 0.98); border: 1px solid rgba(255, 85, 0, 0.4); border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.7);">
+        
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+          <div class="d-flex align-items-center gap-2">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,85,0,0.15); display: flex; align-items: center; justify-content: center; color: var(--callisto-orange);">
+              <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <div>
+              <h5 class="modal-title text-white mb-0" style="font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;">
+                Register New Specialist &bull; NIC
+              </h5>
+              <div style="font-size: 0.72rem; color: #cbd5e1;">Register operator to Callisto zero-DB vault ledger</div>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form id="formRegisterSpecialist">
+          <div class="modal-body">
+            <div id="modalRegAlert"></div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Full Name *</label>
+              <input type="text" class="form-control input-cyber-glass" id="regName" placeholder="e.g. Kaveen Rajapaksha" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Operator NIC Number *</label>
+              <input type="text" class="form-control input-cyber-glass" id="regNic" placeholder="e.g. 200312345678 or 981234567V" required>
+              <small class="text-dim" style="font-size: 0.68rem;">Used by the specialist for instant single-field clearance login.</small>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label text-dim" style="font-size: 0.78rem;">Clearance Role *</label>
+                <select class="form-select input-cyber-glass" id="regRole" style="background: #111a2e; color: #fff;">
+                  <option value="member" selected>Member (NIC Only)</option>
+                  <option value="admin">Admin (Password Required)</option>
+                  <option value="super_admin" id="optSuperAdmin">Super Admin (Password Required)</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label text-dim" style="font-size: 0.78rem;">Username</label>
+                <input type="text" class="form-control input-cyber-glass" id="regUsername" placeholder="e.g. kaveen">
+              </div>
+            </div>
+
+            <!-- Dynamic Password Field for Admin / Super Admin (Hidden for Member) -->
+            <div class="mb-3 d-none" id="regPasswordGroup">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">
+                Admin Security Password * <span class="text-warning">(Required for Admin Login)</span>
+              </label>
+              <div class="position-relative">
+                <input type="password" class="form-control input-cyber-glass pe-5" id="regPassword" placeholder="Enter secure admin password (min 6 chars)">
+                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted text-decoration-none pe-3" id="btnToggleRegPassword" style="border: none; background: transparent; cursor: pointer;">
+                  <i class="bi bi-eye" id="eyeIconRegPassword"></i>
+                </button>
+              </div>
+              <small class="text-dim" style="font-size: 0.68rem;">Admins authenticate using their username/NIC and this password.</small>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Specialization / Title</label>
+              <input type="text" class="form-control input-cyber-glass" id="regTitle" placeholder="e.g. Penetration Tester &amp; AI Security">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Email Address</label>
+              <input type="email" class="form-control input-cyber-glass" id="regEmail" placeholder="e.g. kaveen@callisto.io">
+            </div>
+          </div>
+
+          <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-sm btn-phoenix-main" id="btnSubmitRegister">
+              <i class="bi bi-shield-check me-1"></i> Register to Zero-DB Vault
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: EDIT SPECIALIST (NIC & ROLE)
+       ========================================== -->
+  <div class="modal fade" id="modalEditSpecialist" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-panel" style="background: rgba(13, 19, 36, 0.98); border: 1px solid rgba(0, 210, 255, 0.4); border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.7);">
+        
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+          <div class="d-flex align-items-center gap-2">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(0,210,255,0.15); display: flex; align-items: center; justify-content: center; color: var(--callisto-cyan);">
+              <i class="bi bi-pencil-square"></i>
+            </div>
+            <div>
+              <h5 class="modal-title text-white mb-0" style="font-family: var(--font-display); font-weight: 700; font-size: 1.1rem;">
+                Update Specialist NIC &amp; Clearance
+              </h5>
+              <div style="font-size: 0.72rem; color: #cbd5e1;" id="editModalSub">Modify clearance ledger entry</div>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form id="formEditSpecialist">
+          <input type="hidden" id="editMemberId">
+          <div class="modal-body">
+            <div id="modalEditAlert"></div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Full Name *</label>
+              <input type="text" class="form-control input-cyber-glass" id="editName" placeholder="e.g. Kaveen Rajapaksha" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">Operator NIC Number *</label>
+              <input type="text" class="form-control input-cyber-glass" id="editNic" placeholder="e.g. 200312345678 or 981234567V" required>
+              <small class="text-dim" style="font-size: 0.68rem;">Operator will authenticate using this new NIC.</small>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label text-dim" style="font-size: 0.78rem;">Clearance Role *</label>
+                <select class="form-select input-cyber-glass" id="editRole" style="background: #111a2e; color: #fff;">
+                  <option value="member">Member</option>
+                  <option value="admin">Admin</option>
+                  <option value="super_admin" id="optEditSuperAdmin">Super Admin</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label text-dim" style="font-size: 0.78rem;">Specialization / Title</label>
+                <input type="text" class="form-control input-cyber-glass" id="editTitle" placeholder="e.g. Threat Intelligence Analyst">
+              </div>
+            </div>
+
+            <!-- Dynamic Password Field for Admin (Leave blank to keep existing) -->
+            <div class="mb-3 d-none" id="editPasswordGroup">
+              <label class="form-label text-dim" style="font-size: 0.78rem;">
+                Admin Security Password <span class="text-warning">(Leave blank to keep current)</span>
+              </label>
+              <div class="position-relative">
+                <input type="password" class="form-control input-cyber-glass pe-5" id="editPassword" placeholder="Enter new password (min 6 chars) or leave empty">
+                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted text-decoration-none pe-3" id="btnToggleEditPassword" style="border: none; background: transparent; cursor: pointer;">
+                  <i class="bi bi-eye" id="eyeIconEditPassword"></i>
+                </button>
+              </div>
+              <small class="text-dim" style="font-size: 0.68rem;">Update password when assigning Admin clearance.</small>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-sm btn-phoenix-main" id="btnSubmitEdit">
+              <i class="bi bi-check2-circle me-1"></i> Save Clearance Changes
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       CALLISTO-ORBIT CYBER-PHOENIX FOOTER
+       ========================================== -->
+  <footer class="dash-footer mt-5 py-4" style="position: relative; z-index: 5; border-top: 1px solid rgba(255, 85, 0, 0.2); background: linear-gradient(180deg, rgba(8, 12, 24, 0.88) 0%, rgba(5, 8, 17, 0.98) 100%); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+    <div class="container-fluid px-3 px-md-4" style="max-width: 1560px;">
+      <div class="row g-4 align-items-center justify-content-between">
+        
+        <!-- Left: Brand & Architecture -->
+        <div class="col-12 col-md-5">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <div style="width: 30px; height: 30px; border-radius: 50%; overflow: hidden; border: 1.5px solid rgba(255,85,0,0.6); background: #0c1222; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(255,85,0,0.35);">
+              <img src="/assets/images/callisto-logo.jpg" alt="Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            </div>
+            <span style="font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; letter-spacing: 1px; color: #fff;">
+              CALLISTO<span class="phoenix-gradient-text">-ORBIT</span>
+            </span>
+            <span class="badge" style="background: rgba(255, 85, 0, 0.15); color: #ff9d00; border: 1px solid rgba(255, 85, 0, 0.35); font-size: 0.65rem;">
+              v2.6 &bull; Rising Phoenix
+            </span>
+          </div>
+          <p class="mb-0" style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.5;">
+            Autonomous Fund &amp; Treasury Command for <strong>Callisto Cyber Security &amp; AI</strong>. Zero-database architecture powered by atomic cryptographic JSON state.
+          </p>
+        </div>
+
+        <!-- Middle: Live Vault Telemetry & Security Clearance -->
+        <div class="col-12 col-sm-6 col-md-4">
+          <div class="d-flex flex-column gap-1">
+            <div class="d-flex align-items-center gap-2" style="font-size: 0.78rem; color: #cbd5e1;">
+              <span class="status-indicator-dot" style="width: 7px; height: 7px; background: #00e676; box-shadow: 0 0 8px #00e676;"></span>
+              <span><strong>Zero-DB Vault Ledger:</strong> Live Sync Active</span>
+            </div>
+            <div class="d-flex align-items-center gap-2" style="font-size: 0.78rem; color: #cbd5e1;">
+              <i class="bi bi-shield-check text-warning"></i>
+              <span><strong>Security:</strong> Scrypt 256-bit + HMAC-SHA256</span>
+            </div>
+            <div class="d-flex align-items-center gap-2" style="font-size: 0.78rem; color: #cbd5e1;">
+              <i class="bi bi-wallet2 text-info"></i>
+              <span><strong>Pool Target:</strong> 6 Specialists &times; Rs. 100 / month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Copyright & Quick Links -->
+        <div class="col-12 col-sm-6 col-md-3 text-sm-end">
+          <div class="d-flex flex-column gap-1">
+            <div style="font-size: 0.8rem; color: #ffffff; font-weight: 600;">
+              &copy; 2026 Callisto Software Solution
+            </div>
+            <div style="font-size: 0.74rem; color: #94a3b8;">
+              Crafted by <strong>Kehan Rajapaksha</strong> &bull; MIT License
+            </div>
+            <div class="d-flex align-items-center justify-content-sm-end gap-3 mt-1">
+              <a href="/dashboard.html" class="text-decoration-none" style="font-size: 0.75rem; color: var(--callisto-cyan);">
+                <i class="bi bi-speedometer2 me-1"></i>Dashboard
+              </a>
+              <a href="/" class="text-decoration-none" style="font-size: 0.75rem; color: var(--callisto-amber);">
+                <i class="bi bi-house-door-fill me-1"></i>Home
+              </a>
+              <a href="/login.html" class="text-decoration-none" style="font-size: 0.75rem; color: #cbd5e1;">
+                <i class="bi bi-shield-lock me-1"></i>Portal
+              </a>
+              <a href="https://github.com/Callisto-Software-Solution/Callisto-Orbit" target="_blank" rel="noopener" class="text-decoration-none" style="font-size: 0.75rem; color: #cbd5e1;">
+                <i class="bi bi-github me-1"></i>GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/portal-loader.js"></script>
+  <script src="/assets/js/phoenix.js"></script>
+  <script src="/assets/js/specialists.js?v=2.6"></script>
+</body>
+</html>

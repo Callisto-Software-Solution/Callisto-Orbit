@@ -326,6 +326,12 @@
         </div>
       </div>
 
+      <!-- Specialists Directory Link -->
+      <a href="/specialists.html" class="btn btn-sm d-flex align-items-center gap-1 glass-subcard text-decoration-none px-2 px-sm-3 py-1" style="border-radius: 10px; font-size: 0.8rem; color: var(--callisto-cyan); border: 1px solid rgba(0, 210, 255, 0.35);" title="View Specialist Directory">
+        <i class="bi bi-people-fill"></i>
+        <span class="d-none d-md-inline">Specialists</span>
+      </a>
+
       <!-- Landing Phoenix Link -->
       <a href="/" class="btn btn-sm d-flex align-items-center gap-1 glass-subcard text-decoration-none px-2 px-sm-3 py-1" style="border-radius: 10px; font-size: 0.8rem; color: var(--callisto-amber); border: 1px solid rgba(255, 85, 0, 0.35);" title="Return to Landing Page">
         <i class="bi bi-house-door-fill"></i>
@@ -387,6 +393,10 @@
                 <i class="bi bi-speedometer2"></i>
                 <span>Overview &amp; Metrics</span>
               </a>
+              <a href="/specialists.html" class="sidebar-nav-link" id="navLinkSpecialists">
+                <i class="bi bi-people-fill text-warning"></i>
+                <span>Specialists &amp; Registry</span>
+              </a>
               <a href="#sectionMonthStatus" class="sidebar-nav-link" id="navLinkStatus">
                 <i class="bi bi-pie-chart-fill text-info"></i>
                 <span>Monthly Pool Status</span>
@@ -408,14 +418,14 @@
                 <span class="badge" style="background: rgba(255,85,0,0.2); color:#ff9d00; font-size:0.6rem;">ADMIN</span>
               </div>
               <nav class="d-flex flex-column gap-1">
-                <a href="#adminConsoleSection" class="sidebar-nav-link" id="navLinkAdmin">
-                  <i class="bi bi-people-fill text-warning"></i>
-                  <span>Specialist Registry</span>
+                <a href="/specialists.html" class="sidebar-nav-link">
+                  <i class="bi bi-person-lines-fill text-warning"></i>
+                  <span>Manage Specialists</span>
                 </a>
-                <button type="button" class="btn btn-sm btn-phoenix-main w-100 mt-2 py-2 text-start d-flex align-items-center justify-content-center gap-2" id="sideBtnRegisterSpecialist" style="border-radius: 10px; font-size: 0.78rem; font-weight: 600;">
+                <a href="/specialists.html?action=register" class="btn btn-sm btn-phoenix-main w-100 mt-2 py-2 text-start d-flex align-items-center justify-content-center gap-2 text-decoration-none" style="border-radius: 10px; font-size: 0.78rem; font-weight: 600;">
                   <i class="bi bi-person-plus-fill"></i>
                   <span>+ Register Specialist</span>
-                </button>
+                </a>
               </nav>
             </div>
 
@@ -487,9 +497,9 @@
             </div>
           </div>
 
-          <!-- PRIVILEGED ADMIN & SUPER ADMIN DIRECTORY CONSOLE -->
+          <!-- PRIVILEGED ADMIN & SUPER ADMIN DIRECTORY CONSOLE QUICK LINK -->
           <div id="adminConsoleSection" class="glass-panel p-3 p-md-4 mb-4 d-none" style="border: 1.5px solid rgba(255, 85, 0, 0.4); background: linear-gradient(135deg, rgba(16, 22, 42, 0.95), rgba(36, 14, 20, 0.95)); border-radius: 18px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 120, 0, 0.25);">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3 pb-3" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
               <div>
                 <div class="d-flex align-items-center gap-2 mb-1">
                   <span class="badge" style="background: rgba(255, 85, 0, 0.25); color: #ff9d00; border: 1px solid rgba(255, 85, 0, 0.5); font-size: 0.72rem; box-shadow: 0 0 10px rgba(255,85,0,0.3);">
@@ -499,41 +509,26 @@
                     ADMIN CLEARANCE
                   </span>
                 </div>
-                <h4 class="text-white mb-0" style="font-family: var(--font-display); font-weight: 700;">
-                  Specialist Registry &amp; NIC Clearance Management
+                <h4 class="text-white mb-1" style="font-family: var(--font-display); font-weight: 700;">
+                  Specialist Directory &amp; NIC Clearance Registry
                 </h4>
-                <p class="text-muted mb-0" style="font-size: 0.8rem; margin-top: 2px;">
-                  Register new team specialists with their NIC numbers, assign clearance roles (Member, Admin, Super Admin), and manage access.
+                <p class="text-muted mb-0" style="font-size: 0.82rem;">
+                  Full specialist roster, real-time search, and operator registration have been relocated to the dedicated Registry Center.
                 </p>
               </div>
               <div class="d-flex gap-2">
-                <button type="button" class="btn btn-sm btn-phoenix-main px-3 py-2" id="btnOpenRegisterModal" style="border-radius: 10px; font-size: 0.82rem; font-weight: 600;">
-                  <i class="bi bi-person-plus-fill me-1"></i> Register New Specialist (NIC)
-                </button>
+                <a href="/specialists.html" class="btn btn-sm btn-outline-info px-3 py-2 text-decoration-none" style="border-radius: 10px; font-size: 0.82rem; font-weight: 600;">
+                  <i class="bi bi-people-fill me-1"></i> Open Specialists Directory
+                </a>
+                <a href="/specialists.html?action=register" class="btn btn-sm btn-phoenix-main px-3 py-2 text-decoration-none" style="border-radius: 10px; font-size: 0.82rem; font-weight: 600;">
+                  <i class="bi bi-person-plus-fill me-1"></i> + Register Specialist
+                </a>
               </div>
             </div>
-
-            <!-- Live Notification Banner inside Console -->
-            <div id="adminConsoleAlert"></div>
-
-            <!-- Specialists Directory Table -->
-            <div class="table-responsive">
-              <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
-                <thead>
-                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.12); font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">
-                    <th>Specialist</th>
-                    <th>Registered NIC</th>
-                    <th>Clearance Tier</th>
-                    <th>Specialization / Title</th>
-                    <th>Email</th>
-                    <th class="text-end">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="adminSpecialistsTbody">
-                  <!-- Dynamically populated via JS -->
-                </tbody>
-              </table>
-            </div>
+            <!-- Hidden fallback containers to preserve script compatibility -->
+            <div id="adminConsoleAlert" class="d-none"></div>
+            <button type="button" id="btnOpenRegisterModal" class="d-none"></button>
+            <table class="d-none"><tbody id="adminSpecialistsTbody"></tbody></table>
           </div>
 
           <!-- Stat Metric Cards -->
@@ -597,9 +592,14 @@
                   </div>
                 </div>
                 <div class="stat-number text-white" id="statRosterCount" style="font-family: var(--font-display); font-weight: 700; font-size: 1.85rem;">6 Active</div>
-                <div class="d-flex align-items-center gap-1 mt-2" style="font-size: 0.75rem; color: #00e676;">
-                  <i class="bi bi-shield-check"></i>
-                  <span>All members verified</span>
+                <div class="d-flex align-items-center justify-content-between mt-2" style="font-size: 0.75rem;">
+                  <span class="d-flex align-items-center gap-1 text-success">
+                    <i class="bi bi-shield-check"></i>
+                    <span>All verified</span>
+                  </span>
+                  <a href="/specialists.html" class="text-decoration-none" style="color: var(--callisto-cyan); font-weight: 600;">
+                    Directory &rarr;
+                  </a>
                 </div>
               </div>
             </div>
