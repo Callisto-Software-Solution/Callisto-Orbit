@@ -173,6 +173,123 @@ function syncPaymentToCollections(payment, isPaid) {
   }
 }
 
+// Helper to calculate 100% genuine Treasury metrics from users, payments, and collections
+function getCalculatedTreasuryStats() {
+  const users = readJson(USERS_FILE, []);
+  const activeMembers = users.filter(u => u.active !== false);
+  const config = readJson(CONFIG_FILE, {});
+  const payments = readJson(PAYMENTS_FILE, []);
+  let collections = readJson(COLLECTIONS_FILE, []);
+
+  const perMember = Number(config.monthlyContributionPerMember) || 100;
+  const currency = config.currency || 'Rs. ';
+  const totalMembers = activeMembers.length;
+  const monthlyTarget = totalMembers * perMember;
+
+  // Real current month (e.g. '2026-11')
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const currentYear = parseInt(currentMonth.split('-')[0], 10);
+
+  // Ensure current month ledger exists in collections
+  let currentCol = collections.find(c => c.month === currentMonth);
+  if (!currentCol) {
+    currentCol = {
+      id: `col_${currentMonth.replace('-', '_')}`,
+      month: currentMonth,
+      year: currentYear,
+      target: monthlyTarget,
+      collected: 0,
+      status: 'in_progress',
+      contributions: []
+    };
+    collections.push(currentCol);
+  }
+
+  // Live update target for active cycle based on current roster
+  currentCol.target = monthlyTarget;
+
+  // Ensure all collections have correct collected amounts based on verified contributions & payments
+  collections.forEach(col => {
+    if (!Array.isArray(col.contributions)) col.contributions = [];
+
+    // Sync any verified payments for this month into contributions
+    const verifiedPayments = payments.filter(p => p.month === col.month && p.status === 'verified');
+    verifiedPayments.forEach(p => {
+      let contrib = col.contributions.find(c => c.userId === p.userId);
+      if (contrib) {
+        contrib.status = 'paid';
+        contrib.amount = p.amount;
+        contrib.paidDate = p.paidDate || p.submittedAt;
+        contrib.method = p.method;
+        contrib.txRef = p.txRef;
+      } else {
+        col.contributions.push({
+          userId: p.userId,
+          name: p.userName,
+          amount: p.amount,
+          paidDate: p.paidDate || p.submittedAt,
+          status: 'paid',
+          method: p.method,
+          txRef: p.txRef
+        });
+      }
+    });
+
+    // Recalculate collected for this month
+    col.collected = col.contributions
+      .filter(c => c.status === 'paid')
+      .reduce((sum, c) => sum + (c.amount || 0), 0);
+
+    if (col.collected >= col.target && col.target > 0) {
+      col.status = 'completed';
+    } else {
+      col.status = 'in_progress';
+    }
+  });
+
+  // Calculate grand total collected across all months
+  let totalCollected = 0;
+  let totalExpected = 0;
+  collections.forEach(c => {
+    totalCollected += (c.collected || 0);
+    totalExpected += (c.target || 0);
+  });
+
+  // Persist updated collections and config
+  writeJson(COLLECTIONS_FILE, collections);
+
+  config.totalMembers = totalMembers;
+  config.monthlyTarget = monthlyTarget;
+  writeJson(CONFIG_FILE, config);
+
+  const currentMonthCollected = currentCol.collected || 0;
+  const currentMonthTarget = currentCol.target || monthlyTarget;
+  const currentMonthProgress = currentMonthTarget > 0
+    ? Math.min(100, Math.round((currentMonthCollected / currentMonthTarget) * 100))
+    : 0;
+
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthParts = currentMonth.split('-');
+  const monthName = `${months[parseInt(monthParts[1], 10) - 1] || monthParts[1]} ${monthParts[0]}`;
+
+  return {
+    collections,
+    stats: {
+      totalCollected,
+      totalExpected,
+      monthlyTarget,
+      totalMembers,
+      currentMonth,
+      currentMonthName: monthName,
+      currentMonthCollected,
+      currentMonthTarget,
+      currentMonthProgress,
+      perMember,
+      currency
+    }
+  };
+}
+
 // Parse request body
 function parseBody(req) {
   return new Promise((resolve, reject) => {
