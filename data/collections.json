@@ -126,5 +126,14 @@
         "txRef": null
       }
     ]
+  },
+  {
+    "id": "col_2026_11",
+    "month": "2026-11",
+    "year": 2026,
+    "target": 200,
+    "collected": 0,
+    "status": "in_progress",
+    "contributions": []
   }
 ]
