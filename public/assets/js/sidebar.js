@@ -112,13 +112,13 @@
           <div class="sidebar-bottom-pill p-3 mb-3" id="sideTargetWidget">
             <div class="d-flex justify-content-between align-items-center mb-1">
               <span style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Squad Target</span>
-              <span style="font-size: 0.75rem; color: #00e676; font-weight: 700;" id="sideTargetProgress">66.7%</span>
+              <span style="font-size: 0.75rem; color: #00e676; font-weight: 700;" id="sideTargetProgress">—</span>
             </div>
             <div class="progress-cyber" style="height: 6px;">
-              <div id="sideProgressBar" class="progress-cyber-bar" style="width: 66.7%;"></div>
+              <div id="sideProgressBar" class="progress-cyber-bar" style="width: 0%;"></div>
             </div>
             <div class="d-flex justify-content-between align-items-center mt-2" style="font-size: 0.7rem; color: #cbd5e1;">
-              <span id="sideTargetMembers">6 Specialists</span>
+              <span id="sideTargetMembers">— Specialists</span>
               <span id="sideTargetUnit">Rs. 100/mo</span>
             </div>
           </div>
@@ -190,6 +190,9 @@
 
     // 4. Pending payments notification count
     loadPendingBadge();
+
+    // 5. Squad Target live stats sync
+    loadSidebarTargetStats();
   }
 
   async function loadPendingBadge() {
@@ -204,6 +207,21 @@
         badge.title = `${data.pendingCount} payment(s) awaiting verification`;
       } else if (badge) {
         badge.classList.add('d-none');
+      }
+    } catch (e) {}
+  }
+
+  async function loadSidebarTargetStats() {
+    try {
+      const res = await fetch('/api/collections');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.success && data.stats) {
+        window.updateOrbitSidebarTarget({
+          percentage: data.stats.currentMonthProgress !== undefined ? data.stats.currentMonthProgress : 0,
+          membersCount: data.stats.totalMembers || 0,
+          unitText: `${data.stats.currency || 'Rs. '}100/mo`
+        });
       }
     } catch (e) {}
   }

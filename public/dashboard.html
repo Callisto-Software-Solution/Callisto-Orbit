@@ -225,7 +225,7 @@
           </span>
         </div>
         <div style="font-size: 0.72rem; color: #cbd5e1;" id="squadMetaHeader">
-          6 Members &bull; Rs. 100/mo Fund Pool
+          Loading squad pool metrics...
         </div>
       </div>
     </div>
@@ -346,7 +346,7 @@
 
           <!-- Stat Metric Cards -->
           <div class="row g-3 mb-4">
-            <!-- Stat 1 -->
+            <!-- Stat 1: Total Fund Collected -->
             <div class="col-12 col-sm-6 col-lg-3">
               <div class="glass-panel stat-card h-100 p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -355,7 +355,7 @@
                     <i class="bi bi-wallet2"></i>
                   </div>
                 </div>
-                <div class="stat-number text-white" id="statTotalCollected" style="font-family: var(--font-display); font-weight: 700; font-size: 1.85rem;">Rs. 1,000</div>
+                <div class="stat-number text-white" id="statTotalCollected" style="font-family: var(--font-display); font-weight: 700; font-size: 1.85rem;">—</div>
                 <div class="d-flex align-items-center gap-1 mt-2" style="font-size: 0.75rem; color: #00e676;">
                   <i class="bi bi-arrow-up-right"></i>
                   <span>Accumulating towards growth</span>
@@ -363,7 +363,7 @@
               </div>
             </div>
 
-            <!-- Stat 2 -->
+            <!-- Stat 2: Monthly Squad Target -->
             <div class="col-12 col-sm-6 col-lg-3">
               <div class="glass-panel stat-card h-100 p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -372,14 +372,14 @@
                     <i class="bi bi-bullseye"></i>
                   </div>
                 </div>
-                <div class="stat-number text-white" id="statMonthlyTarget" style="font-family: var(--font-display); font-weight: 700; font-size: 1.85rem;">Rs. 600</div>
+                <div class="stat-number text-white" id="statMonthlyTarget" style="font-family: var(--font-display); font-weight: 700; font-size: 1.85rem;">—</div>
                 <div class="d-flex align-items-center gap-1 mt-2" style="font-size: 0.75rem; color: var(--text-muted);" id="statMonthlyTargetFormula">
-                  <span>6 members &times; Rs. 100 / month</span>
+                  <span>Calculating squad target...</span>
                 </div>
               </div>
             </div>
 
-            <!-- Stat 3 -->
+            <!-- Stat 3: Current Month Progress -->
             <div class="col-12 col-sm-6 col-lg-3">
               <div class="glass-panel stat-card h-100 p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -388,14 +388,14 @@
                     <i class="bi bi-pie-chart-fill"></i>
                   </div>
                 </div>
-                <div class="stat-number text-white" id="statProgressPercentage" style="font-family: var(--font-display); font-weight: 700; font-size: 1.85rem;">66.7%</div>
+                <div class="stat-number text-white" id="statProgressPercentage" style="font-family: var(--font-display); font-weight: 700; font-size: 1.85rem;">0%</div>
                 <div class="progress-cyber mt-2">
-                  <div id="statProgressBar" class="progress-cyber-bar" style="width: 66.7%;"></div>
+                  <div id="statProgressBar" class="progress-cyber-bar" style="width: 0%;"></div>
                 </div>
               </div>
             </div>
 
-            <!-- Stat 4 -->
+            <!-- Stat 4: Team Roster -->
             <div class="col-12 col-sm-6 col-lg-3">
               <div class="glass-panel stat-card h-100 p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -404,11 +404,11 @@
                     <i class="bi bi-people-fill"></i>
                   </div>
                 </div>
-                <div class="stat-number text-white" id="statRosterCount" style="font-family: var(--font-display); font-weight: 700; font-size: 1.85rem;">6 Active</div>
+                <div class="stat-number text-white" id="statRosterCount" style="font-family: var(--font-display); font-weight: 700; font-size: 1.85rem;">—</div>
                 <div class="d-flex align-items-center justify-content-between mt-2" style="font-size: 0.75rem;">
-                  <span class="d-flex align-items-center gap-1 text-success">
+                  <span class="d-flex align-items-center gap-1 text-success" id="statRosterStatus">
                     <i class="bi bi-shield-check"></i>
-                    <span>All verified</span>
+                    <span>Live Roster</span>
                   </span>
                   <a href="/specialists.html" class="text-decoration-none" style="color: var(--callisto-cyan); font-weight: 600;">
                     Directory &rarr;
@@ -429,8 +429,8 @@
               <div class="glass-panel p-3 p-md-4">
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
                   <div>
-                    <h5 class="mb-0 text-white" style="font-family: var(--font-display); font-weight: 700; letter-spacing: 0.5px;">
-                      <i class="bi bi-layers-fill text-warning me-2"></i> Current Month Status (February 2026)
+                    <h5 class="mb-0 text-white" style="font-family: var(--font-display); font-weight: 700; letter-spacing: 0.5px;" id="activeMonthHeaderTitle">
+                      <i class="bi bi-layers-fill text-warning me-2"></i> Current Month Status (<span id="activeMonthName">Active Cycle</span>)
                     </h5>
                     <span class="text-muted" style="font-size: 0.78rem;">Individual Rs. 100 unit contribution tracking</span>
                   </div>
@@ -721,7 +721,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/assets/js/portal-loader.js"></script>
   <script src="/assets/js/phoenix.js"></script>
-  <script src="/assets/js/sidebar.js?v=1.0"></script>
-  <script src="/assets/js/dashboard.js?v=2.7"></script>
+  <script src="/assets/js/sidebar.js?v=1.1"></script>
+  <script src="/assets/js/dashboard.js?v=2.8"></script>
 </body>
 </html>

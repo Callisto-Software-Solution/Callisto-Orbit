@@ -774,25 +774,10 @@ async function handleRequest(req, res) {
 
       // 9. COLLECTIONS: GET /api/collections
       if (pathname === '/api/collections' && method === 'GET') {
-        const collections = readJson(COLLECTIONS_FILE, []);
-        const config = readJson(CONFIG_FILE, {});
-        
-        let totalCollected = 0;
-        let totalExpected = 0;
-        collections.forEach(c => {
-          totalCollected += (c.collected || 0);
-          totalExpected += (c.target || 0);
-        });
-
+        const { collections, stats } = getCalculatedTreasuryStats();
         return sendJson(res, 200, {
           success: true,
-          stats: {
-            totalCollected,
-            totalExpected,
-            monthlyTarget: config.monthlyTarget || 600,
-            perMember: config.monthlyContributionPerMember || 100,
-            currency: config.currency || 'Rs. '
-          },
+          stats,
           collections
         });
       }
@@ -1096,4 +1081,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { server, handleRequest, hashPassword, verifyPassword, createSessionToken, verifySessionToken, syncPaymentToCollections };
+module.exports = { server, handleRequest, hashPassword, verifyPassword, createSessionToken, verifySessionToken, syncPaymentToCollections, getCalculatedTreasuryStats };

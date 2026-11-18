@@ -223,68 +223,113 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 3. Load Dashboard & Collections Data
-  async function loadDashboardData() {
+  // Helper: Month formatting
+  function formatMonth(str) {
+    if (!str) return 'Current Cycle';
     try {
-      const [colRes, memRes, payStatusRes] = await Promise.all([
-        fetch('/api/collections'),
-        fetch('/api/members'),
-        fetch(`/api/payments/member-status?month=${getCurrentMonth()}`)
-      ]);
-
-      const colData = await colRes.json();
-      const memData = await memRes.json();
-      if (payStatusRes.ok) {
-        const psd = await payStatusRes.json();
-        if (psd.success) cachedPaymentStatusMap = psd.statusMap || {};
-      }
-
-      const stats = colData.success && colData.stats ? colData.stats : {};
-      const currency = stats.currency || 'Rs. ';
-
-      if (memData.success && memData.members) {
-        cachedMembers = memData.members;
-        renderAdminSpecialists(cachedMembers);
-        if (statRosterCount) statRosterCount.textContent = `${cachedMembers.length} Active`;
-        if (squadMetaHeader) squadMetaHeader.innerHTML = `${cachedMembers.length} Members &bull; ${currency}100/mo Fund Pool`;
-        if (sideTargetMembers) sideTargetMembers.textContent = `${cachedMembers.length} Specialists`;
-      }
-
-      if (colData.success) {
-        if (statTotalCollected) statTotalCollected.textContent = `${currency}${stats.totalCollected.toLocaleString()}`;
-        if (statMonthlyTarget) statMonthlyTarget.textContent = `${currency}${stats.monthlyTarget.toLocaleString()}`;
-        if (statMonthlyTargetFormula) {
-          statMonthlyTargetFormula.innerHTML = `<span>${cachedMembers.length} members &times; ${currency}100 / month</span>`;
-        }
-        if (sideTargetUnit) sideTargetUnit.textContent = `${currency}100/mo`;
-
-        const collections = colData.collections || [];
-        const activeMonth = collections[collections.length - 1];
-
-        if (activeMonth) {
-          const collected = activeMonth.collected || 0;
-          const target = activeMonth.target || (cachedMembers.length * 100);
-          const pct = Math.min(100, Math.round((collected / target) * 100));
-          if (statProgressPercentage) statProgressPercentage.textContent = `${pct}%`;
-          if (statProgressBar) statProgressBar.style.width = `${pct}%`;
-
-          // Sync sidebar widget
-          if (sideTargetProgress) sideTargetProgress.textContent = `${pct}%`;
-          if (sideProgressBar) sideProgressBar.style.width = `${pct}%`;
-
-          renderActiveMembers(activeMonth.contributions, cachedMembers, currency);
-        }
-
-        renderHistory(collections, currency);
-      }
-    } catch (err) {
-      console.error('Failed to load dashboard data:', err);
-    }
+      const [y, m] = str.split('-');
+      const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const mIdx = parseInt(m, 10) - 1;
+      return `${months[mIdx] || m} ${y}`;
+    } catch { return str; }
   }
 
   // Helper: Get current month in YYYY-MM format
   function getCurrentMonth() {
     return new Date().toISOString().slice(0, 7);
+  }
+
+  // 3. Load Dashboard & Collections Data (100% Real Live Calculated Metrics)
+  async function loadDashboardData() {
+    try {
+      const [colRes, memRes] = await Promise.all([
+        fetch('/api/collections'),
+        fetch('/api/members')
+      ]);
+
+      const colData = await colRes.json();
+      const memData = await memRes.json();
+
+      const stats = colData.success && colData.stats ? colData.stats : {};
+      const currency = stats.currency || 'Rs. ';
+      const collections = colData.collections || [];
+
+      // Identify active month
+      const activeMonthStr = stats.currentMonth || getCurrentMonth();
+      const activeMonthName = stats.currentMonthName || formatMonth(activeMonthStr);
+
+      // Fetch member payment statuses for the active month
+      try {
+        const payStatusRes = await fetch(`/api/payments/member-status?month=${activeMonthStr}`);
+        if (payStatusRes.ok) {
+          const psd = await payStatusRes.json();
+          if (psd.success) cachedPaymentStatusMap = psd.statusMap || {};
+        }
+      } catch (e) {
+        console.warn('Payment status fetch failed:', e);
+      }
+
+      // Member roster & counts
+      if (memData.success && Array.isArray(memData.members)) {
+        cachedMembers = memData.members;
+        renderAdminSpecialists(cachedMembers);
+      }
+
+      const memberCount = cachedMembers.length || stats.totalMembers || 0;
+      const perMember = stats.perMember || 100;
+      const monthlyTarget = stats.monthlyTarget || (memberCount * perMember);
+      const totalCollected = stats.totalCollected !== undefined ? stats.totalCollected : 0;
+      const currentProgress = stats.currentMonthProgress !== undefined
+        ? stats.currentMonthProgress
+        : (monthlyTarget > 0 ? Math.min(100, Math.round(((stats.currentMonthCollected || 0) / monthlyTarget) * 100)) : 0);
+
+      // 1. Roster Count & Top Meta
+      if (statRosterCount) statRosterCount.textContent = `${memberCount} Active`;
+      if (squadMetaHeader) squadMetaHeader.innerHTML = `${memberCount} Members &bull; ${currency}${perMember}/mo Fund Pool`;
+      const statRosterStatus = document.getElementById('statRosterStatus');
+      if (statRosterStatus) {
+        statRosterStatus.innerHTML = `<i class="bi bi-shield-check"></i><span>${memberCount} of ${memberCount} verified</span>`;
+      }
+
+      // 2. Total Fund Collected Card
+      if (statTotalCollected) statTotalCollected.textContent = `${currency}${totalCollected.toLocaleString()}`;
+
+      // 3. Monthly Squad Target Card
+      if (statMonthlyTarget) statMonthlyTarget.textContent = `${currency}${monthlyTarget.toLocaleString()}`;
+      if (statMonthlyTargetFormula) {
+        statMonthlyTargetFormula.innerHTML = `<span>${memberCount} members &times; ${currency}${perMember} / month</span>`;
+      }
+
+      // 4. Current Month Progress Card
+      if (statProgressPercentage) statProgressPercentage.textContent = `${currentProgress}%`;
+      if (statProgressBar) statProgressBar.style.width = `${currentProgress}%`;
+
+      // 5. Active Month Section Header
+      const activeMonthNameElem = document.getElementById('activeMonthName');
+      if (activeMonthNameElem) activeMonthNameElem.textContent = activeMonthName;
+
+      // 6. Sidebar Widget Live Sync
+      if (window.updateOrbitSidebarTarget) {
+        window.updateOrbitSidebarTarget({
+          percentage: currentProgress,
+          membersCount: memberCount,
+          unitText: `${currency}${perMember}/mo`
+        });
+      }
+
+      // 7. Active Month Contribution Grid
+      let activeMonthEntry = collections.find(c => c.month === activeMonthStr) || collections[collections.length - 1];
+      const activeContributions = (activeMonthEntry && Array.isArray(activeMonthEntry.contributions))
+        ? activeMonthEntry.contributions
+        : [];
+
+      renderActiveMembers(activeContributions, cachedMembers, currency);
+
+      // 8. Collection History
+      renderHistory(collections, currency);
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
+    }
   }
 
   // Render Member Contribution Cards (enhanced with payment status)
@@ -509,26 +554,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sorted = collections.slice().reverse();
     historyList.innerHTML = sorted.map((c, idx) => {
       const pct = c.target > 0 ? Math.min(100, Math.round((c.collected / c.target) * 100)) : 0;
-      const isComplete = c.collected >= c.target;
+      const isComplete = c.collected >= c.target && c.target > 0;
       const isActive = idx === 0;
-      const barColor = isComplete ? '#10b981' : (pct >= 50 ? '#ff9d00' : '#ef4444');
+      const barColor = isComplete ? '#10b981' : (pct >= 50 ? '#ff9d00' : '#00d2ff');
       return `
-        <div style="background:rgba(14,20,36,0.6);border:1px solid rgba(255,255,255,${isActive ? '0.12' : '0.06'});border-radius:12px;padding:0.75rem 1rem;${isActive ? 'border-left:3px solid #10b981;' : ''}">
-          <div class="d-flex justify-content-between align-items-center mb-1">
+        <div style="background:rgba(14,20,36,0.6);border:1px solid rgba(255,255,255,${isActive ? '0.12' : '0.06'});border-radius:12px;padding:0.75rem 1rem;${isActive ? 'border-left:3px solid var(--callisto-cyan, #00d2ff);' : ''}">
+          <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
             <div class="d-flex align-items-center gap-2">
-              <strong style="color:#fff;font-size:0.85rem;">${c.month}</strong>
-              ${isActive ? `<span class="badge" style="background:rgba(0,210,255,0.12);color:#00d2ff;border:1px solid rgba(0,210,255,0.3);font-size:0.6rem;">ACTIVE</span>` : ''}
+              <strong style="color:#fff;font-size:0.85rem;">${formatMonth(c.month)}</strong>
+              ${isActive ? `<span class="badge" style="background:rgba(0,210,255,0.15);color:#00d2ff;border:1px solid rgba(0,210,255,0.3);font-size:0.6rem;">ACTIVE CYCLE</span>` : ''}
               ${isComplete ? `<span class="badge" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid #10b981;font-size:0.6rem;"><i class="bi bi-check2-all me-1"></i>COMPLETE</span>` : ''}
             </div>
             <div>
               <span style="font-weight:700;color:${barColor};font-size:0.9rem;">${currency}${c.collected.toLocaleString()}</span>
-              <span style="color:#475569;font-size:0.78rem;"> / ${currency}${c.target.toLocaleString()}</span>
+              <span style="color:#64748b;font-size:0.78rem;"> / ${currency}${c.target.toLocaleString()}</span>
             </div>
           </div>
-          <div style="background:rgba(255,255,255,0.06);border-radius:4px;height:5px;overflow:hidden;">
+          <div style="background:rgba(255,255,255,0.06);border-radius:4px;height:5px;overflow:hidden;margin-top:4px;">
             <div style="width:${pct}%;height:100%;background:${barColor};border-radius:4px;transition:width 0.5s ease;box-shadow:0 0 6px ${barColor};"></div>
           </div>
-          <div style="font-size:0.68rem;color:#475569;margin-top:3px;text-align:right;">${pct}% collected</div>
+          <div class="d-flex justify-content-between align-items-center mt-1" style="font-size:0.68rem;color:#64748b;">
+            <span>${c.status === 'completed' ? 'Target Achieved' : 'Cycle in Progress'}</span>
+            <span>${pct}% collected</span>
+          </div>
         </div>
       `;
     }).join('');
