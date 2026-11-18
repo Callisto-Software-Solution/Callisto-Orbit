@@ -454,6 +454,7 @@ async function runTests() {
   const dashJs = path.join(__dirname, '../public/assets/js/dashboard.js');
   const specialistsJs = path.join(__dirname, '../public/assets/js/specialists.js');
   const paymentsJs = path.join(__dirname, '../public/assets/js/payments.js');
+  const sidebarJs = path.join(__dirname, '../public/assets/js/sidebar.js');
   const logoFile = path.join(__dirname, '../public/assets/images/callisto-logo.jpg');
   const phoenixFile = path.join(__dirname, '../public/assets/images/callisto-phoenix.jpg');
 
@@ -469,6 +470,7 @@ async function runTests() {
   assert.ok(fs.existsSync(dashJs), 'dashboard.js must exist');
   assert.ok(fs.existsSync(specialistsJs), 'specialists.js must exist');
   assert.ok(fs.existsSync(paymentsJs), 'payments.js must exist');
+  assert.ok(fs.existsSync(sidebarJs), 'sidebar.js must exist');
   assert.ok(fs.existsSync(logoFile), 'callisto-logo.jpg must exist');
   assert.ok(fs.existsSync(phoenixFile), 'callisto-phoenix.jpg must exist');
   console.log('  ✅ All UI and asset files verified.\n');
