@@ -663,6 +663,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 400);
   }
 
+  // Load pending payment count and update sidebar badge
+  async function loadPendingBadge() {
+    try {
+      const r = await fetch('/api/payments/pending-count');
+      if (!r.ok) return;
+      const d = await r.json();
+      const badge = document.getElementById('pendingPayBadge');
+      if (badge && d.success && d.pendingCount > 0) {
+        badge.textContent = d.pendingCount;
+        badge.classList.remove('d-none');
+        badge.title = `${d.pendingCount} payment(s) awaiting verification`;
+      } else if (badge) {
+        badge.classList.add('d-none');
+      }
+    } catch (e) { /* silent */ }
+  }
+
   // Initial load
+  loadPendingBadge();
   loadSpecialists();
 });

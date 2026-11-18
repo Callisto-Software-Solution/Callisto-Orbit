@@ -195,6 +195,7 @@ function parseBody(req) {
     req.on('error', reject);
   });
 }
+const parseJsonBody = parseBody;
 
 // Parse cookies
 function parseCookies(cookieHeader) {

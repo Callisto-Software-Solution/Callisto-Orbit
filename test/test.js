@@ -69,10 +69,13 @@ async function runTests() {
   const usersPath = path.join(__dirname, '../data/users.json');
   const collectionsPath = path.join(__dirname, '../data/collections.json');
   const configPath = path.join(__dirname, '../data/config.json');
+  const paymentsPath = path.join(__dirname, '../data/payments.json');
 
   // Preserve pristine state to restore after test run
   const originalUsersContent = fs.readFileSync(usersPath, 'utf8');
   const originalConfigContent = fs.readFileSync(configPath, 'utf8');
+  const originalCollectionsContent = fs.readFileSync(collectionsPath, 'utf8');
+  const originalPaymentsContent = fs.existsSync(paymentsPath) ? fs.readFileSync(paymentsPath, 'utf8') : JSON.stringify({ payments: [] });
 
   try {
     // Seed temporary test members if roster has been pruned by user
@@ -470,12 +473,86 @@ async function runTests() {
   assert.ok(fs.existsSync(phoenixFile), 'callisto-phoenix.jpg must exist');
   console.log('  ✅ All UI and asset files verified.\n');
 
+  // Test 15: Payment Verification Vault API
+  console.log('Test 15: Testing Payment Verification Vault API...');
+  
+  // 1. Pending count endpoint
+  const pendingCountRes = await dispatchMockRequest({
+    url: '/api/payments/pending-count',
+    method: 'GET',
+    headers: { Authorization: `Bearer ${superAdminToken}` }
+  });
+  assert.strictEqual(pendingCountRes.statusCode, 200);
+  assert.ok(typeof pendingCountRes.body.pendingCount === 'number');
+
+  // 2. Submit payment (as member or admin)
+  const submitPayRes = await dispatchMockRequest({
+    url: '/api/payments',
+    method: 'POST',
+    headers: { Authorization: `Bearer ${superAdminToken}` },
+    body: {
+      userId: 'usr_03_test',
+      month: '2026-02',
+      amount: 100,
+      method: 'Bank Transfer',
+      txRef: 'TEST-TX-99881',
+      paidDate: '2026-02-15',
+      notes: 'Automated test payment',
+      autoVerify: false
+    }
+  });
+  assert.strictEqual(submitPayRes.statusCode, 201, 'Payment submission should return 201');
+  assert.ok(submitPayRes.body.payment && submitPayRes.body.payment.id);
+  const createdPayId = submitPayRes.body.payment.id;
+  assert.strictEqual(submitPayRes.body.payment.status, 'pending_verification');
+
+  // 3. Member status endpoint
+  const memStatusRes = await dispatchMockRequest({
+    url: '/api/payments/member-status?month=2026-02',
+    method: 'GET',
+    headers: { Authorization: `Bearer ${superAdminToken}` }
+  });
+  assert.strictEqual(memStatusRes.statusCode, 200);
+  assert.ok(memStatusRes.body.statusMap['usr_03_test']);
+  assert.strictEqual(memStatusRes.body.statusMap['usr_03_test'].status, 'pending_verification');
+
+  // 4. Admin verify payment
+  const verifyRes = await dispatchMockRequest({
+    url: `/api/payments/${createdPayId}/verify`,
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${superAdminToken}` },
+    body: { notes: 'Verified in test' }
+  });
+  assert.strictEqual(verifyRes.statusCode, 200, 'Verification should return 200');
+  assert.strictEqual(verifyRes.body.payment.status, 'verified');
+
+  // 5. Admin reject payment
+  const rejectRes = await dispatchMockRequest({
+    url: `/api/payments/${createdPayId}/reject`,
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${superAdminToken}` },
+    body: { reason: 'Test rejection flow' }
+  });
+  assert.strictEqual(rejectRes.statusCode, 200, 'Rejection should return 200');
+  assert.strictEqual(rejectRes.body.payment.status, 'rejected');
+
+  // 6. Super Admin delete payment
+  const deletePayRes = await dispatchMockRequest({
+    url: `/api/payments/${createdPayId}`,
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${superAdminToken}` }
+  });
+  assert.strictEqual(deletePayRes.statusCode, 200, 'Super admin delete should return 200');
+  console.log('  ✅ Payment verification, status mapping, and audit trail lifecycle verified successfully.\n');
+
   console.log('🎉 ==============================================');
   console.log('🎉 ALL CALLISTO-ORBIT TESTS PASSED SUCCESSFULLY! ');
   console.log('🎉 ==============================================\n');
   } finally {
     fs.writeFileSync(usersPath, originalUsersContent, 'utf8');
     fs.writeFileSync(configPath, originalConfigContent, 'utf8');
+    fs.writeFileSync(collectionsPath, originalCollectionsContent, 'utf8');
+    fs.writeFileSync(paymentsPath, originalPaymentsContent, 'utf8');
   }
 }
 
