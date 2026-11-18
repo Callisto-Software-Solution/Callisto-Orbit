@@ -174,88 +174,6 @@
       background: linear-gradient(90deg, #ff5500, #ff8c00, #ffaa00) !important;
       box-shadow: 0 0 12px rgba(255, 85, 0, 0.65) !important;
     }
-
-    /* Sidebar Sticky & Glassmorphism Styling */
-    .command-sidebar {
-      background: rgba(10, 16, 32, 0.88);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 85, 0, 0.28);
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 120, 0, 0.15);
-      border-radius: 18px;
-      padding: 1.25rem 1rem;
-    }
-
-    @media (min-width: 992px) {
-      .command-sidebar-sticky {
-        position: sticky;
-        top: 5rem;
-        max-height: calc(100vh - 6rem);
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255, 85, 0, 0.3) transparent;
-      }
-    }
-
-    @media (max-width: 991.98px) {
-      .command-sidebar-offcanvas {
-        background: rgba(8, 12, 24, 0.98) !important;
-        backdrop-filter: blur(25px) !important;
-        -webkit-backdrop-filter: blur(25px) !important;
-        border-right: 1.5px solid rgba(255, 85, 0, 0.35) !important;
-        max-width: 310px !important;
-        padding: 1.25rem 1rem !important;
-      }
-    }
-
-    .sidebar-user-card {
-      background: rgba(14, 22, 42, 0.88);
-      border-radius: 14px;
-      border: 1px solid rgba(255, 85, 0, 0.2);
-      padding: 0.85rem;
-    }
-
-    .sidebar-nav-title {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      padding: 0 0.5rem;
-      margin-bottom: 0.45rem;
-    }
-
-    .sidebar-nav-link {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.65rem 0.85rem;
-      border-radius: 10px;
-      color: #94a3b8;
-      font-size: 0.84rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      margin-bottom: 0.25rem;
-      border: 1px solid transparent;
-    }
-
-    .sidebar-nav-link:hover {
-      color: #ffffff;
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(255, 85, 0, 0.25);
-    }
-
-    .sidebar-nav-link.active {
-      color: #ffffff;
-      background: linear-gradient(135deg, rgba(255, 85, 0, 0.22), rgba(216, 27, 27, 0.15));
-      border: 1px solid rgba(255, 85, 0, 0.45);
-      box-shadow: 0 0 15px rgba(255, 85, 0, 0.2);
-    }
-
-    .sidebar-nav-link.active i {
-      color: var(--callisto-orange);
-    }
   </style>
 </head>
 <body style="position: relative; background: #050811;">
@@ -351,119 +269,9 @@
     <div class="row g-4">
       
       <!-- ==========================================
-           LEFT SIDEBAR (Desktop Sticky + Mobile Offcanvas)
+           REUSABLE CALLISTO-ORBIT COMMAND SIDEBAR
            ========================================== -->
-      <aside class="col-12 col-lg-3 col-xl-2">
-        <div class="offcanvas-lg offcanvas-start command-sidebar-offcanvas" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
-          
-          <div class="d-flex justify-content-between align-items-center d-lg-none mb-3 pb-2" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-            <div class="d-flex align-items-center gap-2">
-              <img src="/assets/images/callisto-logo.jpg" alt="Logo" style="width: 28px; height: 28px; border-radius: 50%;">
-              <span style="font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 1rem;">CALLISTO ORBIT</span>
-            </div>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#sidebarOffcanvas" aria-label="Close"></button>
-          </div>
-
-          <div class="command-sidebar command-sidebar-sticky">
-            
-            <!-- 1. Active Specialist Card -->
-            <div class="sidebar-user-card mb-3">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <img id="sideUserAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=User" alt="Specialist" style="width: 40px; height: 40px; border-radius: 12px; background: #131c31; border: 1.5px solid rgba(255,85,0,0.5); box-shadow: 0 0 10px rgba(255,85,0,0.3);">
-                <div style="min-width: 0;">
-                  <div id="sideUserName" class="text-truncate text-white" style="font-weight: 700; font-size: 0.88rem; line-height: 1.2;">Specialist</div>
-                  <div id="sideUserRoleBadge" class="mt-1">
-                    <span class="badge" style="background: rgba(0,240,118,0.15); border: 1px solid #00f076; color: #00f076; font-size: 0.62rem;">MEMBER</span>
-                  </div>
-                </div>
-              </div>
-              <div class="d-flex align-items-center justify-content-between pt-2 mt-2" style="border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.72rem; color: var(--text-dim);">
-                <span>Operator Status:</span>
-                <span class="d-flex align-items-center gap-1 text-success" style="font-weight: 600;">
-                  <span class="status-indicator-dot" style="width: 6px; height: 6px; background:#00f076; box-shadow:0 0 8px #00f076;"></span>
-                  Clearance Active
-                </span>
-              </div>
-            </div>
-
-            <!-- 2. Main Navigation Menu -->
-            <div class="sidebar-nav-title">Orbit Navigation</div>
-            <nav class="d-flex flex-column gap-1 mb-3">
-              <a href="#sectionOverview" class="sidebar-nav-link active" id="navLinkOverview">
-                <i class="bi bi-speedometer2"></i>
-                <span>Overview &amp; Metrics</span>
-              </a>
-              <a href="/specialists.html" class="sidebar-nav-link" id="navLinkSpecialists">
-                <i class="bi bi-people-fill text-warning"></i>
-                <span>Specialists &amp; Registry</span>
-              </a>
-              <a href="/payments.html" class="sidebar-nav-link" id="navLinkPayments">
-                <i class="bi bi-cash-coin" style="color: #10b981;"></i>
-                <span>Payment Verification</span>
-                <span id="pendingPayBadge" class="d-none ms-auto badge" style="background: rgba(245,158,11,0.25); border: 1px solid #f59e0b; color: #fbbf24; font-size: 0.6rem; padding: 0.2rem 0.45rem; border-radius: 5px;"></span>
-              </a>
-              <a href="#sectionMonthStatus" class="sidebar-nav-link" id="navLinkStatus">
-                <i class="bi bi-pie-chart-fill text-info"></i>
-                <span>Monthly Pool Status</span>
-              </a>
-              <a href="#sectionHistory" class="sidebar-nav-link" id="navLinkHistory">
-                <i class="bi bi-clock-history text-warning"></i>
-                <span>Collection History</span>
-              </a>
-              <a href="#sectionArchitecture" class="sidebar-nav-link" id="navLinkArch">
-                <i class="bi bi-shield-check text-success"></i>
-                <span>Zero-DB Vault Info</span>
-              </a>
-            </nav>
-
-            <!-- 3. Privileged Admin Console Section (For Admin & Super Admin) -->
-            <div id="sideAdminGroup" class="d-none mb-3">
-              <div class="sidebar-nav-title d-flex justify-content-between align-items-center">
-                <span>Specialist Console</span>
-                <span class="badge" style="background: rgba(255,85,0,0.2); color:#ff9d00; font-size:0.6rem;">ADMIN</span>
-              </div>
-              <nav class="d-flex flex-column gap-1">
-                <a href="/specialists.html" class="sidebar-nav-link">
-                  <i class="bi bi-person-lines-fill text-warning"></i>
-                  <span>Manage Specialists</span>
-                </a>
-                <a href="/specialists.html?action=register" class="btn btn-sm btn-phoenix-main w-100 mt-2 py-2 text-start d-flex align-items-center justify-content-center gap-2 text-decoration-none" style="border-radius: 10px; font-size: 0.78rem; font-weight: 600;">
-                  <i class="bi bi-person-plus-fill"></i>
-                  <span>+ Register Specialist</span>
-                </a>
-              </nav>
-            </div>
-
-            <!-- 4. Quick Treasury Widget -->
-            <div class="sidebar-bottom-pill p-3 mb-3">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">Squad Target</span>
-                <span style="font-size: 0.75rem; color: #00e676; font-weight: 700;" id="sideTargetProgress">66.7%</span>
-              </div>
-              <div class="progress-cyber" style="height: 6px;">
-                <div id="sideProgressBar" class="progress-cyber-bar" style="width: 66.7%;"></div>
-              </div>
-              <div class="d-flex justify-content-between align-items-center mt-2" style="font-size: 0.7rem; color: var(--text-muted);">
-                <span id="sideTargetMembers">6 Specialists</span>
-                <span id="sideTargetUnit">Rs. 100/mo</span>
-              </div>
-            </div>
-
-            <!-- 5. Quick Return & Logout Buttons -->
-            <div class="d-flex flex-column gap-1 pt-2" style="border-top: 1px solid rgba(255,255,255,0.06);">
-              <a href="/" class="sidebar-nav-link text-decoration-none">
-                <i class="bi bi-house-door-fill text-warning"></i>
-                <span>Landing Phoenix</span>
-              </a>
-              <button type="button" class="sidebar-nav-link text-start text-danger border-0 bg-transparent w-100" id="sideLogoutBtn" style="cursor: pointer;">
-                <i class="bi bi-box-arrow-right text-danger"></i>
-                <span>Exit Session</span>
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </aside>
+      <aside class="col-12 col-lg-3 col-xl-2" id="orbitSidebar" data-active="dashboard"></aside>
 
       <!-- ==========================================
            MAIN DASHBOARD CONTENT COLUMN
@@ -913,6 +721,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/assets/js/portal-loader.js"></script>
   <script src="/assets/js/phoenix.js"></script>
+  <script src="/assets/js/sidebar.js?v=1.0"></script>
   <script src="/assets/js/dashboard.js?v=2.7"></script>
 </body>
 </html>
