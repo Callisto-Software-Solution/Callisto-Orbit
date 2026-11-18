@@ -679,6 +679,55 @@ async function handleRequest(req, res) {
         });
       }
 
+      // 10b. PAYMENTS MEMBER STATUS: GET /api/payments/member-status?month=2026-11
+      if (pathname === '/api/payments/member-status' && method === 'GET') {
+        const token = getAuthToken(req);
+        const session = verifySessionToken(token);
+        if (!session) {
+          return sendJson(res, 401, { success: false, message: 'Unauthorized' });
+        }
+        const urlObj = new URL('http://x' + req.url);
+        const qMonth = urlObj.searchParams.get('month') || new Date().toISOString().slice(0, 7);
+        const payments = readJson(PAYMENTS_FILE, []);
+        const monthPayments = payments.filter(p => p.month === qMonth);
+
+        // Build map: userId -> best payment record for that month
+        const statusMap = {};
+        monthPayments.forEach(p => {
+          const existing = statusMap[p.userId];
+          // Priority: verified > pending_verification > rejected
+          const priority = { verified: 3, pending_verification: 2, rejected: 1 };
+          if (!existing || (priority[p.status] || 0) > (priority[existing.status] || 0)) {
+            statusMap[p.userId] = { status: p.status, amount: p.amount, paymentId: p.id };
+          }
+        });
+        return sendJson(res, 200, { success: true, month: qMonth, statusMap });
+      }
+
+      // 10a. PAYMENTS PENDING COUNT: GET /api/payments/pending-count (Fast summary for badge)
+      if (pathname === '/api/payments/pending-count' && method === 'GET') {
+        const token = getAuthToken(req);
+        const session = verifySessionToken(token);
+        if (!session) {
+          return sendJson(res, 401, { success: false, message: 'Unauthorized' });
+        }
+        const payments = readJson(PAYMENTS_FILE, []);
+        const pendingCount = payments.filter(p => p.status === 'pending_verification').length;
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const myPaymentThisMonth = payments.find(p =>
+          p.userId === session.userId && p.month === currentMonth
+        );
+        return sendJson(res, 200, {
+          success: true,
+          pendingCount,
+          myPaymentThisMonth: myPaymentThisMonth ? {
+            status: myPaymentThisMonth.status,
+            month: myPaymentThisMonth.month,
+            amount: myPaymentThisMonth.amount
+          } : null
+        });
+      }
+
       // 10. PAYMENTS: GET /api/payments (List Payments & Audit Trail)
       if (pathname === '/api/payments' && method === 'GET') {
         const token = getAuthToken(req);
