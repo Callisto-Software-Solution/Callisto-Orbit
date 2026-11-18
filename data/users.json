@@ -11,5 +11,18 @@
     "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Kehan",
     "joinedDate": "2026-01-01",
     "active": true
+  },
+  {
+    "id": "usr_02",
+    "name": "Sahan Dilshan",
+    "username": "sahan",
+    "nic": "200313800593",
+    "email": "sahan@gmail.com",
+    "password": null,
+    "role": "member",
+    "title": "Director",
+    "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=Sahan%20Dilshan",
+    "joinedDate": "2026-11-18",
+    "active": true
   }
 ]
