@@ -183,6 +183,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (statPending)  statPending.textContent  = s.pendingCount  ?? '0';
     if (statVerified) statVerified.textContent = s.verifiedCount ?? '0';
     if (statAmount)   statAmount.textContent   = `${currency}${(s.verifiedTotalAmount || 0).toLocaleString()}`;
+
+    // Update sidebar pending badge
+    const badge = document.getElementById('pendingPayBadge');
+    if (badge) {
+      const pc = s.pendingCount || 0;
+      if (pc > 0) {
+        badge.textContent = pc;
+        badge.classList.remove('d-none');
+      } else {
+        badge.classList.add('d-none');
+      }
+    }
   }
 
   function renderPayments() {
