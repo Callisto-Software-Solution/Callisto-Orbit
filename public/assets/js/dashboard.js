@@ -83,6 +83,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let currentUser = null;
   let cachedMembers = [];
+  let cachedPaymentStatusMap = {}; // userId -> { status, amount } for active month
+
+  // Load pending payment count and update sidebar badge
+  async function loadPendingBadge() {
+    try {
+      const r = await fetch('/api/payments/pending-count');
+      if (!r.ok) return;
+      const d = await r.json();
+      const badge = document.getElementById('pendingPayBadge');
+      if (badge && d.success && d.pendingCount > 0) {
+        badge.textContent = d.pendingCount;
+        badge.classList.remove('d-none');
+        badge.title = `${d.pendingCount} payment(s) awaiting verification`;
+      } else if (badge) {
+        badge.classList.add('d-none');
+      }
+    } catch (e) { /* silent */ }
+  }
 
   // Helper: Role badge generator
   function getRoleBadge(role) {
@@ -208,13 +226,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 3. Load Dashboard & Collections Data
   async function loadDashboardData() {
     try {
-      const [colRes, memRes] = await Promise.all([
+      const [colRes, memRes, payStatusRes] = await Promise.all([
         fetch('/api/collections'),
-        fetch('/api/members')
+        fetch('/api/members'),
+        fetch(`/api/payments/member-status?month=${getCurrentMonth()}`)
       ]);
 
       const colData = await colRes.json();
       const memData = await memRes.json();
+      if (payStatusRes.ok) {
+        const psd = await payStatusRes.json();
+        if (psd.success) cachedPaymentStatusMap = psd.statusMap || {};
+      }
 
       const stats = colData.success && colData.stats ? colData.stats : {};
       const currency = stats.currency || 'Rs. ';
@@ -259,7 +282,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Render Member Contribution Cards
+  // Helper: Get current month in YYYY-MM format
+  function getCurrentMonth() {
+    return new Date().toISOString().slice(0, 7);
+  }
+
+  // Render Member Contribution Cards (enhanced with payment status)
   function renderActiveMembers(contributions = [], members = [], currency = 'Rs. ') {
     if (!membersGrid) return;
 
@@ -267,35 +295,97 @@ document.addEventListener('DOMContentLoaded', async () => {
     contributions.forEach(c => { contribMap[c.userId] = c; });
 
     membersGrid.innerHTML = members.map(m => {
+      // Check payment vault status first (payments.json), fallback to collections.json
+      const payStatus = cachedPaymentStatusMap[m.id];
       const contrib = contribMap[m.id] || { status: 'pending', amount: 0 };
-      const isPaid = contrib.status === 'paid';
+
+      let statusClass, statusIcon, statusLabel, statusColor, borderColor;
+      const isSelf = currentUser && currentUser.id === m.id;
+
+      if (payStatus) {
+        if (payStatus.status === 'verified') {
+          statusClass = 'member-badge-paid';
+          statusIcon = 'bi-check-circle-fill';
+          statusLabel = `VERIFIED ${currency}${payStatus.amount || 100}`;
+          statusColor = '#10b981';
+          borderColor = 'rgba(16,185,129,0.3)';
+        } else if (payStatus.status === 'pending_verification') {
+          statusClass = '';
+          statusIcon = 'bi-hourglass-split';
+          statusLabel = `PENDING VERIFY ${currency}${payStatus.amount || 100}`;
+          statusColor = '#f59e0b';
+          borderColor = 'rgba(245,158,11,0.3)';
+        } else if (payStatus.status === 'rejected') {
+          statusClass = '';
+          statusIcon = 'bi-x-circle-fill';
+          statusLabel = `REJECTED — Resubmit`;
+          statusColor = '#ef4444';
+          borderColor = 'rgba(239,68,68,0.3)';
+        }
+      } else if (contrib.status === 'paid') {
+        statusClass = 'member-badge-paid';
+        statusIcon = 'bi-check-circle-fill';
+        statusLabel = `PAID ${currency}100`;
+        statusColor = '#10b981';
+        borderColor = 'rgba(16,185,129,0.3)';
+      } else {
+        statusClass = 'member-badge-pending';
+        statusIcon = 'bi-hourglass-split';
+        statusLabel = `PENDING ${currency}100`;
+        statusColor = '#f59e0b';
+        borderColor = 'rgba(245,158,11,0.15)';
+      }
+
+      // Build payment sub-line info
+      let paySubInfo = '';
+      if (payStatus) {
+        if (payStatus.status === 'verified') {
+          paySubInfo = `<span style="color:#34d399;"><i class="bi bi-patch-check-fill me-1"></i>Credited to Treasury</span>`;
+        } else if (payStatus.status === 'pending_verification') {
+          paySubInfo = `<span style="color:#fbbf24;"><i class="bi bi-clock me-1"></i>Awaiting Admin Verification</span>`;
+        } else if (payStatus.status === 'rejected') {
+          paySubInfo = `<span style="color:#f87171;"><i class="bi bi-exclamation-triangle-fill me-1"></i>Payment was rejected</span>`;
+        }
+      } else if (contrib.status === 'paid' && contrib.method) {
+        paySubInfo = `<span style="color:#94a3b8;">${contrib.method}${contrib.txRef ? ' • ' + contrib.txRef : ''}</span>`;
+      } else {
+        paySubInfo = `<span style="color:#64748b;">No payment this month</span>`;
+      }
+
+      // Show "Submit Payment" link for self if no verified payment this month
+      const showSubmitLink = isSelf && (!payStatus || payStatus.status === 'rejected') && contrib.status !== 'paid';
+      const submitLink = showSubmitLink
+        ? `<a href="/payments.html" style="color:#10b981;font-size:0.7rem;font-weight:600;text-decoration:none;"><i class="bi bi-plus-circle me-1"></i>Submit Payment</a>`
+        : '';
 
       return `
         <div class="col-12 col-md-6">
-          <div class="member-card d-flex align-items-center justify-content-between p-3" style="background: rgba(14, 20, 36, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;">
-            <div class="d-flex align-items-center gap-3">
-              <img src="${m.avatar}" alt="${m.name}" style="width: 44px; height: 44px; border-radius: 12px; background: #131c31; border: 1px solid rgba(255,255,255,0.1);">
-              <div>
-                <div class="d-flex align-items-center gap-2">
-                  <span style="font-weight: 600; color: #fff; font-size: 0.92rem;">${m.name}</span>
+          <div class="member-card d-flex align-items-center justify-content-between p-3" style="background: rgba(14,20,36,0.7); border: 1px solid ${borderColor}; border-radius: 14px; border-left: 3px solid ${statusColor}; transition: border-color 0.2s;">
+            <div class="d-flex align-items-center gap-3" style="min-width:0;">
+              <div style="position:relative;flex-shrink:0;">
+                <img src="${m.avatar}" alt="${m.name}" style="width:44px;height:44px;border-radius:12px;background:#131c31;border:1px solid rgba(255,255,255,0.1);">
+                ${isSelf ? `<span style="position:absolute;bottom:-3px;right:-3px;width:12px;height:12px;background:#ff5500;border-radius:50%;border:2px solid #060b18;" title="You"></span>` : ''}
+              </div>
+              <div style="min-width:0;">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <span style="font-weight:600;color:#fff;font-size:0.92rem;">${m.name}</span>
                   ${getRoleBadge(m.role)}
+                  ${isSelf ? `<span class="badge" style="background:rgba(255,85,0,0.15);border:1px solid rgba(255,85,0,0.4);color:#ff9d00;font-size:0.6rem;">YOU</span>` : ''}
                 </div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">${m.title || 'Squad Specialist'}</div>
-                <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 2px;">
-                  <span class="badge" style="background: rgba(255,255,255,0.06); color: #cbd5e1; font-family: monospace; font-size: 0.68rem;">NIC: ${m.nic}</span>
-                  ${isPaid ? `<span class="ms-1 text-success"><i class="bi bi-calendar-check me-1"></i>Paid</span>` : '<span class="ms-1 text-warning"><i class="bi bi-clock-history me-1"></i>Awaiting</span>'}
-                </div>
+                <div style="font-size:0.75rem;color:#94a3b8;">${m.title || 'Squad Specialist'}</div>
+                <div style="font-size:0.7rem;margin-top:3px;">${paySubInfo}</div>
+                ${submitLink ? `<div style="margin-top:4px;">${submitLink}</div>` : ''}
               </div>
             </div>
 
-            <div class="text-end">
+            <div class="text-end flex-shrink-0">
               <div>
-                <span class="${isPaid ? 'member-badge-paid' : 'member-badge-pending'}">
-                  ${isPaid ? `<i class="bi bi-check-circle-fill me-1"></i> PAID ${currency}100` : `<i class="bi bi-hourglass-split me-1"></i> PENDING ${currency}100`}
+                <span style="background:rgba(${statusColor === '#10b981' ? '16,185,129' : statusColor === '#f59e0b' ? '245,158,11' : statusColor === '#ef4444' ? '239,68,68' : '100,116,139'},0.15);border:1px solid ${statusColor};color:${statusColor};font-size:0.68rem;font-weight:700;padding:0.25rem 0.55rem;border-radius:7px;white-space:nowrap;">
+                  <i class="bi ${statusIcon} me-1"></i>${statusLabel}
                 </span>
               </div>
-              <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">
-                ${isPaid && contrib.method ? `${contrib.method} • ${contrib.txRef || 'Verified'}` : `Target: ${currency}100/mo`}
+              <div style="font-size:0.68rem;color:#475569;margin-top:4px;">
+                NIC: <span style="font-family:monospace;color:#94a3b8;">${m.nic}</span>
               </div>
             </div>
           </div>
@@ -413,23 +503,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Render Collection History
+  // Render Collection History (enhanced with progress bars)
   function renderHistory(collections, currency) {
     if (!historyList) return;
-    historyList.innerHTML = collections.slice().reverse().map(c => `
-      <div class="p-2 px-3 glass-panel d-flex justify-content-between align-items-center" style="border-radius: 10px; font-size: 0.82rem;">
-        <div>
-          <strong class="text-white">${c.month}</strong>
-          <span class="text-dim ms-2">${c.status === 'completed' ? 'Fully Completed' : 'In Progress'}</span>
+    const sorted = collections.slice().reverse();
+    historyList.innerHTML = sorted.map((c, idx) => {
+      const pct = c.target > 0 ? Math.min(100, Math.round((c.collected / c.target) * 100)) : 0;
+      const isComplete = c.collected >= c.target;
+      const isActive = idx === 0;
+      const barColor = isComplete ? '#10b981' : (pct >= 50 ? '#ff9d00' : '#ef4444');
+      return `
+        <div style="background:rgba(14,20,36,0.6);border:1px solid rgba(255,255,255,${isActive ? '0.12' : '0.06'});border-radius:12px;padding:0.75rem 1rem;${isActive ? 'border-left:3px solid #10b981;' : ''}">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="d-flex align-items-center gap-2">
+              <strong style="color:#fff;font-size:0.85rem;">${c.month}</strong>
+              ${isActive ? `<span class="badge" style="background:rgba(0,210,255,0.12);color:#00d2ff;border:1px solid rgba(0,210,255,0.3);font-size:0.6rem;">ACTIVE</span>` : ''}
+              ${isComplete ? `<span class="badge" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid #10b981;font-size:0.6rem;"><i class="bi bi-check2-all me-1"></i>COMPLETE</span>` : ''}
+            </div>
+            <div>
+              <span style="font-weight:700;color:${barColor};font-size:0.9rem;">${currency}${c.collected.toLocaleString()}</span>
+              <span style="color:#475569;font-size:0.78rem;"> / ${currency}${c.target.toLocaleString()}</span>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.06);border-radius:4px;height:5px;overflow:hidden;">
+            <div style="width:${pct}%;height:100%;background:${barColor};border-radius:4px;transition:width 0.5s ease;box-shadow:0 0 6px ${barColor};"></div>
+          </div>
+          <div style="font-size:0.68rem;color:#475569;margin-top:3px;text-align:right;">${pct}% collected</div>
         </div>
-        <div>
-          <span style="font-weight: 700; color: ${c.collected >= c.target ? '#00e676' : '#ff9d00'};">
-            ${currency}${c.collected}
-          </span>
-          <span class="text-dim">/ ${currency}${c.target}</span>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   // 4. Modal Triggers & Form Submissions
@@ -611,5 +713,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Initial load
+  loadPendingBadge();
   loadDashboardData();
 });
