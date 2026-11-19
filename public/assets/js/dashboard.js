@@ -342,7 +342,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     membersGrid.innerHTML = members.map(m => {
       // Check payment vault status first (payments.json), fallback to collections.json
       const payStatus = cachedPaymentStatusMap[m.id];
-      const contrib = contribMap[m.id] || { status: 'pending', amount: 0 };
+      // Only use contrib if it has a real paid record — never default to fake pending state
+      const contrib = contribMap[m.id] || null;
+      const hasRealContrib = contrib && contrib.status === 'paid';
 
       let statusClass, statusIcon, statusLabel, statusColor, borderColor;
       const isSelf = currentUser && currentUser.id === m.id;
@@ -357,7 +359,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (payStatus.status === 'pending_verification') {
           statusClass = '';
           statusIcon = 'bi-hourglass-split';
-          statusLabel = `PENDING VERIFY ${currency}${payStatus.amount || 100}`;
+          statusLabel = `AWAITING VERIFY ${currency}${payStatus.amount || 100}`;
           statusColor = '#f59e0b';
           borderColor = 'rgba(245,158,11,0.3)';
         } else if (payStatus.status === 'rejected') {
