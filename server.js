@@ -803,7 +803,9 @@ async function handleRequest(req, res) {
           return sendJson(res, 401, { success: false, message: 'Unauthorized' });
         }
         const payments = readJson(PAYMENTS_FILE, []);
-        const pendingCount = payments.filter(p => p.status === 'pending_verification').length;
+        const pendingPayments = payments.filter(p => p.status === 'pending_verification');
+        const pendingCount = pendingPayments.length;
+        const pendingAmount = pendingPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
         const currentMonth = new Date().toISOString().slice(0, 7);
         const myPaymentThisMonth = payments.find(p =>
           p.userId === session.userId && p.month === currentMonth
@@ -811,6 +813,7 @@ async function handleRequest(req, res) {
         return sendJson(res, 200, {
           success: true,
           pendingCount,
+          pendingAmount,
           myPaymentThisMonth: myPaymentThisMonth ? {
             status: myPaymentThisMonth.status,
             month: myPaymentThisMonth.month,

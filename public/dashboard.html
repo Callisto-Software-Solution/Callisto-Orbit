@@ -111,8 +111,8 @@
       letter-spacing: 0.8px !important;
     }
 
-    #statMonthlyTargetFormula {
-      color: #cbd5e1 !important;
+    #statPendingSubText {
+      color: #f59e0b !important;
       font-weight: 500 !important;
     }
 
@@ -363,18 +363,19 @@
               </div>
             </div>
 
-            <!-- Stat 2: Monthly Squad Target -->
+            <!-- Stat 2: Pending Payments -->
             <div class="col-12 col-sm-6 col-lg-3">
               <div class="glass-panel stat-card h-100 p-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="text-muted" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Monthly Squad Target</span>
-                  <div class="stat-icon" style="background: rgba(255, 85, 0, 0.15); color: var(--callisto-orange); box-shadow: 0 0 10px rgba(255,85,0,0.3);">
-                    <i class="bi bi-bullseye"></i>
+                  <span class="text-muted" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Pending Payments</span>
+                  <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.3);">
+                    <i class="bi bi-hourglass-split"></i>
                   </div>
                 </div>
-                <div class="stat-number text-white" id="statMonthlyTarget" style="font-family: var(--font-display); font-weight: 700; font-size: 1.85rem;">—</div>
-                <div class="d-flex align-items-center gap-1 mt-2" style="font-size: 0.75rem; color: var(--text-muted);" id="statMonthlyTargetFormula">
-                  <span>Calculating squad target...</span>
+                <div class="stat-number text-white" id="statPendingCount" style="font-family: var(--font-display); font-weight: 700; font-size: 1.85rem;">—</div>
+                <div class="d-flex align-items-center gap-1 mt-2" style="font-size: 0.75rem;" id="statPendingSubText">
+                  <i class="bi bi-clock text-warning"></i>
+                  <span style="color:#f59e0b;">Awaiting admin verification</span>
                 </div>
               </div>
             </div>

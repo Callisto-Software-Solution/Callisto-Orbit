@@ -25,8 +25,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Stats
   const statTotalCollected = document.getElementById('statTotalCollected');
-  const statMonthlyTarget = document.getElementById('statMonthlyTarget');
-  const statMonthlyTargetFormula = document.getElementById('statMonthlyTargetFormula');
+  const statPendingCount   = document.getElementById('statPendingCount');
+  const statPendingSubText = document.getElementById('statPendingSubText');
   const statProgressPercentage = document.getElementById('statProgressPercentage');
   const statProgressBar = document.getElementById('statProgressBar');
   const statRosterCount = document.getElementById('statRosterCount');
@@ -242,13 +242,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 3. Load Dashboard & Collections Data (100% Real Live Calculated Metrics)
   async function loadDashboardData() {
     try {
-      const [colRes, memRes] = await Promise.all([
+      const [colRes, memRes, pendingRes] = await Promise.all([
         fetch('/api/collections'),
-        fetch('/api/members')
+        fetch('/api/members'),
+        fetch('/api/payments/pending-count')
       ]);
 
-      const colData = await colRes.json();
-      const memData = await memRes.json();
+      const colData     = await colRes.json();
+      const memData     = await memRes.json();
+      const pendingData = pendingRes.ok ? await pendingRes.json() : {};
 
       const stats = colData.success && colData.stats ? colData.stats : {};
       const currency = stats.currency || 'Rs. ';
@@ -294,10 +296,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       // 2. Total Fund Collected Card
       if (statTotalCollected) statTotalCollected.textContent = `${currency}${totalCollected.toLocaleString()}`;
 
-      // 3. Monthly Squad Target Card
-      if (statMonthlyTarget) statMonthlyTarget.textContent = `${currency}${monthlyTarget.toLocaleString()}`;
-      if (statMonthlyTargetFormula) {
-        statMonthlyTargetFormula.innerHTML = `<span>${memberCount} members &times; ${currency}${perMember} / month</span>`;
+      // 3. Pending Payments Card
+      const pendingCount  = (pendingData && pendingData.success) ? (pendingData.pendingCount || 0) : 0;
+      const pendingAmount = (pendingData && pendingData.success) ? (pendingData.pendingAmount || 0) : 0;
+      if (statPendingCount) {
+        statPendingCount.textContent = pendingCount > 0 ? pendingCount : '0';
+        statPendingCount.style.color = pendingCount > 0 ? '#f59e0b' : '#64748b';
+      }
+      if (statPendingSubText) {
+        if (pendingCount > 0) {
+          statPendingSubText.innerHTML = `<i class="bi bi-clock text-warning"></i> <span style="color:#f59e0b;">${currency}${pendingAmount.toLocaleString()} awaiting verify</span>`;
+        } else {
+          statPendingSubText.innerHTML = `<i class="bi bi-check-circle" style="color:#10b981;"></i> <span style="color:#10b981;">All payments verified</span>`;
+        }
       }
 
       // 4. Current Month Progress Card
