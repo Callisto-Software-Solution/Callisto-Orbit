@@ -394,14 +394,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (payStatus.status === 'rejected') {
           paySubInfo = `<span style="color:#f87171;"><i class="bi bi-exclamation-triangle-fill me-1"></i>Payment was rejected</span>`;
         }
-      } else if (contrib.status === 'paid' && contrib.method) {
+      } else if (hasRealContrib && contrib.method) {
         paySubInfo = `<span style="color:#94a3b8;">${contrib.method}${contrib.txRef ? ' • ' + contrib.txRef : ''}</span>`;
       } else {
         paySubInfo = `<span style="color:#64748b;">No payment this month</span>`;
       }
 
-      // Show "Submit Payment" link for self if no verified payment this month
-      const showSubmitLink = isSelf && (!payStatus || payStatus.status === 'rejected') && contrib.status !== 'paid';
+      // Show "Submit Payment" link for self only if no payment at all OR rejected
+      const showSubmitLink = isSelf && (!payStatus || payStatus.status === 'rejected') && !hasRealContrib;
       const submitLink = showSubmitLink
         ? `<a href="/payments.html" style="color:#10b981;font-size:0.7rem;font-weight:600;text-decoration:none;"><i class="bi bi-plus-circle me-1"></i>Submit Payment</a>`
         : '';
