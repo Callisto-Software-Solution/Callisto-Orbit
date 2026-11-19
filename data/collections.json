@@ -4,19 +4,9 @@
     "month": "2026-01",
     "year": 2026,
     "target": 600,
-    "collected": 100,
+    "collected": 0,
     "status": "in_progress",
-    "contributions": [
-      {
-        "userId": "usr_01",
-        "name": "Kehan Hasalaka",
-        "amount": 100,
-        "paidDate": "2026-01-05",
-        "status": "paid",
-        "method": "Bank Transfer",
-        "txRef": "CAL-0105"
-      }
-    ]
+    "contributions": []
   },
   {
     "id": "col_2026_02",
@@ -25,17 +15,7 @@
     "target": 600,
     "collected": 0,
     "status": "in_progress",
-    "contributions": [
-      {
-        "userId": "usr_01",
-        "name": "Kehan Hasalaka",
-        "amount": 0,
-        "paidDate": null,
-        "status": "pending",
-        "method": "Bank Transfer",
-        "txRef": "CAL-0202"
-      }
-    ]
+    "contributions": []
   },
   {
     "id": "col_2026_11",

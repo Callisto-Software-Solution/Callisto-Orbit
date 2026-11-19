@@ -208,42 +208,30 @@ function getCalculatedTreasuryStats() {
   // Live update target for active cycle based on current roster
   currentCol.target = monthlyTarget;
 
-  // Ensure all collections have correct collected amounts based on verified contributions & payments
+  // Rebuild contributions ONLY from verified payments in payments.json (single source of truth).
+  // This prevents fake seed data or orphaned records from inflating totalCollected.
   collections.forEach(col => {
-    if (!Array.isArray(col.contributions)) col.contributions = [];
-
-    // Sync any verified payments for this month into contributions
+    // Find all verified payments for this specific month
     const verifiedPayments = payments.filter(p => p.month === col.month && p.status === 'verified');
-    verifiedPayments.forEach(p => {
-      let contrib = col.contributions.find(c => c.userId === p.userId);
-      if (contrib) {
-        contrib.status = 'paid';
-        contrib.amount = p.amount;
-        contrib.paidDate = p.paidDate || p.submittedAt;
-        contrib.method = p.method;
-        contrib.txRef = p.txRef;
-      } else {
-        col.contributions.push({
-          userId: p.userId,
-          name: p.userName,
-          amount: p.amount,
-          paidDate: p.paidDate || p.submittedAt,
-          status: 'paid',
-          method: p.method,
-          txRef: p.txRef
-        });
-      }
-    });
 
-    // Recalculate collected for this month
-    col.collected = col.contributions
-      .filter(c => c.status === 'paid')
-      .reduce((sum, c) => sum + (c.amount || 0), 0);
+    // Rebuild contributions entirely from verified payments — no seed data, no orphans
+    col.contributions = verifiedPayments.map(p => ({
+      userId: p.userId,
+      name: p.userName,
+      amount: p.amount,
+      paidDate: p.paidDate || p.submittedAt,
+      status: 'paid',
+      method: p.method,
+      txRef: p.txRef
+    }));
+
+    // Recalculate collected strictly from verified payments
+    col.collected = verifiedPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
 
     if (col.collected >= col.target && col.target > 0) {
       col.status = 'completed';
     } else {
-      col.status = 'in_progress';
+      col.status = col.month === currentMonth ? 'in_progress' : (col.collected > 0 ? 'partial' : 'in_progress');
     }
   });
 
