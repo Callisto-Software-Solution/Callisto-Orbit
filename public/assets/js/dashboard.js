@@ -369,18 +369,19 @@ document.addEventListener('DOMContentLoaded', async () => {
           statusColor = '#ef4444';
           borderColor = 'rgba(239,68,68,0.3)';
         }
-      } else if (contrib.status === 'paid') {
+      } else if (hasRealContrib) {
         statusClass = 'member-badge-paid';
         statusIcon = 'bi-check-circle-fill';
-        statusLabel = `PAID ${currency}100`;
+        statusLabel = `PAID ${currency}${contrib.amount || 100}`;
         statusColor = '#10b981';
         borderColor = 'rgba(16,185,129,0.3)';
       } else {
-        statusClass = 'member-badge-pending';
-        statusIcon = 'bi-hourglass-split';
-        statusLabel = `PENDING ${currency}100`;
-        statusColor = '#f59e0b';
-        borderColor = 'rgba(245,158,11,0.15)';
+        // No payment submitted at all — neutral grey, NOT a yellow PENDING
+        statusClass = '';
+        statusIcon = 'bi-dash-circle';
+        statusLabel = `NOT PAID`;
+        statusColor = '#64748b';
+        borderColor = 'rgba(100,116,139,0.15)';
       }
 
       // Build payment sub-line info
