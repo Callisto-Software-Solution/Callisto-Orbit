@@ -2354,3 +2354,29 @@ body.viewport-100vh .cursor-pointer {
   color: var(--callisto-orange, #ff5500);
 }
 
+/* ==========================================================================
+   CALLISTO-ORBIT REUSABLE COMMAND HEADER / NAVBAR COMPONENT
+   ========================================================================== */
+.dash-navbar {
+  background: rgba(8, 13, 26, 0.88) !important;
+  backdrop-filter: blur(25px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(25px) saturate(190%) !important;
+  border-bottom: 1.5px solid rgba(255, 85, 0, 0.28) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+  position: relative;
+  z-index: 100;
+}
+
+.header-user-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  transition: all 0.2s ease;
+}
+
+.header-user-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 85, 0, 0.3);
+}
+
+
