@@ -5,7 +5,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
   // ── DOM refs ──────────────────────────────────────────────────────────────
-  const portalLoader         = document.getElementById('portalLoader');
   const userNameElem         = document.getElementById('userName');
   const userAvatarElem       = document.getElementById('userAvatar');
   const userRoleElem         = document.getElementById('userRole');
@@ -521,13 +520,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (sideLogoutBtn) sideLogoutBtn.addEventListener('click', executeLogout);
 
   // ── 11. Initialise ─────────────────────────────────────────────────────────
-  if (portalLoader) {
-    setTimeout(() => {
-      portalLoader.style.opacity = '0';
-      setTimeout(() => { portalLoader.style.display = 'none'; }, 500);
-    }, 700);
-  }
-
   await loadMembers();
   await loadPayments();
 });

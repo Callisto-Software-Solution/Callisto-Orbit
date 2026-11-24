@@ -110,6 +110,33 @@
   }
 
   /**
+   * Show the unified Cyber-Fire Portal Preloader
+   * @param {string} statusText
+   */
+  window.showOrbitPreloader = function (statusText = 'INITIALIZING GATEWAY...') {
+    const loader = ensureLoaderDOM();
+    if (!loader) return;
+    const statusElem = document.getElementById('portalLoaderStatus');
+    const progressBar = document.getElementById('portalProgressBar');
+    loader.classList.add('active');
+    if (progressBar) progressBar.style.width = '35%';
+    if (statusElem) {
+      statusElem.style.color = '#ff9d00';
+      statusElem.textContent = statusText;
+    }
+  };
+
+  /**
+   * Hide the unified Cyber-Fire Portal Preloader
+   */
+  window.hideOrbitPreloader = function () {
+    const loader = document.getElementById('phoenixPortalLoader');
+    if (loader) {
+      loader.classList.remove('active');
+    }
+  };
+
+  /**
    * Main Universal Transition Trigger
    * @param {string} targetUrl The destination URL
    * @param {string} customStatus Custom status text to display
@@ -258,48 +285,56 @@
     playCyberKey(e.key);
   }, { passive: true });
 
-  // Auto-hook internal navigation links on DOM ready
+  // Ensure unified loader DOM is ready and reset if restored from bfcache
+  window.addEventListener('pageshow', () => {
+    window.hideOrbitPreloader();
+  });
+
+  // Auto-hook ALL internal navigation links via event delegation (works for static + reusable header/sidebar/footer links)
   document.addEventListener('DOMContentLoaded', () => {
     ensureLoaderDOM();
+  });
 
-    document.querySelectorAll('a').forEach((link) => {
-      const href = link.getAttribute('href');
-      if (!href) return;
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (!link) return;
 
-      // Ignore anchor jumps (#), javascript:, external links, or downloads
-      if (href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
-      if (href.startsWith('http') && !href.includes(window.location.host)) return;
+    const href = link.getAttribute('href');
+    if (!href) return;
 
-      // Determine if it's an internal page link
-      const isInternalPage = href === '/' || href.includes('.html') || href.startsWith('/api') === false;
+    // Ignore anchor jumps (#), javascript:, external links, target="_blank", or downloads
+    if (link.getAttribute('target') === '_blank' || link.hasAttribute('download')) return;
+    if (href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+    if (href.startsWith('http') && !href.includes(window.location.host)) return;
 
-      if (isInternalPage) {
-        link.addEventListener('click', (e) => {
-          // If middle click or ctrl/cmd click (new tab), allow default
-          if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    // Ignore middle click or modifier keys (new tab)
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
 
-          e.preventDefault();
+    // Determine if it's an internal page link (ignore pure /api/ links)
+    if (href.startsWith('/api')) return;
 
-          let msg = 'SYNCHRONIZING ORBIT GATEWAY...';
-          let duration = 900;
+    e.preventDefault();
 
-          if (href === '/' || href === '/index.html') {
-            msg = 'RETURNING TO PHOENIX SANCTUARY...';
-          } else if (href.includes('login.html')) {
-            msg = 'LAUNCHING SECURITY CLEARANCE...';
-            // Landing page button gets the grand 1.5s sequence
-            if (link.id === 'btnLaunchOrbit') {
-              duration = 1450;
-              msg = 'INITIALIZING ORBIT GATEWAY...';
-            }
-          } else if (href.includes('dashboard.html')) {
-            msg = 'ACCESSING ORBIT TREASURY DASHBOARD...';
-          }
+    let msg = 'SYNCHRONIZING ORBIT GATEWAY...';
+    let duration = 900;
 
-          window.triggerOrbitTransition(href, msg, duration);
-        });
+    if (href === '/' || href === '/index.html') {
+      msg = 'RETURNING TO PHOENIX SANCTUARY...';
+    } else if (href.includes('login.html')) {
+      msg = 'LAUNCHING SECURITY CLEARANCE...';
+      if (link.id === 'btnLaunchOrbit') {
+        duration = 1450;
+        msg = 'INITIALIZING ORBIT GATEWAY...';
       }
-    });
+    } else if (href.includes('dashboard.html')) {
+      msg = 'ACCESSING ORBIT TREASURY DASHBOARD...';
+    } else if (href.includes('specialists.html')) {
+      msg = 'LOADING SPECIALIST DIRECTORY...';
+    } else if (href.includes('payments.html')) {
+      msg = 'ACCESSING PAYMENT VERIFICATION VAULT...';
+    }
+
+    window.triggerOrbitTransition(href, msg, duration);
   });
 })();
 
